@@ -1,0 +1,5 @@
+main: net.brutewars.worldpvp.BWorldPlugin
+author: explosivemines
+version: 1.0.0
+name: WorldPvP
+depend: [Vault]

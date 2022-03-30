@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="WorldPvP:jar">
+    <output-path>$USER_HOME$/Documents/Coding</output-path>
+    <root id="archive" name="WorldPvP.jar">
+      <element id="module-output" name="WorldPvP" />
+    </root>
+  </artifact>
+</component>

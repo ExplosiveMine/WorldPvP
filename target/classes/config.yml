@@ -1,0 +1,20 @@
+# TIME UNIT IS IN SECONDS
+
+commands:
+  cooldown:
+    create: 30
+    reset: 30
+
+world:
+  resetting time: 30
+  unloading time: 600
+  size:
+    default: 500
+    tyrant: 750
+    nomad: 1000
+    brute: 2500
+
+invites:
+  expire time: 300
+
+debug: true
