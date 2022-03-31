@@ -2,8 +2,8 @@
 
 commands:
   cooldown:
-    create: 30
-    reset: 30
+    create: 300
+    reset: 300
 
 world:
   resetting time: 30
@@ -17,4 +17,4 @@ world:
 invites:
   expire time: 300
 
-debug: true
+debug: false
