@@ -4,17 +4,15 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.player.BPlayer;
-import net.brutewars.sandbox.rank.RankManager;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.world.WorldFactory;
-import org.bukkit.World;
 
 import java.util.*;
 
 public final class BWorldManager {
     private final BWorldPlugin plugin;
 
-    private final Map<UUID, BWorld> bWorlds = new HashMap<>();
+    private final Map<UUID, BWorld> bWorlds;
 
     @Getter private final WorldFactory worldFactory;
 
@@ -24,6 +22,7 @@ public final class BWorldManager {
 
     public BWorldManager(final BWorldPlugin plugin) {
         this.plugin = plugin;
+        this.bWorlds = new HashMap<>();
         this.worldFactory = new WorldFactory(plugin);
 
         this.INVITING_TIME = plugin.getConfig().getLong("invites.expire time");
@@ -45,7 +44,6 @@ public final class BWorldManager {
         final BWorld bWorld = new BWorld(plugin, uuid, owner);
 
         owner.setBWorld(bWorld);
-        owner.setRank(RankManager.getOwner());
 
         bWorlds.put(uuid, bWorld);
 
@@ -57,14 +55,13 @@ public final class BWorldManager {
 
     public void removeBWorld(BWorld bWorld) {
         if (bWorld.getResetting() != -1) {
-            Logging.debug(plugin, "Resetting: " + bWorld.getOwner().getName());
+            Logging.debug(plugin, "Resetting: " + bWorld.getAlias());
             plugin.getServer().getScheduler().cancelTask(bWorld.getResetting());
         }
 
         bWorld.getPlayers(true).forEach(bPlayer -> {
             bPlayer.sendToSpawn();
-            bPlayer.setBWorld(null);
-            bPlayer.setRank(null);
+            bPlayer.removeBWorld(bWorld);
         });
 
         worldFactory.delete(bWorld);

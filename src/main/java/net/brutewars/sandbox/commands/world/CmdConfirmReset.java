@@ -54,12 +54,12 @@ public final class CmdConfirmReset implements IPermissibleCommand {
 
     @Override
     public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.NO_PERMISSION_RESET::send;
+        return Lang.PLAYER_NO_WORLD::send;
     }
 
     @Override
     public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getRank().isOwner();
+        return bPlayer -> bPlayer.getBWorld() != null;
     }
 
     @Override

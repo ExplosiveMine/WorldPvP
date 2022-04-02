@@ -30,7 +30,7 @@ public final class WorldFactory {
         Executor.async(plugin, new BukkitRunnable() {
             @Override
             public void run() {
-                Logging.debug(plugin, "Creating world for " + bWorld.getOwner().getName() + ": " + bWorld.getWorldName());
+                Logging.debug(plugin, "Creating world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
 
                 importWorld(bWorld);
                 Lang.WORLD_CREATED.send(bWorld.getOwner(), bWorld.getWorldSize().getValue());
@@ -42,7 +42,7 @@ public final class WorldFactory {
         Executor.async(plugin, new BukkitRunnable() {
             @Override
             public void run() {
-                Logging.debug(plugin, "Loading world for " + bWorld.getOwner().getName() + ": " + bWorld.getWorldName());
+                Logging.debug(plugin, "Loading world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
 
                 importWorld(bWorld);
                 Lang.WORLD_LOADED.send(bWorld);
@@ -52,7 +52,7 @@ public final class WorldFactory {
 
     @SneakyThrows(IOException.class)
     public void delete(final BWorld bWorld) {
-        Logging.debug(plugin, "Deleting world for " + bWorld.getOwner().getName());
+        Logging.debug(plugin, "Deleting world for " + bWorld.getAlias());
 
         final File file = new File(plugin.getServer().getWorldContainer() + File.pathSeparator + bWorld.getWorldName());
         plugin.getServer().unloadWorld(bWorld.getWorldName(), false);
@@ -65,12 +65,12 @@ public final class WorldFactory {
             @Override
             public void run() {
                 if (save) {
-                    Logging.debug(plugin, "Saving world for " + bWorld.getOwner().getName());
+                    Logging.debug(plugin, "Saving world for " + bWorld.getAlias());
                     AsyncWorld.wrap(getWorld(bWorld)).save();
                 }
             }
         }, unused -> {
-            Logging.debug(plugin, "Unloaded world for " + bWorld.getOwner().getName());
+            Logging.debug(plugin, "Unloaded world for " + bWorld.getAlias());
             plugin.getServer().unloadWorld(bWorld.getWorldName(), false);
             bWorld.setWorldPhase(WorldPhase.UNLOADED);
         });

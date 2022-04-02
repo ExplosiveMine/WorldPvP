@@ -38,8 +38,7 @@ public final class SQLiteDatabase {
 
         membersTable = createTable("members",
                 "`world_id` TEXT NOT NULL",
-                "`player_id` TEXT NOT NULL",
-                "`player_rank` INTEGER NOT NULL");
+                "`player_id` TEXT NOT NULL");
 
     }
 
@@ -154,29 +153,6 @@ public final class SQLiteDatabase {
             Logging.debug(plugin, "Database: " + sb);
             executeQuery(sb.toString(), callback);
         }
-
-        /*
-        public void delete(final String... conditions) {
-            final StringBuilder sb = new StringBuilder("DELETE FROM `" + name + "`");
-            if (conditions != null && conditions.length != 0)
-                sb.append(" WHERE ").append(Arrays.toString(conditions));
-
-            StringUtils.debug(plugin, "Database: " + sb);
-            executeUpdate(sb.toString());
-        }
-        */
-
-        /*
-        public void update(final String set, final String condition) {
-            Preconditions.checkArgument(condition != null && !condition.isEmpty(), "cannot update the whole database");
-
-            final StringBuilder sb = new StringBuilder("UPDATE `" + name + "` SET " + set);
-            sb.append(" WHERE ").append(condition);
-
-            StringUtils.debug(plugin, "Database: " + sb);
-            executeUpdate(sb.toString());
-        }
-        */
 
     }
 

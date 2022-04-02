@@ -3,20 +3,19 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.JSONMessage;
+import net.brutewars.sandbox.utils.Pair;
 import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.bworld.BWorld;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public final class CmdInvite implements IPermissibleCommand {
+public final class CmdInvite implements ICommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("invite");
@@ -53,17 +52,15 @@ public final class CmdInvite implements IPermissibleCommand {
     }
 
     @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.NO_PERMISSION_INVITE::send;
-    }
+    public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        final Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-    @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getRank().isOwner();
-    }
+        final BPlayer inviter = pair.getValue();
+        final BWorld bWorld = pair.getKey();
 
-    @Override
-    public void execute(BWorldPlugin plugin, BPlayer inviter, BWorld bWorld, String[] args) {
+        if (bWorld == null)
+            return;
+
         final BPlayer invitee = CommandArguments.getBPlayer(plugin, inviter, args[1]);
         if (invitee == null) return;
 
@@ -77,14 +74,14 @@ public final class CmdInvite implements IPermissibleCommand {
             return;
         }
 
-        final String worldName = bWorld.getOwner().getName();
+        final String worldName = bWorld.getAlias();
         JSONMessage.create(Lang.PLAYER_INVITED.get(worldName))
                 .then(StringUtils.colour(" &aACC. "))
-                    .tooltip(Lang.ACCEPT_INVITE_TOOLTIP.get())
-                    .runCommand("/world accept " + worldName)
+                .tooltip(Lang.ACCEPT_INVITE_TOOLTIP.get())
+                .runCommand("/world accept " + worldName)
                 .then(StringUtils.colour("&cDECL. "))
-                    .tooltip(Lang.DENY_INVITE_TOOLTIP.get())
-                    .runCommand("/world deny " + worldName)
+                .tooltip(Lang.DENY_INVITE_TOOLTIP.get())
+                .runCommand("/world deny " + worldName)
                 .send(invitee);
 
         bWorld.invite(inviter, invitee);
@@ -93,6 +90,6 @@ public final class CmdInvite implements IPermissibleCommand {
 
     @Override
     public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        return CommandTabCompletes.getOnlinePlayersWithoutWorlds(plugin);
+        return CommandTabCompletes.getOnlinePlayers(plugin);
     }
 }

@@ -30,7 +30,6 @@ public final class BWorld {
     @Getter @Setter private int resetting = -1;
     @Getter @Setter private int unloading = -1;
 
-
     @Getter @Setter private WorldPhase worldPhase = WorldPhase.UNLOADED;
 
     public BWorld(final BWorldPlugin plugin, UUID uuid, BPlayer owner) {
@@ -53,12 +52,10 @@ public final class BWorld {
         return _players;
     }
 
-    public void addPlayer(BPlayer bPlayer, Rank rank) {
+    public void addPlayer(BPlayer bPlayer) {
         Preconditions.checkNotNull(bPlayer, "bPlayer parameter cannot be null");
-        Preconditions.checkNotNull(rank, "rank parameter cannot be null");
 
-        bPlayer.setRank(rank);
-        bPlayer.setBWorld(this);
+        bPlayer.addBWorld(this);
 
         players.add(bPlayer);
     }
@@ -66,8 +63,7 @@ public final class BWorld {
     public void removePlayer(BPlayer bPlayer) {
         Preconditions.checkNotNull(bPlayer, "bPlayer parameter cannot be null");
 
-        bPlayer.setBWorld(null);
-        bPlayer.setRank(null);
+        bPlayer.removeBWorld(this);
         bPlayer.sendToSpawn();
 
         players.remove(bPlayer);
@@ -96,12 +92,12 @@ public final class BWorld {
     }
 
     public void initialiseReset() {
-        Logging.debug(plugin, "Initialised reset for: " + getOwner().getName());
+        Logging.debug(plugin, "Initialised reset for: " + getAlias());
 
         setResetting(Executor.syncTimer(plugin, new BukkitRunnable() {
             @Override
             public void run() {
-                Logging.debug(plugin, "Reset cancelled for: " + getOwner().getName());
+                Logging.debug(plugin, "Reset cancelled for: " + getAlias());
                 setResetting(-1);
             }
         }, plugin.getBWorldManager().RESETTING_TIME));
@@ -118,7 +114,7 @@ public final class BWorld {
         if (worldSize.equals(maxSize))
             return;
 
-        Logging.debug(plugin, "Updated WorldSize for: " + getOwner().getName());
+        Logging.debug(plugin, "Updated WorldSize for: " + getAlias());
 
         if (worldPhase.equals(WorldPhase.LOADED)) {
             Lang.WORLD_BORDER_UPDATE.send(this, (maxSize.getValue() > worldSize.getValue() ? "increased" : "decreased"),worldSize.getValue(), maxSize.getValue());
@@ -129,25 +125,29 @@ public final class BWorld {
     }
 
     public void initialiseUnloading() {
-        Logging.debug(plugin, "Initialised unloading for: " + getOwner().getName());
+        Logging.debug(plugin, "Initialised unloading for: " + getAlias());
 
         setUnloading(Executor.syncTimer(plugin, new BukkitRunnable() {
             @Override
             public void run() {
                 if (getOnlineBPlayers().size() != 0) return;
-                Logging.debug(plugin, "Unloading world: " + getOwner().getName());
+                Logging.debug(plugin, "Unloading world: " + getAlias());
                 plugin.getBWorldManager().getWorldFactory().unload(BWorld.this, true);
             }
         }, plugin.getBWorldManager().UNLOADING_TIME));
     }
 
     public void cancelUnloading() {
-        Logging.debug(plugin, "Unloading cancelled for: " + getOwner().getName());
+        Logging.debug(plugin, "Unloading cancelled for: " + getAlias());
         plugin.getServer().getScheduler().cancelTask(getUnloading());
     }
 
     public String getWorldName() {
         return uuid.toString();
+    }
+
+    public String getAlias() {
+        return getOwner().getName();
     }
 
 }

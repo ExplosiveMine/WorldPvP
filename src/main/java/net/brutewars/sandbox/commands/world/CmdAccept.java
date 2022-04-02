@@ -65,15 +65,10 @@ public final class CmdAccept implements ICommand {
             return;
         }
 
-        if (invitee.getBWorld() != null) {
-            Lang.ALREADY_HAVE_WORLD.send(invitee);
-            return;
-        }
-
-        inviter.getBWorld().addPlayer(invitee, RankManager.getMember());
+        inviter.getBWorld().addPlayer(invitee);
 
         Lang.PLAYER_ACCEPTED_INVITE.send(inviter, invitee.getName());
-        Lang.SUCCESSFULLY_JOINED_WORLD.send(invitee, invitingWorld.getOwner().getName());
+        Lang.SUCCESSFULLY_JOINED_WORLD.send(invitee, invitingWorld.getAlias());
         Lang.NEW_MEMBER.send(invitingWorld, invitee.getName());
 
         invitingWorld.removeInvite(invitee);

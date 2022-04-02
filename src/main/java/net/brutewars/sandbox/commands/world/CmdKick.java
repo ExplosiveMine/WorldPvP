@@ -3,16 +3,18 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
+import net.brutewars.sandbox.utils.Pair;
+import org.bukkit.command.CommandSender;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public final class CmdKick implements IPermissibleCommand {
+
+public final class CmdKick implements ICommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("kick");
@@ -49,19 +51,16 @@ public final class CmdKick implements IPermissibleCommand {
     }
 
     @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getRank().isOwner();
-    }
+    public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        final Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-    @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.NO_PERMISSION_KICK::send;
-    }
+        final BPlayer owner = pair.getValue();
+        final BWorld bWorld = pair.getKey();
 
-    @Override
-    public void execute(BWorldPlugin plugin, BPlayer owner, BWorld bWorld, String[] args) {
+        if (bWorld == null)
+            return;
+
         final BPlayer toBeKicked = CommandArguments.getBPlayer(plugin, owner, args[1]);
-
         if (toBeKicked == null)
             return;
 
@@ -70,7 +69,7 @@ public final class CmdKick implements IPermissibleCommand {
             return;
         }
 
-        if (!bWorld.getPlayers(false).contains(toBeKicked)) {
+        if (!toBeKicked.isInBWorld(bWorld)) {
             Lang.PLAYER_NOT_IN_WORLD.send(owner);
             return;
         }
@@ -82,8 +81,8 @@ public final class CmdKick implements IPermissibleCommand {
     }
 
     @Override
-    public List<String> tabComplete(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
-        return CommandTabCompletes.getPlayersToKick(bWorld);
+    public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        return CommandTabCompletes.getPlayersToKick(plugin, sender);
     }
 
 }

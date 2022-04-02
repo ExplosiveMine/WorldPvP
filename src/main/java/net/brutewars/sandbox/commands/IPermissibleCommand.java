@@ -19,7 +19,7 @@ public interface IPermissibleCommand extends ICommand {
         BPlayer bPlayer = null;
 
         if (!canBeExecutedByConsole() || sender instanceof Player) {
-            Pair<BWorld, BPlayer> arguments = CommandArguments.getSenderBWorld(plugin, sender);
+            Pair<BWorld, BPlayer> arguments = CommandArguments.getPair(plugin, sender);
 
             bWorld = arguments.getKey();
 
@@ -51,12 +51,12 @@ public interface IPermissibleCommand extends ICommand {
 
     Consumer<BPlayer> getPermissionLackAction();
 
+    Predicate<BPlayer> getPredicate();
+
     void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args);
 
     default List<String> tabComplete(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
         return new ArrayList<>();
     }
-
-    Predicate<BPlayer> getPredicate();
 
 }

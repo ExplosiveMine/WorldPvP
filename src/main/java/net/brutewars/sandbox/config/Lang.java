@@ -41,7 +41,6 @@ public enum Lang {
     NO_PERMISSION_INVITE,
     NO_PERMISSION_KICK,
     NO_PERMISSION_RESET,
-    OWNER_FAIL_LEAVE,
     OWNER_KICK_PLAYER,
     PLAYER_ACCEPTED_INVITE,
     PLAYER_ALREADY_INVITED,
@@ -62,7 +61,8 @@ public enum Lang {
     WORLD_CREATING,
     WORLD_INFO,
     WORLD_LOADED,
-    WORLD_LOADING;
+    WORLD_LOADING,
+    NOT_IN_WORLD;
 
 
     private static YamlConfiguration langCfg;

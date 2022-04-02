@@ -123,11 +123,11 @@ public final class CmdHelp implements ICommand {
         return list;
     }
 
-    public String getLabel(ICommand iCommand) {
+    private String getLabel(ICommand iCommand) {
         return iCommands.get(iCommand);
     }
 
-    public Map<ICommand, String> getICommands(final BWorldPlugin plugin) {
+    private Map<ICommand, String> getICommands(final BWorldPlugin plugin) {
         if (iCommands.isEmpty()) {
             for (CommandHandler commandHandler : plugin.getCommands())
                 commandHandler.getSubCommands().forEach(iCommand -> iCommands.put(iCommand, commandHandler.getLabel()));

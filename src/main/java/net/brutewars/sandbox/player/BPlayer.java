@@ -3,29 +3,42 @@ package net.brutewars.sandbox.player;
 import lombok.Getter;
 import lombok.Setter;
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.rank.Rank;
 import net.brutewars.sandbox.bworld.BWorld;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public final class BPlayer {
     private final BWorldPlugin plugin;
 
     @Getter private final UUID uuid;
+
     @Getter @Setter private BWorld bWorld;
-    @Getter private Rank rank;
+    @Getter private final Set<UUID> additionalWorlds;
+
     @Getter @Setter private PlayerChat playerChat;
 
-    public BPlayer(final BWorldPlugin plugin, final UUID uuid, BWorld bWorld, Rank rank) {
+    public BPlayer(final BWorldPlugin plugin, final UUID uuid, BWorld bWorld) {
         this.plugin = plugin;
-        this.rank = rank;
         this.bWorld = bWorld;
         this.uuid = uuid;
         this.playerChat = PlayerChat.GLOBAL;
+        this.additionalWorlds = new HashSet<>();
+    }
+
+    public void addBWorld(final BWorld bWorld) {
+        additionalWorlds.add(bWorld.getUuid());
+    }
+
+    public void removeBWorld(final BWorld bWorld) {
+        additionalWorlds.remove(bWorld.getUuid());
+    }
+
+    public boolean isInBWorld(final BWorld bWorld) {
+        return additionalWorlds.contains(bWorld.getUuid());
     }
 
     private OfflinePlayer toOfflinePlayer() {
@@ -53,12 +66,7 @@ public final class BPlayer {
         return plugin.getVault().hasPermission(toOfflinePlayer(), permission);
     }
 
-    public void setRank(Rank rank) {
-        this.rank = rank;
-    }
-
     public void sendToWorld() {
-
         teleport(plugin.getBWorldManager().getWorldFactory().getWorld(bWorld).getSpawnLocation());
     }
 

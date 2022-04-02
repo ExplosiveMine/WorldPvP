@@ -19,7 +19,6 @@ HELP_NEXT_PAGE: '&e&lSandbox &7Use /sandbox help {0} for the next page.'
 HELP_FOOTER: '&e&lBrutewars Sandbox'
 MEMBER_LEAVE: "&c{0} has left your world!"
 LEFT_WORLD: "&cYou have left {0}'s world"
-OWNER_FAIL_LEAVE: "&cYou cannot leave your own world, you must reset it!"
 NO_PERMISSION_RESET: "&cYou cannot reset this world since you are not the owner."
 CONFIRM_RESET: |
   &c&lWARNING: &cYOU ARE ABOUT TO RESET YOUR WORLD PERMANENTLY.
@@ -37,7 +36,7 @@ PLAYER_INVITED: "&aYou have been invited to join {0}'s world"
 ACCEPT_INVITE_TOOLTIP: "&aAccept the world invitation"
 DENY_INVITE_TOOLTIP: "&cDeny the world invitation."
 NO_INVITE: "&cYou do not currently have an invite to join this world"
-ALREADY_HAVE_WORLD: "&cYou must leave your current world before trying to join or create a new one!"
+ALREADY_HAVE_WORLD: "&cYou must leave your current world before trying to create a new one!"
 PLAYER_ACCEPTED_INVITE: "&a{0} has accepted your invite!"
 SUCCESSFULLY_JOINED_WORLD: "&aYou have successfully joined {0}'s world."
 NEW_MEMBER: "&a{0} has joined your world."
@@ -48,10 +47,11 @@ PLAYER_KICKED: "&cYou have been kicked from {0}'s world."
 SUCCESSFUL_HOOK: "Hooked into {0} successfully!"
 WORLD_BORDER_UPDATE: "&aThe world border has been {0} from {1} to {2}"
 HOW_TO_CREATE_WORLD: "&aTo create your first world, use the command /world create"
-PLAYER_NOT_IN_WORLD: "&cThis player is not part of your world!"
+PLAYER_NOT_IN_WORLD: "&cThis player is not a member of your world!"
 RELOADED_CONFIG: "&aReloaded messages."
 WORLD_INFO: |
   &aOwner: {0}
   &aBorder size: {1}
   &aMembers:
 MEMBER_LIST: "&a{0}"
+NOT_IN_WORLD: "&cYou are not a member of {0}'s world!"

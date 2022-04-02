@@ -1,8 +1,8 @@
 package net.brutewars.sandbox.commands;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
+import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -16,21 +16,31 @@ public final class CommandTabCompletes {
         final BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
         return plugin.getBWorldManager().getBWorlds().stream()
                 .filter(bWorld -> bWorld.isInvited(invitee))
-                .map(bWorld -> bWorld.getOwner().getName())
+                .map(BWorld::getAlias)
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getOnlinePlayersWithoutWorlds(BWorldPlugin plugin) {
-        return plugin.getBPlayerManager().getBPlayers().stream()
-                .filter(BPlayer::isOnline)
-                .filter(bPlayer -> bPlayer.getBWorld() == null)
+    public static List<String> getWorldsToLeave(BWorldPlugin plugin, CommandSender sender) {
+        return plugin.getBPlayerManager().getBPlayer((Player) sender).getAdditionalWorlds().stream()
+                .map(uuid -> plugin.getBWorldManager().getBWorld(uuid).getAlias())
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getOnlinePlayers(BWorldPlugin plugin) {
+        return plugin.getServer().getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> getPlayersToKick(BWorldPlugin plugin, CommandSender sender) {
+        return plugin.getBPlayerManager().getBPlayer((Player) sender).getBWorld().getPlayers(false).stream()
                 .map(BPlayer::getName)
                 .collect(Collectors.toList());
     }
 
-    public static List<String> getPlayersToKick(BWorld bWorld) {
-        return bWorld.getPlayers(false).stream()
-                .map(BPlayer::getName)
+    public static List<String> getBWorlds(BWorldPlugin plugin) {
+        return plugin.getBWorldManager().getBWorlds().stream()
+                .map(BWorld::getAlias)
                 .collect(Collectors.toList());
     }
 

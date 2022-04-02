@@ -1,6 +1,5 @@
 package net.brutewars.sandbox.rank;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -14,22 +13,6 @@ public final class RankManager {
 
     public static Rank getRank(int weight) {
         return ranks.get(getRankName(weight));
-    }
-
-    public static Rank getNextRank(Rank rank) {
-        Preconditions.checkNotNull(rank, "rank parameter cannot be null");
-        return ranks.get(getRankName(getRankName(rank).getWeight() + 1));
-    }
-
-    public static Rank getPreviousRank(Rank rank) {
-        Preconditions.checkNotNull(rank, "rank parameter cannot be null");
-        return ranks.get(getRankName(getRankName(rank).getWeight() - 1));
-    }
-
-    private static Ranks getRankName(Rank rank) {
-        if (rank.isMember()) return Ranks.MEMBER;
-        if (rank.isOwner()) return Ranks.OWNER;
-        return null;
     }
 
     private static Ranks getRankName(int weight) {

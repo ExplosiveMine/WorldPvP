@@ -1,7 +1,6 @@
 package net.brutewars.sandbox.player;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.rank.Rank;
 import net.brutewars.sandbox.bworld.BWorld;
 import org.bukkit.entity.Player;
 
@@ -17,11 +16,11 @@ public final class BPlayerManager {
     }
 
     public BPlayer createBPlayer(UUID uuid) {
-        return createBPlayer(uuid, null, null);
+        return createBPlayer(uuid, null);
     }
 
-    public BPlayer createBPlayer(UUID uuid, BWorld bWorld, Rank rank) {
-        final BPlayer bPlayer = new BPlayer(plugin, uuid, bWorld, rank);
+    public BPlayer createBPlayer(UUID uuid, BWorld bWorld) {
+        final BPlayer bPlayer = new BPlayer(plugin, uuid, bWorld);
         players.put(uuid, bPlayer);
         return bPlayer;
     }
