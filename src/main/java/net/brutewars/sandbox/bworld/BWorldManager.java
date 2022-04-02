@@ -79,10 +79,6 @@ public final class BWorldManager {
         return Collections.unmodifiableCollection(bWorlds.values());
     }
 
-    public World getWorld(final BWorld bWorld) {
-        return plugin.getServer().getWorld(bWorld.getWorldName());
-    }
-
     public UUID generateNextUuid() {
         UUID uuid;
 

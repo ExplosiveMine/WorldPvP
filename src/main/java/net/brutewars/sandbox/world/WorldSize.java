@@ -7,16 +7,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum WorldSize {
-    DEFAULT("world.default"),
-    TYRANT("world.tyrant"),
-    NOMAD("world.nomad"),
-    BRUTE("world.brute");
+    DEFAULT(),
+    TYRANT(),
+    NOMAD(),
+    BRUTE();
 
     @Getter private final String permission;
     private final static Map<WorldSize, Integer> sizes = new HashMap<>();
 
-    WorldSize(final String permission) {
-        this.permission = permission;
+    WorldSize() {
+        this.permission = "world." + name().toLowerCase();
     }
 
     public static void reload(final BWorldPlugin plugin) {

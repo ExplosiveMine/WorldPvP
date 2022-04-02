@@ -122,7 +122,7 @@ public final class BWorld {
 
         if (worldPhase.equals(WorldPhase.LOADED)) {
             Lang.WORLD_BORDER_UPDATE.send(this, (maxSize.getValue() > worldSize.getValue() ? "increased" : "decreased"),worldSize.getValue(), maxSize.getValue());
-            plugin.getBWorldManager().getWorldFactory().setWorldBorder(getWorldName(), maxSize);
+            plugin.getBWorldManager().getWorldFactory().setWorldBorder(this, maxSize);
         }
 
         this.worldSize = maxSize;

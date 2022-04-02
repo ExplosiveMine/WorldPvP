@@ -58,7 +58,8 @@ public final class BPlayer {
     }
 
     public void sendToWorld() {
-        teleport(plugin.getServer().getWorld(bWorld.getWorldName()).getSpawnLocation());
+
+        teleport(plugin.getBWorldManager().getWorldFactory().getWorld(bWorld).getSpawnLocation());
     }
 
     public void sendToSpawn() {

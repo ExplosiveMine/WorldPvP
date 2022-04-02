@@ -63,7 +63,6 @@ public final class CmdInfo implements IPermissibleCommand {
         Lang.WORLD_INFO.send(bPlayer, bWorld.getOwner().getName(), bWorld.getWorldSize().getValue());
         for (BPlayer _bPlayer : bWorld.getPlayers(false))
             Lang.MEMBER_LIST.send(bPlayer, _bPlayer.getName());
-        Logging.info(String.valueOf(plugin.getServer().getWorld(bWorld.getWorldName()).getKeepSpawnInMemory()));
     }
 
 }

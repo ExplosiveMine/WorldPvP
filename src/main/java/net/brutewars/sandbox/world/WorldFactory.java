@@ -8,6 +8,7 @@ import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.thread.Executor;
 import net.brutewars.sandbox.utils.Logging;
 import org.apache.commons.io.FileUtils;
+import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -17,8 +18,11 @@ import java.io.IOException;
 public final class WorldFactory {
     private final BWorldPlugin plugin;
 
+    private final String PATH;
+
     public WorldFactory(final BWorldPlugin plugin) {
         this.plugin = plugin;
+        this.PATH = plugin.getDataFolder() + File.separator + "worlds" + File.separator;
     }
 
     public void create(final BWorld bWorld) {
@@ -62,7 +66,7 @@ public final class WorldFactory {
             public void run() {
                 if (save) {
                     Logging.debug(plugin, "Saving world for " + bWorld.getOwner().getName());
-                    AsyncWorld.wrap(plugin.getServer().getWorld(bWorld.getWorldName())).save();
+                    AsyncWorld.wrap(getWorld(bWorld)).save();
                 }
             }
         }, unused -> {
@@ -73,12 +77,16 @@ public final class WorldFactory {
 
     }
 
-    public void setWorldBorder(final String worldName, final WorldSize worldSize) {
-        plugin.getServer().getWorld(worldName).getWorldBorder().setSize(worldSize.getValue());
+    public void setWorldBorder(final BWorld bWorld, final WorldSize worldSize) {
+        getWorld(bWorld).getWorldBorder().setSize(worldSize.getValue());
+    }
+
+    public World getWorld(final BWorld bWorld) {
+        return plugin.getServer().getWorld(PATH + bWorld.getWorldName());
     }
 
     private void importWorld(final BWorld bWorld) {
-        final AsyncWorld world = AsyncWorld.create(new WorldCreator(bWorld.getWorldName()));
+        final AsyncWorld world = AsyncWorld.create(new WorldCreator(PATH + bWorld.getWorldName()));
         world.setKeepSpawnInMemory(false);
         world.getWorldBorder().setSize(bWorld.getWorldSize().getValue());
         world.commit();
