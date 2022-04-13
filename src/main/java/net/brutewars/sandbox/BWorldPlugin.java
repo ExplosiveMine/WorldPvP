@@ -6,7 +6,9 @@ import net.brutewars.sandbox.commands.world.WorldCommandHandler;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.database.DataManager;
 import net.brutewars.sandbox.hooks.Vault;
+import net.brutewars.sandbox.listeners.PlayerJoinListener;
 import net.brutewars.sandbox.listeners.PlayerQuitListener;
+import net.brutewars.sandbox.listeners.PlayerTeleportListener;
 import net.brutewars.sandbox.player.BPlayerManager;
 import net.brutewars.sandbox.bworld.BWorldManager;
 import net.brutewars.sandbox.world.WorldSize;
@@ -28,9 +30,9 @@ public final class BWorldPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Config
-        Lang.reload(this);
-        WorldSize.reload(this);
         saveDefaultConfig();
+        WorldSize.reload(this);
+        Lang.reload(this);
 
         // Hooks
         this.vault = new Vault(this);
@@ -45,13 +47,17 @@ public final class BWorldPlugin extends JavaPlugin {
                 new WorldCommandHandler(this)};
 
         Listener[] listeners = new Listener[] {
-                new PlayerQuitListener(this)};
+                new PlayerQuitListener(this),
+                new PlayerTeleportListener(this),
+                new PlayerJoinListener(this)};
 
         Arrays.stream(listeners).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
     }
 
     @Override
     public void onDisable() {
+        bWorldManager.updateLastLocations();
+
         dataManager.save();
     }
 

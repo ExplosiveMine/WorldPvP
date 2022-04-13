@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.database;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.player.BPlayerManager;
 import net.brutewars.sandbox.utils.Logging;
@@ -50,14 +51,16 @@ public final class DataManager {
                     // get basic BWorld info
                     final UUID worldUuid = UUID.fromString(worldSet.getString("world_id"));
                     final BPlayer owner = bPlayerManager.getBPlayer(UUID.fromString(worldSet.getString("owner_id")));
-
                     final BWorld bWorld = bWorldManager.loadBWorld(worldUuid, owner, false);
+
+                    bWorld.setDefaultLocation(new LastLocation(worldSet.getString("last_location")));
 
                     // get BWorld members
                     database.getMembersTable().select("*", "`world_id` = \"" + worldUuid + "\"", memberSet -> {
                         try {
                             while (memberSet.next())
-                                bWorld.addPlayer(bPlayerManager.getBPlayer(UUID.fromString(memberSet.getString("player_id"))));
+                                bWorld.addPlayer(bPlayerManager.getBPlayer(UUID.fromString(memberSet.getString("player_id"))),
+                                        new LastLocation(memberSet.getString("last_location")));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
@@ -74,7 +77,7 @@ public final class DataManager {
 
     public void createSQLiteDatabase() {
         // we get the database file
-        final File databaseFile = new File(plugin.getDataFolder(), "BruteWarsWorldPvP.db");
+        final File databaseFile = new File(plugin.getDataFolder(), "BruteWars.db");
 
         try {
             databaseFile.createNewFile();
@@ -101,8 +104,8 @@ public final class DataManager {
               BWorld#getWorldName() returns the uuid as a String
              */
             final String bWorldUuid = bWorld.getWorldName();
-            database.getWorldsTable().insert(bWorldUuid, bWorld.getOwner().getUuid().toString());
-            bWorld.getPlayers(false).forEach(bPlayer -> database.getMembersTable().insert(bWorldUuid, bPlayer.getUuid().toString()));
+            database.getWorldsTable().insert(bWorldUuid, bWorld.getOwner().getUuid().toString(), bWorld.getDefaultLocation().toString());
+            bWorld.getPlayers(false).forEach(bPlayer -> database.getMembersTable().insert(bWorldUuid, bPlayer.getUuid().toString(), bWorld.getLastLocation(bPlayer).toString()));
         });
 
         //close connection

@@ -33,10 +33,10 @@ public final class CommandArguments {
         return plugin.getBPlayerManager().getBPlayer((Player) sender);
     }
 
-    public static BPlayer getBPlayer(BWorldPlugin plugin, BPlayer bPlayer, String playerName) {
+    public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender, String playerName) {
         final Player player = plugin.getServer().getPlayer(playerName);
         if (player == null) {
-            Lang.INVALID_PLAYER.send(bPlayer);
+            Lang.INVALID_PLAYER.send(sender);
             return null;
         }
 
@@ -44,7 +44,14 @@ public final class CommandArguments {
     }
 
     public static BWorld getBWorld(BWorldPlugin plugin, CommandSender sender, String worldOwnerName) {
-        final BWorld bWorld = plugin.getBPlayerManager().getBPlayer(worldOwnerName).getBWorld();
+        final Player player = plugin.getServer().getPlayer(worldOwnerName);
+
+        if (player == null) {
+            Lang.INVALID_WORLD.send(sender);
+            return null;
+        }
+
+        final BWorld bWorld = plugin.getBPlayerManager().getBPlayer(player).getBWorld();
         if (bWorld == null)
             Lang.INVALID_WORLD.send(sender);
 

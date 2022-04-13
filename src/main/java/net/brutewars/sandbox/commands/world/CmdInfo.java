@@ -8,6 +8,7 @@ import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,25 +46,23 @@ public final class CmdInfo implements ICommand {
 
     @Override
     public boolean canBeExecutedByConsole() {
-        return false;
+        return true;
     }
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final BPlayer bPlayer = CommandArguments.getBPlayer(plugin, sender);
-
-        BWorld bWorld;
+        BWorld bWorld = null;
         if (args.length == 2)
             bWorld = CommandArguments.getBWorld(plugin, sender, args[1]);
-        else
-            bWorld = bPlayer.getBWorld();
+        else if (sender instanceof Player)
+            bWorld = CommandArguments.getBPlayer(plugin, sender).getBWorld();
 
         if (bWorld == null)
             return;
 
-        Lang.WORLD_INFO.send(bPlayer, bWorld.getAlias(), bWorld.getWorldSize().getValue());
+        Lang.WORLD_INFO.send(sender, bWorld.getAlias(), bWorld.getWorldSize().getValue());
         for (BPlayer _bPlayer : bWorld.getPlayers(false))
-            Lang.MEMBER_LIST.send(bPlayer, _bPlayer.getName());
+            Lang.MEMBER_LIST.send(sender, _bPlayer.getName());
     }
 
     @Override

@@ -31,12 +31,12 @@ public final class CmdLeave implements ICommand {
 
     @Override
     public String getDescription() {
-        return "Leave the player's world.";
+        return "Leave another player's world.";
     }
 
     @Override
     public int getMinArgs() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -53,12 +53,12 @@ public final class CmdLeave implements ICommand {
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
         final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
 
-        final BPlayer bWorldOwner = CommandArguments.getBPlayer(plugin, bPlayer, args[1]);
+        final BPlayer bWorldOwner = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (bWorldOwner == null)
             return;
 
         final BWorld leavingBWorld = bWorldOwner.getBWorld();
-        if (leavingBWorld == null || !bPlayer.isInBWorld(leavingBWorld)) {
+        if (!bPlayer.isInBWorld(leavingBWorld, false)) {
             Lang.NOT_IN_WORLD.send(bPlayer, bWorldOwner.getName());
             return;
         }

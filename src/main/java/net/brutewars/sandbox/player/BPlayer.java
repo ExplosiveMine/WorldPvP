@@ -19,13 +19,10 @@ public final class BPlayer {
     @Getter @Setter private BWorld bWorld;
     @Getter private final Set<UUID> additionalWorlds;
 
-    @Getter @Setter private PlayerChat playerChat;
-
     public BPlayer(final BWorldPlugin plugin, final UUID uuid, BWorld bWorld) {
         this.plugin = plugin;
         this.bWorld = bWorld;
         this.uuid = uuid;
-        this.playerChat = PlayerChat.GLOBAL;
         this.additionalWorlds = new HashSet<>();
     }
 
@@ -37,8 +34,9 @@ public final class BPlayer {
         additionalWorlds.remove(bWorld.getUuid());
     }
 
-    public boolean isInBWorld(final BWorld bWorld) {
-        return additionalWorlds.contains(bWorld.getUuid());
+    public boolean isInBWorld(final BWorld bWorld, boolean includeOwnBWorld) {
+        if (bWorld == null) return false;
+        return additionalWorlds.contains(bWorld.getUuid()) || (includeOwnBWorld && bWorld.equals(this.bWorld));
     }
 
     private OfflinePlayer toOfflinePlayer() {
@@ -66,16 +64,8 @@ public final class BPlayer {
         return plugin.getVault().hasPermission(toOfflinePlayer(), permission);
     }
 
-    public void sendToWorld() {
-        teleport(plugin.getBWorldManager().getWorldFactory().getWorld(bWorld).getSpawnLocation());
-    }
-
-    public void sendToSpawn() {
-        runIfOnline(player -> player.performCommand("spawn"));
-    }
-
     public void teleport(final Location location) {
-        if (!isOnline() || bWorld == null)
+        if (!isOnline())
             return;
 
         toPlayer().teleport(location);

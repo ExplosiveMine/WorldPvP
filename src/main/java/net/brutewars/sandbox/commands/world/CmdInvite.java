@@ -61,7 +61,7 @@ public final class CmdInvite implements ICommand {
         if (bWorld == null)
             return;
 
-        final BPlayer invitee = CommandArguments.getBPlayer(plugin, inviter, args[1]);
+        final BPlayer invitee = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (invitee == null) return;
 
         if (bWorld.getPlayers(true).contains(invitee)) {

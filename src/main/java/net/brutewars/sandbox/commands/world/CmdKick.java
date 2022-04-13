@@ -60,7 +60,7 @@ public final class CmdKick implements ICommand {
         if (bWorld == null)
             return;
 
-        final BPlayer toBeKicked = CommandArguments.getBPlayer(plugin, owner, args[1]);
+        final BPlayer toBeKicked = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (toBeKicked == null)
             return;
 
@@ -69,7 +69,7 @@ public final class CmdKick implements ICommand {
             return;
         }
 
-        if (!toBeKicked.isInBWorld(bWorld)) {
+        if (!toBeKicked.isInBWorld(bWorld, false)) {
             Lang.PLAYER_NOT_IN_WORLD.send(owner);
             return;
         }

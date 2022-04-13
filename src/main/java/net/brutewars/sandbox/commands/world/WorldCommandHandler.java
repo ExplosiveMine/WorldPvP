@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandHandler;
 import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
@@ -78,36 +79,59 @@ public final class WorldCommandHandler extends CommandHandler {
                 final Player player = (Player) sender;
                 final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
 
-                if (bPlayer.getBWorld() != null && args.length == 0) {
-                    final BWorld bWorld = bPlayer.getBWorld();
+                if (args.length == 0) {
+                    // COMMAND: /world
+                    BWorld bWorld = null;
+                    if (bPlayer.getBWorld() != null)
+                        bWorld = bPlayer.getBWorld();
+                    else if (!bPlayer.getAdditionalWorlds().isEmpty())
+                        bWorld = plugin.getBWorldManager().getBWorld(bPlayer.getAdditionalWorlds().stream().findFirst().get());
 
-                    switch (bWorld.getWorldPhase()) {
-                        case LOADING:
-                            Lang.WORLD_LOADING.send(sender);
-                            return false;
-                        case CREATING:
-                            Lang.WORLD_CREATING.send(sender);
-                            return false;
-                        case UNLOADED:
-                            Lang.WORLD_LOADING.send(bWorld);
-                            plugin.getBWorldManager().getWorldFactory().load(bWorld);
-                            return false;
-                        case UNLOADING:
-                            bWorld.cancelUnloading();
+                    if (bWorld == null)
+                        Lang.HOW_TO_CREATE_WORLD.send(bPlayer);
+                    else
+                        teleportPlayer(bWorld, bPlayer);
+                } else if (args.length == 1) {
+                    // COMMAND: /world <player>
+                    final BPlayer owner = CommandArguments.getBPlayer(plugin, sender, args[0]);
+                    if (owner == null)
+                        return false;
+
+                    if (owner.getBWorld() == null) {
+                        Lang.INVALID_WORLD.send(sender);
+                        return false;
                     }
 
-                    bWorld.updateWorldSize();
-                    bPlayer.sendToWorld();
-                } else if (bPlayer.getBWorld() == null && args.length == 0)
-                    Lang.HOW_TO_CREATE_WORLD.send(bPlayer);
-                else
+                    teleportPlayer(owner.getBWorld(), bPlayer);
+                } else {
                     plugin.getServer().dispatchCommand(sender, label + " help");
+                }
 
                 return false;
             }
 
             Lang.PLAYER_NO_PERMISSION.send(sender);
             return false;
+        }
+
+        private void teleportPlayer(final BWorld bWorld, final BPlayer bPlayer) {
+            switch (bWorld.getLoadingPhase()) {
+                case LOADING:
+                    Lang.WORLD_LOADING.send(bPlayer);
+                    return;
+                case CREATING:
+                    Lang.WORLD_CREATING.send(bPlayer);
+                    return;
+                case UNLOADED:
+                    Lang.WORLD_LOADING.send(bWorld);
+                    plugin.getBWorldManager().getWorldFactory().load(bWorld);
+                    return;
+                case UNLOADING:
+                    bWorld.cancelUnloading();
+            }
+
+            bWorld.updateWorldSize();
+            bWorld.teleportToWorld(bPlayer);
         }
 
     }

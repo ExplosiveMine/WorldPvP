@@ -34,11 +34,13 @@ public final class SQLiteDatabase {
 
         worldsTable = createTable("worlds",
                 "`world_id` TEXT PRIMARY KEY",
-                "`owner_id` TEXT NOT NULL");
+                "`owner_id` TEXT NOT NULL",
+                "'last_location' TEXT NOT NULL");
 
         membersTable = createTable("members",
                 "`world_id` TEXT NOT NULL",
-                "`player_id` TEXT NOT NULL");
+                "`player_id` TEXT NOT NULL",
+                "'last_location' TEXT NOT NULL");
 
     }
 
