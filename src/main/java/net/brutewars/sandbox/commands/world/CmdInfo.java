@@ -1,18 +1,19 @@
 package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.bworld.BWorld;
+import net.brutewars.sandbox.commands.CommandArguments;
+import net.brutewars.sandbox.commands.CommandTabCompletes;
+import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
-import net.brutewars.sandbox.bworld.BWorld;
-import net.brutewars.sandbox.utils.Logging;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public final class CmdInfo implements IPermissibleCommand {
+public final class CmdInfo implements ICommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("info");
@@ -25,12 +26,12 @@ public final class CmdInfo implements IPermissibleCommand {
 
     @Override
     public String getUsage() {
-        return "info";
+        return "info <player-name>";
     }
 
     @Override
     public String getDescription() {
-        return "Get info about your world.";
+        return "Get info about your world or a player's world.";
     }
 
     @Override
@@ -40,29 +41,33 @@ public final class CmdInfo implements IPermissibleCommand {
 
     @Override
     public int getMaxArgs() {
-        return 1;
+        return 2;
     }
 
     @Override
     public boolean canBeExecutedByConsole() {
-        return false;
+        return true;
     }
 
     @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.PLAYER_NO_WORLD::send;
-    }
+    public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        BWorld bWorld = null;
+        if (args.length == 2)
+            bWorld = CommandArguments.getBWorld(plugin, sender, args[1]);
+        else if (sender instanceof Player)
+            bWorld = CommandArguments.getBPlayer(plugin, sender).getBWorld();
 
-    @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getBWorld() != null;
-    }
+        if (bWorld == null)
+            return;
 
-    @Override
-    public void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
-        Lang.WORLD_INFO.send(bPlayer, bWorld.getOwner().getName(), bWorld.getWorldSize().getValue());
+        Lang.WORLD_INFO.send(sender, bWorld.getAlias(), bWorld.getWorldSize().getValue());
         for (BPlayer _bPlayer : bWorld.getPlayers(false))
-            Lang.MEMBER_LIST.send(bPlayer, _bPlayer.getName());
+            Lang.MEMBER_LIST.send(sender, _bPlayer.getName());
+    }
+
+    @Override
+    public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        return CommandTabCompletes.getBWorlds(plugin);
     }
 
 }

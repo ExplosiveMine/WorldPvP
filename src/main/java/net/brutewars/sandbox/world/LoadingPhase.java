@@ -1,6 +1,6 @@
 package net.brutewars.sandbox.world;
 
-public enum WorldPhase {
+public enum LoadingPhase {
     CREATING,
     LOADING,
     LOADED,

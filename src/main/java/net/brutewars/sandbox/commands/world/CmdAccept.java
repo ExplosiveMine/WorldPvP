@@ -6,7 +6,6 @@ import net.brutewars.sandbox.commands.CommandTabCompletes;
 import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
-import net.brutewars.sandbox.rank.RankManager;
 import net.brutewars.sandbox.bworld.BWorld;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -65,15 +64,12 @@ public final class CmdAccept implements ICommand {
             return;
         }
 
-        if (invitee.getBWorld() != null) {
-            Lang.ALREADY_HAVE_WORLD.send(invitee);
-            return;
-        }
+        invitingWorld.addPlayer(invitee, null);
 
-        inviter.getBWorld().addPlayer(invitee, RankManager.getMember());
+        invitingWorld.teleportToWorld(invitee);
 
         Lang.PLAYER_ACCEPTED_INVITE.send(inviter, invitee.getName());
-        Lang.SUCCESSFULLY_JOINED_WORLD.send(invitee, invitingWorld.getOwner().getName());
+        Lang.SUCCESSFULLY_JOINED_WORLD.send(invitee, invitingWorld.getAlias());
         Lang.NEW_MEMBER.send(invitingWorld, invitee.getName());
 
         invitingWorld.removeInvite(invitee);

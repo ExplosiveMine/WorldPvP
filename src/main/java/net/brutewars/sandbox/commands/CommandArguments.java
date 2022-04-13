@@ -11,7 +11,15 @@ import org.bukkit.entity.Player;
 public final class CommandArguments {
     private CommandArguments() { }
 
-    public static Pair<BWorld, BPlayer> getSenderBWorld(BWorldPlugin plugin, CommandSender sender) {
+    /**
+     * @apiNote This method is to be used only in the case where the sender
+     * needs to have a BWorld. Since a message saying that the sender does not have a BWorld
+     * is sent if they don't.
+     *
+     * Use {@link CommandArguments#getBPlayer(BWorldPlugin, CommandSender)} to simply get the player
+     * and the BWorld afterwards.
+     */
+    public static Pair<BWorld, BPlayer> getPair(BWorldPlugin plugin, CommandSender sender) {
         final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
         final BWorld bWorld = bPlayer.getBWorld();
 
@@ -21,11 +29,14 @@ public final class CommandArguments {
         return new Pair<>(bWorld, bPlayer);
     }
 
-    public static BPlayer getBPlayer(BWorldPlugin plugin, BPlayer bPlayer, String playerName) {
-        final Player player = plugin.getServer().getPlayer(playerName);
+    public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender) {
+        return plugin.getBPlayerManager().getBPlayer((Player) sender);
+    }
 
+    public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender, String playerName) {
+        final Player player = plugin.getServer().getPlayer(playerName);
         if (player == null) {
-            Lang.INVALID_PLAYER.send(bPlayer);
+            Lang.INVALID_PLAYER.send(sender);
             return null;
         }
 
@@ -33,9 +44,17 @@ public final class CommandArguments {
     }
 
     public static BWorld getBWorld(BWorldPlugin plugin, CommandSender sender, String worldOwnerName) {
-        final BWorld bWorld = plugin.getBPlayerManager().getBPlayer(worldOwnerName).getBWorld();
+        final Player player = plugin.getServer().getPlayer(worldOwnerName);
+
+        if (player == null) {
+            Lang.INVALID_WORLD.send(sender);
+            return null;
+        }
+
+        final BWorld bWorld = plugin.getBPlayerManager().getBPlayer(player).getBWorld();
         if (bWorld == null)
             Lang.INVALID_WORLD.send(sender);
+
         return bWorld;
     }
 

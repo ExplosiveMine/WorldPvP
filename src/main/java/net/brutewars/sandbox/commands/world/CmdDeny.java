@@ -64,7 +64,7 @@ public final class CmdDeny implements ICommand {
             return;
         }
 
-        Lang.INVITE_DENIED.send(invitee, invitingWorld.getOwner().getName());
+        Lang.INVITE_DENIED.send(invitee, invitingWorld.getAlias());
         Lang.PLAYER_DENIED_INVITE.send(inviter, invitee.getName());
 
         invitingWorld.removeInvite(invitee);

@@ -8,8 +8,6 @@ import net.brutewars.sandbox.bworld.BWorld;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class CmdConfirmReset implements IPermissibleCommand {
     @Override
@@ -50,16 +48,6 @@ public final class CmdConfirmReset implements IPermissibleCommand {
     @Override
     public boolean displayCommand() {
         return false;
-    }
-
-    @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.NO_PERMISSION_RESET::send;
-    }
-
-    @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getRank().isOwner();
     }
 
     @Override

@@ -10,10 +10,6 @@ public final class StringUtils {
         return ChatColor.translateAlternateColorCodes('&', s);
     }
 
-    public static String removeColour(String s) {
-        return ChatColor.stripColor(colour(s));
-    }
-
     public static String replaceArgs(String msg, Object... objects) {
         if (msg == null) return null;
 
@@ -32,53 +28,47 @@ public final class StringUtils {
     */
 
     public static String formatTime(long time, TimeUnit timeUnit) {
-        return formatTimeFromMilliseconds(timeUnit.toMillis(time));
-    }
-
-    private static String formatTimeFromMilliseconds(long millis) {
-        Duration duration = Duration.ofMillis(millis);
+        Duration duration = Duration.ofMillis(timeUnit.toMillis(time));
         StringBuilder timeBuilder = new StringBuilder();
 
-        {
-            long days = duration.toDays();
+        boolean addComma = false;
 
-            if (days > 0) {
-                timeBuilder.insert(0, days).insert(0, " ").insert(0, days == 1 ? "day" : "days").insert(0, ", ");
-                duration = duration.minusDays(days);
-            }
+        long days = duration.toDays();
+        if (days > 0) {
+            timeBuilder.append(days).append(days == 1 ? " day" : " days");
+            duration = duration.minusDays(days);
+            addComma = true;
         }
 
-        {
-            long hours = duration.toHours();
-
-            if (hours > 0) {
-                timeBuilder.insert(0, hours).insert(0, " ").insert(0, hours == 1 ? "hour" : "hours").insert(0, ", ");
-                duration = duration.minusHours(hours);
-            }
+        long hours = duration.toHours();
+        if (hours > 0) {
+            if (addComma)
+                timeBuilder.append(", ");
+            timeBuilder.append(hours).append(" ").append(hours == 1 ? "hour" : "hours");
+            duration = duration.minusHours(hours);
+            addComma = true;
         }
 
-        {
-            long minutes = duration.toMinutes();
-
-            if (minutes > 0) {
-                timeBuilder.insert(0, minutes).insert(0, " ").insert(0, minutes == 1 ? "minute" : "minutes").insert(0, " ,");
-                duration = duration.minusMinutes(minutes);
-            }
+        long minutes = duration.toMinutes();
+        if (minutes > 0) {
+            if (addComma)
+                timeBuilder.append(", ");
+            timeBuilder.append(minutes).append(" ").append(minutes == 1 ? "minute" : "minutes");
+            duration = duration.minusMinutes(minutes);
+            addComma = true;
         }
 
-        {
-            long seconds = duration.getSeconds();
-
-            if (seconds > 0) {
-                timeBuilder.insert(0, seconds).insert(0, " ").insert(0, seconds == 1 ? "second" : "seconds").insert(0, " ,");
-            }
+        long seconds = duration.getSeconds();
+        if (seconds > 0) {
+            if (addComma)
+                timeBuilder.append(", ");
+            timeBuilder.append(seconds).append(" ").append(seconds == 1 ? "second" : "seconds");
         }
 
-        if (timeBuilder.length() == 0) {
-            timeBuilder.insert(0, "1 ").append("second").insert(0, " ,");
-        }
+        if (timeBuilder.length() == 0)
+            timeBuilder.append("0 ").append("second");
 
-        return timeBuilder.substring(2);
+        return timeBuilder.toString();
     }
 
 }

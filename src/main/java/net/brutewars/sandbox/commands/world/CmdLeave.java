@@ -1,17 +1,19 @@
 package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.commands.CommandArguments;
+import net.brutewars.sandbox.commands.CommandTabCompletes;
+import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
-public final class CmdLeave implements IPermissibleCommand {
+public final class CmdLeave implements ICommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("leave");
@@ -24,22 +26,22 @@ public final class CmdLeave implements IPermissibleCommand {
 
     @Override
     public String getUsage() {
-        return "leave";
+        return "leave <player-name>";
     }
 
     @Override
     public String getDescription() {
-        return "Leave the world.";
+        return "Leave another player's world.";
     }
 
     @Override
     public int getMinArgs() {
-        return 1;
+        return 2;
     }
 
     @Override
     public int getMaxArgs() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -48,20 +50,27 @@ public final class CmdLeave implements IPermissibleCommand {
     }
 
     @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.OWNER_FAIL_LEAVE::send;
+    public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
+
+        final BPlayer bWorldOwner = CommandArguments.getBPlayer(plugin, sender, args[1]);
+        if (bWorldOwner == null)
+            return;
+
+        final BWorld leavingBWorld = bWorldOwner.getBWorld();
+        if (!bPlayer.isInBWorld(leavingBWorld, false)) {
+            Lang.NOT_IN_WORLD.send(bPlayer, bWorldOwner.getName());
+            return;
+        }
+
+        leavingBWorld.removePlayer(bPlayer);
+        Lang.MEMBER_LEAVE.send(leavingBWorld, bPlayer.getName());
+        Lang.LEFT_WORLD.send(bPlayer, leavingBWorld.getAlias());
     }
 
     @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> !bPlayer.getRank().isOwner();
-    }
-
-    @Override
-    public void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
-        bWorld.removePlayer(bPlayer);
-        Lang.MEMBER_LEAVE.send(bWorld, bPlayer.getName());
-        Lang.LEFT_WORLD.send(bPlayer, bWorld.getOwner().getName());
+    public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
+        return CommandTabCompletes.getWorldsToLeave(plugin, sender);
     }
 
 }

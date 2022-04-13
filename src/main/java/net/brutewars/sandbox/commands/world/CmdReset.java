@@ -8,8 +8,6 @@ import net.brutewars.sandbox.bworld.BWorld;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public final class CmdReset implements IPermissibleCommand {
     final long cooldown;
@@ -61,16 +59,6 @@ public final class CmdReset implements IPermissibleCommand {
     @Override
     public boolean displayCommand() {
         return true;
-    }
-
-    @Override
-    public Consumer<BPlayer> getPermissionLackAction() {
-        return Lang.OWNER_FAIL_LEAVE::send;
-    }
-
-    @Override
-    public Predicate<BPlayer> getPredicate() {
-        return bPlayer -> bPlayer.getRank().isOwner();
     }
 
     @Override
