@@ -1,5 +1,8 @@
 # Sandbox
  This plugin has been made for Brutewars and was released on 30th March 2022, version 1.0.0
+ 
+## Dependencies
+- [FastAsyncWorldEdit, WorldEdit, Vault]
 
 ## Commands
 - /sandbox, /world, /worlds - Main command which teleports you to your world
