@@ -99,11 +99,6 @@ public final class JSONMessage {
             bPlayer.runIfOnline(player -> ReflectionHelper.sendPacket(ReflectionHelper.createTextPacket(toString()), player));
     }
 
-    public void title(int fadeIn, int stay, int fadeOut, Player... players) {
-        ReflectionHelper.sendPacket(ReflectionHelper.createTitleTimesPacket(fadeIn, stay, fadeOut), players);
-        ReflectionHelper.sendPacket(ReflectionHelper.createTitlePacket(toString()), players);
-    }
-
     public JSONMessage runCommand(String command) {
         last().setOnClick(ClickEvent.runCommand(command));
         return this;
@@ -170,10 +165,6 @@ public final class JSONMessage {
         private static Field packetPlayOutChatUuid;
         private static Object enumChatMessageTypeMessage;
 
-        private static Constructor<?> titlePacketConstructor;
-        private static Constructor<?> titleTimesPacketConstructor;
-        private static Object enumActionTitle;
-
         private static Field connection;
         private static MethodHandle GET_HANDLE;
         private static MethodHandle SEND_PACKET;
@@ -195,8 +186,6 @@ public final class JSONMessage {
 
                 chatComponentText = getClass("{nms}.ChatComponentText").getConstructor(String.class);
 
-                final Class<?> iChatBaseComponent = getClass("{nms}.IChatBaseComponent");
-
                 Method stringToChat;
 
                 if (MAJOR_VER < 8) {
@@ -213,14 +202,6 @@ public final class JSONMessage {
                 packetPlayOutChatComponent = getField(packetPlayOutChat, "a");
                 packetPlayOutChatMessageType = getField(packetPlayOutChat, "b");
                 packetPlayOutChatUuid = MAJOR_VER >= 16 ? getField(packetPlayOutChat, "c") : null;
-
-                Class<?> packetPlayOutTitle = getClass("{nms}.PacketPlayOutTitle");
-                Class<?> titleAction = getClass("{nms}.PacketPlayOutTitle$EnumTitleAction");
-
-                titlePacketConstructor = packetPlayOutTitle.getConstructor(titleAction, iChatBaseComponent);
-                titleTimesPacketConstructor = packetPlayOutTitle.getConstructor(int.class, int.class, int.class);
-
-                enumActionTitle = titleAction.getField("TITLE").get(null);
 
                 if (MAJOR_VER >= 12) {
                     Method getChatMessageType = getClass("{nms}.ChatMessageType").getMethod("a", byte.class);
@@ -268,29 +249,6 @@ public final class JSONMessage {
                 return null;
             }
         }
-
-        static Object createTitlePacket(String message) {
-            assertIsSetup();
-
-            try {
-                return titlePacketConstructor.newInstance(enumActionTitle, fromJson(message));
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        static Object createTitleTimesPacket(int fadeIn, int stay, int fadeOut) {
-            assertIsSetup();
-
-            try {
-                return titleTimesPacketConstructor.newInstance(fadeIn, stay, fadeOut);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
         private static void setType(Object chatPacket) {
             assertIsSetup();
 
@@ -399,4 +357,5 @@ public final class JSONMessage {
             this.onHover = onHover;
         }
     }
+
 }

@@ -79,4 +79,5 @@ public final class CmdAccept implements ICommand {
     public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
         return CommandTabCompletes.getWorldInvitations(plugin, sender);
     }
+
 }

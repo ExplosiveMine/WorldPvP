@@ -86,7 +86,6 @@ public final class BWorld implements IBWorld {
 
         bPlayer.removeBWorld(this);
         bPlayer.runIfOnline(player -> {
-            //todo this doesnt seem to work
             if (player.getWorld().getName().equals(getWorldName()))
                 plugin.getBWorldManager().getSpawn().teleportToWorld(bPlayer);
         });

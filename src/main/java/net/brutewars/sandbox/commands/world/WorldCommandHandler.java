@@ -81,11 +81,7 @@ public final class WorldCommandHandler extends CommandHandler {
 
                 if (args.length == 0) {
                     // COMMAND: /world
-                    BWorld bWorld = null;
-                    if (bPlayer.getBWorld() != null)
-                        bWorld = bPlayer.getBWorld();
-                    else if (!bPlayer.getAdditionalWorlds().isEmpty())
-                        bWorld = plugin.getBWorldManager().getBWorld(bPlayer.getAdditionalWorlds().stream().findFirst().get());
+                    final BWorld bWorld = bPlayer.getBWorld();
 
                     if (bWorld == null)
                         Lang.HOW_TO_CREATE_WORLD.send(bPlayer);

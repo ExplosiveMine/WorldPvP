@@ -49,12 +49,6 @@ public final class Executor {
             Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, unused1 -> consumer.accept(t))));
         }
 
-//        public <R> ComplexTask<R> sync(final BWorldPlugin plugin, Supplier<R> supplier) {
-//            final ComplexTask<R> task = new ComplexTask<>();
-//            Executor.sync(plugin, unused -> task.completableFuture.complete(supplier.get()));
-//            return task;
-//        }
-
         public ComplexTask<Void> async(final BWorldPlugin plugin, Consumer<T> consumer) {
             Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> consumer.accept(t)));
             return new ComplexTask<>();

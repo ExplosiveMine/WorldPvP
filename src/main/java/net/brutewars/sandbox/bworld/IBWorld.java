@@ -62,4 +62,5 @@ public interface IBWorld {
     LastLocation getDefaultLocation();
 
     void setDefaultLocation(final LastLocation defaultLocation);
+
 }

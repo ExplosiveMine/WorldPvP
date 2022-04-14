@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
-public class PlayerTeleportListener implements Listener {
+public final class PlayerTeleportListener implements Listener {
     private final BWorldPlugin plugin;
 
     public PlayerTeleportListener(final BWorldPlugin plugin) {

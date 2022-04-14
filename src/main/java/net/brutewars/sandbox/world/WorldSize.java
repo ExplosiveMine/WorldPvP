@@ -7,10 +7,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum WorldSize {
-    DEFAULT(),
-    TYRANT(),
-    NOMAD(),
-    BRUTE();
+    DEFAULT,
+    TYRANT,
+    NOMAD,
+    BRUTE;
 
     @Getter private final String permission;
     private final static Map<WorldSize, Integer> sizes = new HashMap<>();

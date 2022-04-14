@@ -92,4 +92,5 @@ public final class CmdInvite implements ICommand {
     public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
         return CommandTabCompletes.getOnlinePlayers(plugin);
     }
+
 }
