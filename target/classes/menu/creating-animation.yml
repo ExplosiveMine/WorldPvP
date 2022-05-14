@@ -1,0 +1,60 @@
+creating animation:
+  animationSpeed: 7
+  materials:
+    0:
+      # displayName: ""
+      type: STONE
+      value: 0
+      enchanted: false
+    1:
+      type: STONE
+      value: 5
+      enchanted: false
+    2:
+      type: DIRT
+      value: 1
+      enchanted: false
+    3:
+      type: GRASS
+      value: 0
+      enchanted: false
+    4:
+      type: DIRT
+      value: 0
+      enchanted: false
+    5:
+      type: STONE
+      value: 0
+      enchanted: true
+    6:
+      type: STONE
+      value: 5
+      enchanted: true
+    7:
+      type: DIRT
+      value: 1
+      enchanted: true
+    8:
+      type: GRASS
+      value: 1
+      enchanted: true
+    9:
+      type: DIRT
+      value: 0
+      enchanted: true
+  frames:
+    - "5:0:0:1:1"
+    - "5:0:1:1:1"
+    - "5:1:1:1:2"
+    - "6:1:1:2:2"
+    - "6:1:2:2:4"
+    - "6:2:2:4:4"
+    - "7:2:4:4:3"
+    - "7:4:4:3:3"
+    - "9:4:3:3:3"
+    - "9:3:3:3:3"
+    - "8:3:3:3:3"
+    - "8:8:3:3:3"
+    - "8:8:8:3:3"
+    - "8:8:8:8:3"
+    - "8:8:8:8:8"
