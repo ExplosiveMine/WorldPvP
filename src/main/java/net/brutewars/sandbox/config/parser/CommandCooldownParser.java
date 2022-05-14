@@ -7,10 +7,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class CommandCooldownParser implements SectionParser {
-    private final Map<String, Long> commandCooldown;
+    private final Map<String, Long> commandCooldown = new HashMap<>();
 
     public CommandCooldownParser(ConfigurationSection configurationSection) {
-        commandCooldown = new HashMap<>();
         parse(configurationSection);
     }
 

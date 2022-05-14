@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.config;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.config.parser.AnimatedMenuParser;
 import net.brutewars.sandbox.config.parser.BonusChestParser;
 import net.brutewars.sandbox.config.parser.CommandCooldownParser;
 import net.brutewars.sandbox.config.parser.Lang;
@@ -16,6 +17,7 @@ public final class ConfigSettings {
 
     public CommandCooldownParser commandCooldownParser;
     public BonusChestParser bonusChestParser;
+    public AnimatedMenuParser creatingAnimationParser;
 
     public long invitingTime;
     public long resettingTime;
@@ -38,11 +40,16 @@ public final class ConfigSettings {
         FileConfiguration config;
 
         /*
-         * bonus chest.yml
+         * bonus-chest.yml
          */
-        config = getConfig("bonus chest.yml");
-
+        config = getConfig("bonus-chest.yml");
         bonusChestParser = new BonusChestParser(config.getConfigurationSection("bonus chest"));
+
+        /*
+         * creating-animation.yml
+         */
+        config = getConfig("menu" + File.separator + "creating-animation.yml");
+        creatingAnimationParser = new AnimatedMenuParser(config.getConfigurationSection("creating animation"));
 
         /*
          * config.yml

@@ -11,18 +11,17 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class BonusChestParser implements SectionParser {
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    private final List<BonusItem> bonusItems;
-    public int min, max;
+    private final List<BonusItem> bonusItems = new ArrayList<>();
+    private int min, max;
 
     public BonusChestParser(ConfigurationSection configurationSection) {
-        bonusItems = new ArrayList<>();
         parse(configurationSection);
     }
 
     @Override
     public void parse(final ConfigurationSection bonusChestSection) {
-        this.min = bonusChestSection.getInt("minimum items", 5);
-        this.max = bonusChestSection.getInt("maximum items", 5);
+        min = bonusChestSection.getInt("minimum items", 5);
+        max = bonusChestSection.getInt("maximum items", 5);
 
         bonusChestSection.getConfigurationSection("items").getKeys(false).forEach(s -> {
             final ConfigurationSection item = bonusChestSection.getConfigurationSection("items." + s);

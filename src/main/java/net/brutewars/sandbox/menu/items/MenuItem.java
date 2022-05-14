@@ -11,7 +11,4 @@ public final class MenuItem extends BaseMenuItem {
         super(item, action);
     }
 
-    public MenuItem(final ItemStack item) {
-        super(item, null);
-    }
 }

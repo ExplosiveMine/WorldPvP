@@ -2,9 +2,10 @@ package net.brutewars.sandbox.menu;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.menu.bmenu.Menu;
-import net.brutewars.sandbox.menu.bmenu.bworld.CreateMenu;
-import net.brutewars.sandbox.menu.bmenu.bworld.RecruitMenu;
-import net.brutewars.sandbox.menu.bmenu.bworld.SettingsMenu;
+import net.brutewars.sandbox.menu.bworld.CreateMenu;
+import net.brutewars.sandbox.menu.bworld.CreatingAnimationMenu;
+import net.brutewars.sandbox.menu.bworld.RecruitMenu;
+import net.brutewars.sandbox.menu.bworld.SettingsMenu;
 import net.brutewars.sandbox.player.BPlayer;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ import java.util.Map;
 public final class MenuManager {
     private final BWorldPlugin plugin;
 
-    private Map<String, Menu> menus;
+    private final Map<String, Menu> menus = new HashMap<>();
 
     public MenuManager(final BWorldPlugin plugin) {
         this.plugin = plugin;
@@ -21,14 +22,12 @@ public final class MenuManager {
     }
 
     public void init() {
-        //initialise menu listeners
         new MenuListener(plugin);
-
-        menus = new HashMap<>();
 
         registerMenu(MenuIdentifier.CREATE, new CreateMenu(plugin));
         registerMenu(MenuIdentifier.SETTINGS, new SettingsMenu(plugin));
         registerMenu(MenuIdentifier.RECRUIT, new RecruitMenu(plugin));
+        registerMenu(MenuIdentifier.CREATING_ANIMATION, new CreatingAnimationMenu(plugin));
     }
 
     private void registerMenu(MenuIdentifier menuIdentifier, Menu menu) {

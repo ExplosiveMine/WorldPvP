@@ -5,7 +5,8 @@ import lombok.Getter;
 public enum MenuIdentifier {
     CREATE("create"),
     RECRUIT("recruit"),
-    SETTINGS("settings");
+    SETTINGS("settings"),
+    CREATING_ANIMATION("creating_animation");
 
     @Getter private final String identifier;
 

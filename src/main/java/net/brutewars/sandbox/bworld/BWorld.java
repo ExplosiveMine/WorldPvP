@@ -158,7 +158,7 @@ public final class BWorld implements IBWorld {
         if (worldSize.equals(maxSize))
             return;
 
-        Logging.debug(plugin, "Updated WorldSize for: " + getAlias());
+        Logging.debug(plugin, "Updated WorldSize from " +  worldSize.getValue() + " to " + maxSize.getValue() + " for: " + getAlias());
 
         if (loadingPhase.equals(LoadingPhase.LOADED)) {
             Lang.WORLD_BORDER_UPDATE.send(this, (maxSize.getValue() > worldSize.getValue() ? "increased" : "decreased"),worldSize.getValue(), maxSize.getValue());

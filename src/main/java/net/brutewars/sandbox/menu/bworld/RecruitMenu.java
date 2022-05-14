@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.menu.bmenu.bworld;
+package net.brutewars.sandbox.menu.bworld;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.config.parser.Lang;

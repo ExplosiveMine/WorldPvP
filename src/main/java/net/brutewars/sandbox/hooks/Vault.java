@@ -31,7 +31,7 @@ public final class Vault {
     }
 
     public boolean hasPermission(final OfflinePlayer offlinePlayer, final String permission) {
-        return perms.playerHas(plugin.getServer().getWorlds().get(0).getName(), offlinePlayer, permission);
+        return perms.playerHas(null, offlinePlayer, permission);
     }
 
 }
