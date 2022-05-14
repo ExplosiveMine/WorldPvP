@@ -1,53 +1,57 @@
+ACCEPT_INVITE_TOOLTIP: "&aAccept the world invitation"
+ALREADY_HAVE_WORLD: "&cYou must leave your current world before trying to create a new one!"
+CANNOT_KICK_YOURSELF: "&cYou cannot kick yourself!"
+CLICK_TO_INVITE: "&6Click &c&lhere &6to invite {0} &6to your world!"
 COMMAND_COOLDOWN: "This command will be available again in {0}"
 COMMAND_USAGE: "&cUsage: /{0}"
-CONSOLE_NO_PERMISSION: "&cConsole cannot execute this command!"
-WORLD_CREATING: |
-  &cCreating your brand new world. Please wait as this might take a short while.
-WORLD_CREATED: |
-  &aYour new world has been created with a world border of size {0} blocks. To increase your world's size, you can purchase a rank at &6store.brutewars.net&a!
-  &aTo go to your world, simply use the command /world.
-WORLD_LOADING: "&cYour world is being loaded. Please wait, this might take a short while!"
-WORLD_LOADED: "&aThe world has been loaded, you may now join!"
-PLAYER_NO_PERMISSION: "&8(&f&l&oBW&8) &7&oThat is an unknown command!"
-PLAYER_NO_WORLD: "&cYou do not currently have a world."
-INVALID_AMOUNT: "&cInvalid amount {0}."
-HELP_HEADER: "&e&lSandbox &7Commands List [{0}/{1}]:"
-HELP_LINE: '&e/{0} &f- &7{1}'
-HELP_NEXT_PAGE: '&e&lSandbox &7Use /sandbox help {0} for the next page.'
-HELP_FOOTER: '&e&lBrutewars Sandbox'
-MEMBER_LEAVE: "&c{0} has left your world!"
-LEFT_WORLD: "&cYou have left {0}'s world"
 CONFIRM_RESET: |
   &c&lWARNING: &cYOU ARE ABOUT TO RESET YOUR WORLD PERMANENTLY.
   &cAre you sure you want to continue? Type "/world confirm" to reset your world.
-RESET_SUCCESS: "&cYour world has been reset by {0}"
-CANNOT_KICK_YOURSELF: "&cYou cannot kick yourself!"
+CONSOLE_NO_PERMISSION: "&cConsole cannot execute this command!"
+CREATE_MENU: "        &e&lChoose terrain type"
+DENY_INVITE_TOOLTIP: "&cDeny the world invitation."
+HELP_FOOTER: '&e&lBrutewars Sandbox'
+HELP_HEADER: "&e&lSandbox &7Commands List [{0}/{1}]:"
+HELP_LINE: '&e/{0} &f- &7{1}'
+HELP_NEXT_PAGE: '&e&lSandbox &7Use /sandbox help {0} for the next page.'
+HOW_TO_CREATE_WORLD: "&aTo create your first world, use the command /world create"
+INVALID_AMOUNT: "&cInvalid amount {0}."
 INVALID_PLAYER: "&cWe could not find the mentioned player!"
 INVALID_WORLD: "&cWe could not find the world!"
-SUCCESSFULLY_INVITED_PLAYER: "&aYou have successfully invited {0} to join your world."
 INVITED_PLAYER_IS_MEMBER: "&cThis player has already joined your world"
-PLAYER_ALREADY_INVITED: "&cThis player has already been invited to join your world."
-PLAYER_INVITED: "&aYou have been invited to join {0}'s world"
-ACCEPT_INVITE_TOOLTIP: "&aAccept the world invitation"
-DENY_INVITE_TOOLTIP: "&cDeny the world invitation."
-NO_INVITE: "&cYou do not currently have an invite to join this world"
-ALREADY_HAVE_WORLD: "&cYou must leave your current world before trying to create a new one!"
-PLAYER_ACCEPTED_INVITE: "&a{0} has accepted your invite!"
-SUCCESSFULLY_JOINED_WORLD: "&aYou have successfully joined {0}'s world."
-NEW_MEMBER: "&a{0} has joined your world."
 INVITE_DENIED: "&aYou have denied the invitation to {0}'s world."
-PLAYER_DENIED_INVITE: "&C{0} has denied your invite!"
+LEFT_WORLD: "&cYou have left {0}'s world"
+MEMBER_LEAVE: "&c{0} has left your world!"
+MEMBER_LIST: "&a{0}"
+NEW_MEMBER: "&a{0} has joined your world."
+NOT_IN_WORLD: "&cYou are not a member of {0}'s world!"
+NO_INVITE: "&cYou do not currently have an invite to join this world"
+ON_RESET_VISITOR: "&cThe world you were in has been reset, so you were teleported to spawn!"
 OWNER_KICK_PLAYER: "&a{0} has been kicked from your world!"
+PLAYER_ACCEPTED_INVITE: "&a{0} has accepted your invite!"
+PLAYER_ALREADY_INVITED: "&cThis player has already been invited to join your world."
+PLAYER_DENIED_INVITE: "&C{0} has denied your invite!"
+PLAYER_INVITED: "&aYou have been invited to join {0}'s world"
 PLAYER_KICKED: "&cYou have been kicked from {0}'s world."
+PLAYER_NOT_IN_WORLD: "&cThis player is not a member of your world!"
+PLAYER_NO_PERMISSION: "&8(&f&l&oBW&8) &7&oThat is an unknown command!"
+PLAYER_NO_WORLD: "&cYou do not currently have a world."
+RECRUIT_MENU: "             &e&lRecruit Members"
+RELOADED_CONFIG: "&aReloaded messages."
+RESET_SUCCESS: "&cYour world has been reset by {0}"
+SETTINGS_MENU: "              &e&lWorld Settings"
+SUCCESSFULLY_INVITED_PLAYER: "&aYou have successfully invited {0} to join your world."
+SUCCESSFULLY_JOINED_WORLD: "&aYou have successfully joined {0}'s world."
 SUCCESSFUL_HOOK: "Hooked into {0} successfully!"
 WORLD_BORDER_UPDATE: "&aThe world border has been {0} from {1} to {2}"
-HOW_TO_CREATE_WORLD: "&aTo create your first world, use the command /world create"
-PLAYER_NOT_IN_WORLD: "&cThis player is not a member of your world!"
-RELOADED_CONFIG: "&aReloaded messages."
+WORLD_CREATED: |
+  &aYour new world has been created with a world border of size {0} blocks. To increase your world's size, you can purchase a rank at &6store.brutewars.net&a!
+  &aTo go to your world, simply use the command /world.
+WORLD_CREATING: |
+  &cCreating your brand new world. Please wait as this might take a short while.
 WORLD_INFO: |
   &aOwner: {0}
   &aBorder size: {1}
   &aMembers:
-MEMBER_LIST: "&a{0}"
-NOT_IN_WORLD: "&cYou are not a member of {0}'s world!"
-ON_RESET_VISITOR: "&cThe world you were in has been reset, so you were teleported to spawn!"
+WORLD_LOADED: "&aThe world has been loaded, you may now join!"
+WORLD_LOADING: "&cYour world is being loaded. Please wait, this might take a short while!"

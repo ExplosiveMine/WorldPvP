@@ -3,7 +3,7 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandHandler;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;

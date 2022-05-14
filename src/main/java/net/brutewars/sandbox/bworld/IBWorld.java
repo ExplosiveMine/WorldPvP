@@ -9,6 +9,7 @@ import org.bukkit.World;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public interface IBWorld {
     UUID getUuid();
@@ -53,8 +54,6 @@ public interface IBWorld {
 
     void teleportToWorld(BPlayer bPlayer);
 
-    World getWorld();
-
     void updateLastLocation(BPlayer bPlayer, Location location);
 
     LastLocation getLastLocation(final BPlayer bPlayer);
@@ -62,5 +61,7 @@ public interface IBWorld {
     LastLocation getDefaultLocation();
 
     void setDefaultLocation(final LastLocation defaultLocation);
+
+    CompletableFuture<World> getWorld();
 
 }

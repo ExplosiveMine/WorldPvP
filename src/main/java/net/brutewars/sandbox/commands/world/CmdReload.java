@@ -2,7 +2,7 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.world.WorldSize;
 import org.bukkit.command.CommandSender;
 

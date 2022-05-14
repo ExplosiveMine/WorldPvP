@@ -14,7 +14,7 @@ public final class Logging {
     }
 
     public static void debug(final BWorldPlugin plugin, String s) {
-        if (!plugin.getConfig().getBoolean("debug")) return;
+        if (!plugin.getConfigSettings().debug) return;
         info("[" + plugin.getName() + "] " + s);
     }
 }

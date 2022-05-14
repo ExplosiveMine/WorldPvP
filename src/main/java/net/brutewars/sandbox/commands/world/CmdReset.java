@@ -2,7 +2,7 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.IPermissibleCommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
 
@@ -10,12 +10,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class CmdReset implements IPermissibleCommand {
-    final long cooldown;
-
-    public CmdReset(final BWorldPlugin plugin) {
-        this.cooldown = plugin.getConfig().getLong("commands.cooldown.reset") * 1000;
-    }
-
     @Override
     public List<String> getAliases() {
         return Arrays.asList("reset", "delete", "disband");
@@ -49,11 +43,6 @@ public final class CmdReset implements IPermissibleCommand {
     @Override
     public boolean canBeExecutedByConsole() {
         return false;
-    }
-
-    @Override
-    public long getCooldown() {
-        return cooldown;
     }
 
     @Override

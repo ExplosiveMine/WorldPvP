@@ -17,22 +17,22 @@ public final class Executor {
         }.runTaskAsynchronously(plugin);
     }
 
-    public static void sync(final BWorldPlugin plugin, Consumer<Void> consumer) {
-        new BukkitRunnable() {
+    public static int sync(final BWorldPlugin plugin, Consumer<BukkitRunnable> consumer, final long...args) {
+        final BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
-                consumer.accept(null);
+                consumer.accept(this);
             }
-        }.runTaskLater(plugin, 0L);
-    }
+        };
 
-    public static int syncTimer(final BWorldPlugin plugin, Consumer<Void> consumer, final long delay) {
-        return new BukkitRunnable() {
-            @Override
-            public void run() {
-                consumer.accept(null);
-            }
-        }.runTaskLater(plugin, delay * 20L).getTaskId();
+        if (args.length == 0)
+            runnable.runTaskLater(plugin, 0L);
+        else if (args.length == 1)
+            runnable.runTaskLater(plugin, args[0] * 20L);
+        else if (args.length == 2)
+            runnable.runTaskTimer(plugin, args[0] * 20L, args[1]);
+
+        return runnable.getTaskId();
     }
 
     public static ComplexTask<Void> create() {
@@ -45,8 +45,8 @@ public final class Executor {
         private ComplexTask() {
         }
 
-        public void sync(final BWorldPlugin plugin, Consumer<T> consumer) {
-            Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, unused1 -> consumer.accept(t))));
+        public void sync(final BWorldPlugin plugin, Consumer<T> consumer, long...args) {
+            Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, unused1 -> consumer.accept(t), args)));
         }
 
         public ComplexTask<Void> async(final BWorldPlugin plugin, Consumer<T> consumer) {

@@ -1,6 +1,5 @@
 package net.brutewars.sandbox.commands;
 
-import com.google.common.base.Preconditions;
 import net.brutewars.sandbox.BWorldPlugin;
 
 import java.util.*;
@@ -26,15 +25,6 @@ public abstract class CommandMap {
 
         for (int i = 1; i < iCommand.getAliases().size(); i++)
             aliasesToCommand.put(iCommand.getAliases().get(i).toLowerCase(), iCommand);
-    }
-
-    public void unregisterCommand(ICommand iCommand) {
-        Preconditions.checkNotNull(iCommand, "wCommand parameter cannot be null.");
-
-        final String label = iCommand.getAliases().get(0).toLowerCase();
-
-        subCommands.remove(label);
-        aliasesToCommand.values().removeIf(sC -> sC.getAliases().get(0).equals(label));
     }
 
     public ICommand getCommand(String label) {

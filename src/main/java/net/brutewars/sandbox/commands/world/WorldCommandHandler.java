@@ -4,7 +4,7 @@ import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandHandler;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -51,15 +51,15 @@ public final class WorldCommandHandler extends CommandHandler {
                     }
 
                     final String commandLabel = command.getAliases().get(0);
+                    final long cooldown = plugin.getConfigSettings().commandCooldownParser.get(command);
 
-                    if (sender instanceof Player && command.getCooldown() != 0) {
+                    if (sender instanceof Player && cooldown != 0) {
                         UUID uuid = ((Player) sender).getUniqueId();
 
                         long timeToExecute = commandsCooldown.containsKey(uuid) && commandsCooldown.get(uuid).containsKey(commandLabel) ?
                                 commandsCooldown.get(uuid).get(commandLabel) : -1;
 
                         long timeNow = System.currentTimeMillis();
-
                         if (timeNow < timeToExecute) {
                             Lang.COMMAND_COOLDOWN.send(sender, StringUtils.formatTime(timeToExecute - timeNow, TimeUnit.MILLISECONDS));
                             return false;
@@ -67,7 +67,7 @@ public final class WorldCommandHandler extends CommandHandler {
 
                         if (!commandsCooldown.containsKey(uuid)) commandsCooldown.put(uuid, new HashMap<>());
 
-                        commandsCooldown.get(uuid).put(commandLabel, timeNow + command.getCooldown());
+                        commandsCooldown.get(uuid).put(commandLabel, timeNow + cooldown);
                     }
 
                     command.execute(plugin, sender, args);

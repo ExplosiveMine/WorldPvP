@@ -5,16 +5,19 @@ import lombok.Getter;
 import lombok.Setter;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.thread.Executor;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.world.LoadingPhase;
 import net.brutewars.sandbox.world.WorldSize;
+import org.bukkit.Difficulty;
 import org.bukkit.Location;
 import org.bukkit.World;
 
+import java.io.File;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public final class BWorld implements IBWorld {
@@ -22,27 +25,45 @@ public final class BWorld implements IBWorld {
 
     @Getter private final UUID uuid;
 
+    /*
+     * Players
+     */
     @Getter private BPlayer owner;
-
     private final Set<BPlayer> players = new HashSet<>();
-    private final Map<BPlayer, BPlayer> invitedPlayers = new HashMap<>();
 
+    /*
+     * World values
+     */
+    @Getter private final String worldName;
+    @Getter private WorldSize worldSize = WorldSize.DEFAULT;
+    @Getter private Difficulty difficulty = Difficulty.NORMAL;
+    @Getter @Setter private boolean cheating = false;
+
+    /*
+     * Spawn location & last player locations
+     */
     @Getter private LastLocation defaultLocation;
     private final Map<BPlayer, LastLocation> lastLocations = new HashMap<>();
 
-    @Getter private WorldSize worldSize;
-
+    /*
+     * Flags
+     */
+    @Getter @Setter private int resetting = -1;
     @Getter @Setter private int unloading = -1;
     @Getter @Setter private LoadingPhase loadingPhase = LoadingPhase.UNLOADED;
 
-    @Getter @Setter private int resetting = -1;
+    /*
+     * Random stuff
+     */
+    private final Map<BPlayer, BPlayer> invitedPlayers = new HashMap<>();
+
 
     public BWorld(final BWorldPlugin plugin, UUID uuid) {
         this.plugin = plugin;
         this.uuid = uuid;
-        this.owner = null;
-        this.defaultLocation = null;
-        this.worldSize = WorldSize.DEFAULT;
+        owner = null;
+        defaultLocation = null;
+        worldName = plugin.getDataFolder() + File.separator + "worlds" + File.separator + uuid.toString();
     }
 
     public void init(final BPlayer owner) {
@@ -85,6 +106,7 @@ public final class BWorld implements IBWorld {
         Preconditions.checkNotNull(bPlayer, "bPlayer parameter cannot be null");
 
         bPlayer.removeBWorld(this);
+
         bPlayer.runIfOnline(player -> {
             if (player.getWorld().getName().equals(getWorldName()))
                 plugin.getBWorldManager().getSpawn().teleportToWorld(bPlayer);
@@ -101,7 +123,7 @@ public final class BWorld implements IBWorld {
     @Override
     public void invite(BPlayer inviter, BPlayer invitee) {
         invitedPlayers.put(invitee, inviter);
-        Executor.syncTimer(plugin, unused -> invitedPlayers.remove(invitee), plugin.getBWorldManager().INVITING_TIME);
+        Executor.sync(plugin, unused -> invitedPlayers.remove(invitee), plugin.getConfigSettings().invitingTime);
     }
 
     @Override
@@ -118,10 +140,10 @@ public final class BWorld implements IBWorld {
     public void initialiseReset() {
         Logging.debug(plugin, "Initialised reset for: " + getAlias());
 
-        setResetting(Executor.syncTimer(plugin, unused -> {
+        setResetting(Executor.sync(plugin, unused -> {
             Logging.debug(plugin, "Reset cancelled for: " + getAlias());
             setResetting(-1);
-        }, plugin.getBWorldManager().RESETTING_TIME));
+        }, plugin.getConfigSettings().resettingTime));
     }
 
     @Override
@@ -150,22 +172,17 @@ public final class BWorld implements IBWorld {
     public void initialiseUnloading() {
         Logging.debug(plugin, "Initialised unloading for: " + getAlias());
 
-        setUnloading(Executor.syncTimer(plugin, unused -> {
+        setUnloading(Executor.sync(plugin, unused -> {
             if (getOnlineBPlayers().size() != 0) return;
             Logging.debug(plugin, "Unloading world: " + getAlias());
             plugin.getBWorldManager().getWorldFactory().unload(BWorld.this, true);
-        }, plugin.getBWorldManager().UNLOADING_TIME));
+        }, plugin.getConfigSettings().unloadingTime));
     }
 
     @Override
     public void cancelUnloading() {
         Logging.debug(plugin, "Unloading cancelled for: " + getAlias());
         plugin.getServer().getScheduler().cancelTask(getUnloading());
-    }
-
-    @Override
-    public String getWorldName() {
-        return uuid.toString();
     }
 
     @Override
@@ -177,12 +194,7 @@ public final class BWorld implements IBWorld {
     public void teleportToWorld(final BPlayer bPlayer) {
         final LastLocation lastLoc = lastLocations.put(bPlayer, defaultLocation);
         if (lastLoc != null)
-            bPlayer.teleport(lastLoc.toLoc(getWorld()));
-    }
-
-    @Override
-    public World getWorld() {
-        return plugin.getBWorldManager().getWorldFactory().getWorld(this);
+            getWorld().whenComplete((world, throwable) -> bPlayer.teleport(lastLoc.toLoc(world)));
     }
 
     @Override
@@ -200,6 +212,17 @@ public final class BWorld implements IBWorld {
     public void setDefaultLocation(final LastLocation defaultLocation) {
         this.defaultLocation = defaultLocation;
         lastLocations.replaceAll((bPlayer, lastLocation) -> lastLocation == null ? defaultLocation : lastLocation);
+    }
+
+    @Override
+    public CompletableFuture<World> getWorld() {
+        return plugin.getBWorldManager().getWorldFactory().getWorld(this);
+    }
+
+    public void setDifficulty(Difficulty difficulty, boolean updateWorld) {
+        this.difficulty = difficulty;
+        if (updateWorld)
+            getWorld().whenComplete((world, throwable) -> world.setDifficulty(difficulty));
     }
 
 }

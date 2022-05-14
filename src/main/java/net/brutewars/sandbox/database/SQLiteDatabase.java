@@ -1,6 +1,5 @@
 package net.brutewars.sandbox.database;
 
-import lombok.Getter;
 import lombok.SneakyThrows;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.utils.Logging;
@@ -12,36 +11,22 @@ import java.nio.file.Paths;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Consumer;
 
 public final class SQLiteDatabase {
     private final BWorldPlugin plugin;
     private final File databaseFile;
 
-    private Connection connection;
+    private final Map<String, Table> tables;
 
-    //tables
-    @Getter private final Table playersTable;
-    @Getter private final Table worldsTable;
-    @Getter private final Table membersTable;
+    private Connection connection;
 
     public SQLiteDatabase(final BWorldPlugin plugin, final File databaseFile) {
         this.plugin = plugin;
         this.databaseFile = databaseFile;
-
-        playersTable = createTable("players",
-                "`player_id` TEXT PRIMARY KEY");
-
-        worldsTable = createTable("worlds",
-                "`world_id` TEXT PRIMARY KEY",
-                "`owner_id` TEXT NOT NULL",
-                "'last_location' TEXT NOT NULL");
-
-        membersTable = createTable("members",
-                "`world_id` TEXT NOT NULL",
-                "`player_id` TEXT NOT NULL",
-                "'last_location' TEXT NOT NULL");
-
+        this.tables = new HashMap<>();
     }
 
     @SneakyThrows(SQLException.class)
@@ -55,7 +40,6 @@ public final class SQLiteDatabase {
         connection = DriverManager.getConnection("jdbc:sqlite:" + databaseFile);
         return connection;
     }
-
 
     private void loadDriver() {
         try {
@@ -92,10 +76,14 @@ public final class SQLiteDatabase {
         if (connection != null) connection.close();
     }
 
-    public Table createTable(final String name, final String... fields) {
+    public void createTable(final String name, final String... fields) {
         final Table table = new Table(name);
         table.create(fields);
-        return table;
+        tables.put(name, table);
+    }
+
+    public Table getTable(final String name) {
+        return tables.get(name);
     }
 
     @SneakyThrows

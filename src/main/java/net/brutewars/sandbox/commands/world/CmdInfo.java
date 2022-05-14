@@ -5,7 +5,7 @@ import net.brutewars.sandbox.bworld.BWorld;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

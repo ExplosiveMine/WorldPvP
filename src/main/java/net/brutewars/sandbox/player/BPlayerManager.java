@@ -33,10 +33,6 @@ public final class BPlayerManager {
         return getBPlayer(player.getUniqueId());
     }
 
-    public BPlayer getBPlayer(final String name) {
-        return getBPlayer(plugin.getServer().getPlayer(name));
-    }
-
     public boolean containsBPlayer(final UUID uuid) {
         return players.containsKey(uuid);
     }

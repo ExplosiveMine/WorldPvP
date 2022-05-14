@@ -2,7 +2,6 @@
 
 commands:
   cooldown:
-    create: 300
     reset: 300
 
 world:

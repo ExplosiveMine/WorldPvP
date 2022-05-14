@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.config;
+package net.brutewars.sandbox.config.parser;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.player.BPlayer;
@@ -17,10 +17,12 @@ public enum Lang {
     ACCEPT_INVITE_TOOLTIP,
     ALREADY_HAVE_WORLD,
     CANNOT_KICK_YOURSELF,
+    CLICK_TO_INVITE,
     COMMAND_COOLDOWN,
     COMMAND_USAGE,
     CONFIRM_RESET,
     CONSOLE_NO_PERMISSION,
+    CREATE_MENU,
     DENY_INVITE_TOOLTIP,
     HELP_FOOTER,
     HELP_HEADER,
@@ -36,6 +38,7 @@ public enum Lang {
     MEMBER_LEAVE,
     MEMBER_LIST,
     NEW_MEMBER,
+    NOT_IN_WORLD,
     NO_INVITE,
     ON_RESET_VISITOR,
     OWNER_KICK_PLAYER,
@@ -47,8 +50,10 @@ public enum Lang {
     PLAYER_NOT_IN_WORLD,
     PLAYER_NO_PERMISSION,
     PLAYER_NO_WORLD,
+    RECRUIT_MENU,
     RELOADED_CONFIG,
     RESET_SUCCESS,
+    SETTINGS_MENU,
     SUCCESSFULLY_INVITED_PLAYER,
     SUCCESSFULLY_JOINED_WORLD,
     SUCCESSFUL_HOOK,
@@ -57,8 +62,7 @@ public enum Lang {
     WORLD_CREATING,
     WORLD_INFO,
     WORLD_LOADED,
-    WORLD_LOADING,
-    NOT_IN_WORLD;
+    WORLD_LOADING;
 
     private static YamlConfiguration langCfg;
 

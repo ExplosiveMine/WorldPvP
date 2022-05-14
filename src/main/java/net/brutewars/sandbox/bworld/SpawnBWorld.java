@@ -12,6 +12,7 @@ import org.bukkit.World;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public final class SpawnBWorld implements IBWorld {
     private final BWorldPlugin plugin;
@@ -22,13 +23,10 @@ public final class SpawnBWorld implements IBWorld {
     @Getter private final int resetting = -1;
     @Getter private final int unloading = -1;
 
-    @Getter private final String worldName;
-
     public SpawnBWorld(final BWorldPlugin plugin) {
         this.plugin = plugin;
         this.uuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
         this.owner = new BPlayer(plugin, uuid, null);
-        this.worldName = plugin.getConfig().getString("spawnWorld");
     }
 
     @Override
@@ -102,18 +100,18 @@ public final class SpawnBWorld implements IBWorld {
     }
 
     @Override
+    public String getWorldName() {
+        return plugin.getConfigSettings().worldName;
+    }
+
+    @Override
     public String getAlias() {
-        return worldName;
+        return uuid.toString();
     }
 
     @Override
     public void teleportToWorld(BPlayer bPlayer) {
-        bPlayer.teleport(getWorld().getSpawnLocation());
-    }
-
-    @Override
-    public World getWorld() {
-        return plugin.getServer().getWorld(worldName);
+        getWorld().whenComplete((world, throwable) -> bPlayer.teleport(world.getSpawnLocation()));
     }
 
     @Override
@@ -123,7 +121,7 @@ public final class SpawnBWorld implements IBWorld {
 
     @Override
     public LastLocation getDefaultLocation() {
-        return new LastLocation(getWorld().getSpawnLocation());
+        return new LastLocation(getWorld().getNow(null).getSpawnLocation());
     }
 
     @Override
@@ -134,6 +132,13 @@ public final class SpawnBWorld implements IBWorld {
     @Override
     public void setDefaultLocation(LastLocation defaultLocation) {
         //noop
+    }
+
+    @Override
+    public CompletableFuture<World> getWorld() {
+        final CompletableFuture<World> cf = new CompletableFuture<>();
+        cf.complete(plugin.getServer().getWorld(getWorldName()));
+        return cf;
     }
 
 }

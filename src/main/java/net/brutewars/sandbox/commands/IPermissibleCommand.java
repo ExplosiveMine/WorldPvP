@@ -1,7 +1,6 @@
 package net.brutewars.sandbox.commands;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.config.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.Pair;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -20,14 +19,8 @@ public interface IPermissibleCommand extends ICommand {
         if (!canBeExecutedByConsole() || sender instanceof Player) {
             Pair<BWorld, BPlayer> arguments = CommandArguments.getPair(plugin, sender);
 
-            bWorld = arguments.getKey();
-
-            if (bWorld == null) {
-                Lang.PLAYER_NO_WORLD.send(bPlayer);
-                return;
-            }
-
             bPlayer = arguments.getValue();
+            bWorld = arguments.getKey();
         }
 
         execute(plugin, bPlayer, bWorld, args);

@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.hooks;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.utils.Logging;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.OfflinePlayer;

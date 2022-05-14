@@ -5,57 +5,46 @@ import lombok.SneakyThrows;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.BWorld;
 import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.thread.Executor;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.world.bonus.BonusChest;
 import org.apache.commons.io.FileUtils;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
+import org.bukkit.*;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public final class WorldFactory {
     private final BWorldPlugin plugin;
-    private final String PATH;
-
-    private final BonusChest bonusChest;
 
     public WorldFactory(final BWorldPlugin plugin) {
         this.plugin = plugin;
-        this.bonusChest = new BonusChest(plugin);
-        this.PATH = plugin.getDataFolder() + File.separator + "worlds" + File.separator;
     }
 
-    public void create(final BWorld bWorld) {
+    public void create(final BWorld bWorld, WorldType worldType) {
         bWorld.setLoadingPhase(LoadingPhase.CREATING);
 
         Executor.create().async(plugin, () -> {
             Logging.debug(plugin, "Creating world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
+            return importWorld(bWorld, worldType);
+        }).sync(plugin, (asyncWorld) -> {
+            final Location spawnLoc = asyncWorld.getSpawnLocation();
+            int xCord = spawnLoc.getBlockX();
+            int zCord = spawnLoc.getBlockZ();
 
-            final AsyncWorld asyncWorld = importWorld(bWorld);
-
-            // set default location
-            final Location spawnLocation = asyncWorld.getSpawnLocation();
-            final int xCord = spawnLocation.getBlockX();
-            final int zCord = spawnLocation.getBlockZ();
-            asyncWorld.setSpawnLocation(xCord, asyncWorld.getHighestBlockYAt(xCord, zCord) + 1, zCord);
-            asyncWorld.getWorldBorder().setCenter(asyncWorld.getSpawnLocation());
+            asyncWorld.setSpawnLocation(xCord, asyncWorld.getHighestBlockYAt(spawnLoc) + 1, zCord);
+            asyncWorld.getWorldBorder().setCenter(spawnLoc);
             bWorld.setDefaultLocation(new LastLocation(asyncWorld.getSpawnLocation()));
 
-            return asyncWorld;
-        }).sync(plugin, (asyncWorld) -> {
             final World world = asyncWorld.getBukkitWorld();
-            int xCord = asyncWorld.getSpawnLocation().getBlockX();
-            final int zCord = asyncWorld.getSpawnLocation().getBlockZ() + 2;
+            zCord += 2;
 
             // spawn the bonus chest
-            bonusChest.spawn(new Location(world, xCord, asyncWorld.getHighestBlockYAt(xCord, zCord) + 1, zCord));
+            new BonusChest(plugin).spawn(new Location(world, xCord, asyncWorld.getHighestBlockYAt(xCord, zCord) + 1, zCord));
 
             xCord = xCord + 1;
+
             // spawn torch
             new Location(world, xCord, asyncWorld.getHighestBlockYAt(xCord, zCord) + 1, zCord).getBlock().setType(Material.TORCH);
 
@@ -66,18 +55,18 @@ public final class WorldFactory {
 
     public void load(final BWorld bWorld) {
         bWorld.setLoadingPhase(LoadingPhase.LOADING);
-        Executor.async(plugin, unused -> {
+        Executor.async(plugin, (unused) -> {
             Logging.debug(plugin, "Loading world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
-            importWorld(bWorld);
+            importWorld(bWorld, null);
             Lang.WORLD_LOADED.send(bWorld);
         });
     }
 
-    @SneakyThrows(IOException.class)
+    @SneakyThrows
     public void delete(final BWorld bWorld) {
         Logging.debug(plugin, "Deleting world for " + bWorld.getAlias());
-        final File file = new File(PATH + bWorld.getWorldName());
-        plugin.getServer().unloadWorld(getWorld(bWorld), false);
+        final File file = new File(bWorld.getWorldName());
+        plugin.getServer().unloadWorld(getWorld(bWorld).getNow(null), false);
         bWorld.setLoadingPhase(LoadingPhase.UNLOADED);
         FileUtils.deleteDirectory(file);
     }
@@ -86,7 +75,7 @@ public final class WorldFactory {
         Executor.create().async(plugin, unused -> {
             if (!save) return;
             Logging.debug(plugin, "Saving world for " + bWorld.getAlias());
-            AsyncWorld.wrap(getWorld(bWorld)).save();
+            getWorld(bWorld).whenComplete((world, throwable) -> world.save());
         }).sync(plugin, unused -> {
             Logging.debug(plugin, "Unloaded world for " + bWorld.getAlias());
             plugin.getServer().unloadWorld(bWorld.getWorldName(), false);
@@ -94,22 +83,36 @@ public final class WorldFactory {
         });
     }
 
+    @SneakyThrows
     public void setWorldBorder(final BWorld bWorld, final WorldSize worldSize) {
-        getWorld(bWorld).getWorldBorder().setSize(worldSize.getValue());
+        getWorld(bWorld).getNow(null).getWorldBorder().setSize(worldSize.getValue());
     }
 
-    public World getWorld(final BWorld bWorld) {
-        return plugin.getServer().getWorld(PATH + bWorld.getWorldName());
+    public CompletableFuture<World> getWorld(final BWorld bWorld) {
+        final CompletableFuture<World> cf = new CompletableFuture<>();
+
+        if (!bWorld.getLoadingPhase().equals(LoadingPhase.UNLOADED)) {
+            cf.complete(plugin.getServer().getWorld(bWorld.getWorldName()));
+        } else {
+            Executor.async(plugin, unused -> {
+                importWorld(bWorld, null);
+                cf.complete(plugin.getServer().getWorld(bWorld.getWorldName()));
+            });
+        }
+
+        return cf;
     }
 
-    private AsyncWorld importWorld(final BWorld bWorld) {
-        final AsyncWorld world = AsyncWorld.create(new WorldCreator(PATH + bWorld.getWorldName()));
+    private AsyncWorld importWorld(final BWorld bWorld, final WorldType worldType) {
+        final WorldCreator wc = new WorldCreator(bWorld.getWorldName());
+        if (worldType != null)
+            wc.type(worldType);
+        final AsyncWorld world = AsyncWorld.create(wc);
         world.setKeepSpawnInMemory(false);
         world.getWorldBorder().setSize(bWorld.getWorldSize().getValue());
 
         world.commit();
         bWorld.setLoadingPhase(LoadingPhase.LOADED);
-
         return world;
     }
 

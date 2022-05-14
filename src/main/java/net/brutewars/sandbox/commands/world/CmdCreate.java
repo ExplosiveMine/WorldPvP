@@ -2,7 +2,8 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.Lang;
+import net.brutewars.sandbox.config.parser.Lang;
+import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,12 +13,6 @@ import java.util.Collections;
 import java.util.List;
 
 public final class CmdCreate implements ICommand {
-    final long cooldown;
-
-    public CmdCreate(final BWorldPlugin plugin) {
-        this.cooldown = plugin.getConfig().getLong("commands.cooldown.create") * 1000;
-    }
-
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("create");
@@ -54,11 +49,6 @@ public final class CmdCreate implements ICommand {
     }
 
     @Override
-    public long getCooldown() {
-        return cooldown;
-    }
-
-    @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
         final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
 
@@ -67,8 +57,7 @@ public final class CmdCreate implements ICommand {
             return;
         }
 
-        Lang.WORLD_CREATING.send(sender);
-        plugin.getBWorldManager().createBWorld(bPlayer);
+        plugin.getMenuManager().open(MenuIdentifier.CREATE, bPlayer);
     }
 
     @Override

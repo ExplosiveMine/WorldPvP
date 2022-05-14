@@ -10,17 +10,18 @@ public final class WorldCommandMap extends CommandMap {
 
     @Override
     public void loadDefaultCommands(final BWorldPlugin plugin) {
-        registerCommand(new CmdCreate(plugin));
+        registerCommand(new CmdCreate());
         registerCommand(new CmdKick());
         registerCommand(new CmdHelp());
         registerCommand(new CmdInvite());
         registerCommand(new CmdAccept());
         registerCommand(new CmdDeny());
         registerCommand(new CmdLeave());
-        registerCommand(new CmdReset(plugin));
+        registerCommand(new CmdReset());
         registerCommand(new CmdConfirmReset());
         registerCommand(new CmdReload());
         registerCommand(new CmdInfo());
+        registerCommand(new CmdSettings());
     }
 
 }

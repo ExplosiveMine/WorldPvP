@@ -20,10 +20,6 @@ public interface ICommand {
 
     boolean canBeExecutedByConsole();
 
-    default long getCooldown() {
-        return 0;
-    }
-
     void execute(BWorldPlugin plugin, CommandSender sender, String[] args);
 
     List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args);

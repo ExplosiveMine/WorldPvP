@@ -6,10 +6,13 @@ import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.BWorld;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 public final class BPlayer {
     private final BWorldPlugin plugin;
@@ -52,6 +55,11 @@ public final class BPlayer {
         consumer.accept(toPlayer());
     }
 
+    public <T> T getIfOnline(Function<Player, T> function) {
+        if (!isOnline()) return null;
+        return function.apply(toPlayer());
+    }
+
     public boolean isOnline() {
         return toOfflinePlayer().isOnline();
     }
@@ -69,6 +77,24 @@ public final class BPlayer {
             return;
 
         toPlayer().teleport(location);
+    }
+
+    public void playSound(Sound sound, float v, float v1) {
+        if (!isOnline())
+            return;
+
+        final Player player = toPlayer();
+        player.playSound(player.getLocation(), sound, v, v1);
+    }
+
+    public boolean isSleeping() {
+        return isOnline() && toPlayer().isSleeping();
+    }
+
+    public void openInventory(final Inventory inventory) {
+        if (!isOnline()) return;
+
+        toPlayer().openInventory(inventory);
     }
 
 }
