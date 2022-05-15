@@ -25,7 +25,6 @@ public final class PlayerQuitListener implements Listener {
             return;
 
         final BWorld bWorld = bPlayer.getBWorld();
-
         if (bPlayer.getBWorld() == null)
             return;
 
