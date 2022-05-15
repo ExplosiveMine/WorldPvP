@@ -1,0 +1,5 @@
+main: net.brutewars.sandbox.BWorldPlugin
+author: explosivemines
+version: '${project.version}'
+name: Sandbox
+depend: [Vault, FastAsyncWorldEdit, WorldEdit]

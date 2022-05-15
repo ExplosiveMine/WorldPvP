@@ -1,0 +1,21 @@
+# TIME UNIT IS IN SECONDS
+
+commands:
+  cooldown:
+    reset: 300
+
+world:
+  resetting time: 30
+  unloading time: 600
+  size:
+    default: 1000
+    tyrant: 1500
+    nomad: 2500
+    brute: 5000
+
+spawnWorld: "Sandbox"
+
+invites:
+  expire time: 300
+
+debug: true
