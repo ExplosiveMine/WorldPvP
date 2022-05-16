@@ -13,7 +13,7 @@ public final class Logging {
         Bukkit.getLogger().severe(s);
     }
 
-    public static void debug(final BWorldPlugin plugin, String s) {
+    public static void debug(BWorldPlugin plugin, String s) {
         if (!plugin.getConfigSettings().debug) return;
         info("[" + plugin.getName() + "] " + s);
     }

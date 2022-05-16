@@ -29,7 +29,6 @@ public enum Lang {
     HELP_HEADER,
     HELP_LINE,
     HELP_NEXT_PAGE,
-    HOW_TO_CREATE_WORLD,
     INVALID_AMOUNT,
     INVALID_PLAYER,
     INVALID_WORLD,
@@ -69,11 +68,11 @@ public enum Lang {
 
     private static final Map<Lang, Message> messages = new HashMap<>();
 
-    public static void reload(final BWorldPlugin plugin) {
+    public static void reload(BWorldPlugin plugin) {
         Logging.info("Reloading messages...");
-        final long startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
-        final File langFile = new File(plugin.getDataFolder(), "lang.yml");
+        File langFile = new File(plugin.getDataFolder(), "lang.yml");
         if (!langFile.exists())
             plugin.saveResource("lang.yml", false);
 

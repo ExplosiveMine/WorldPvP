@@ -22,7 +22,7 @@ public final class BWorldManager {
 
     @Getter private final WorldFactory worldFactory;
 
-    public BWorldManager(final BWorldPlugin plugin) {
+    public BWorldManager(BWorldPlugin plugin) {
         this.plugin = plugin;
         this.spawn = new SpawnBWorld(plugin);
         this.bWorlds = new HashMap<>();
@@ -33,12 +33,12 @@ public final class BWorldManager {
         loadBWorld(generateNextUuid(), owner, worldType);
     }
 
-    public BWorld loadBWorld(final UUID uuid, BPlayer owner, WorldType worldType) {
+    public BWorld loadBWorld(UUID uuid, BPlayer owner, WorldType worldType) {
         Preconditions.checkNotNull(uuid, "uuid parameter cannot be null");
         Preconditions.checkNotNull(owner, "owner parameter cannot be null");
 
-        final BWorld bWorld = new BWorld(plugin, uuid);
-        bWorld.init(owner);
+        BWorld bWorld = new BWorld(plugin, uuid);
+        bWorld.setOwner(owner);
 
         bWorlds.put(uuid, bWorld);
 
@@ -83,8 +83,8 @@ public final class BWorldManager {
         return bWorlds.get(uuid);
     }
 
-    public BWorld getBWorld(final String worldPath) {
-        final String[] str = worldPath.split("worlds" + File.separator);
+    public BWorld getBWorld(String worldPath) {
+        String[] str = worldPath.split("worlds" + File.separator);
         if (str.length != 2)
             return null;
         return getBWorld(UUID.fromString(str[1]));
@@ -105,9 +105,9 @@ public final class BWorldManager {
 
     public void updateLastLocations() {
         plugin.getServer().getWorlds().forEach(world -> {
-            final BWorld bWorld = getBWorld(world.getName());
+            BWorld bWorld = getBWorld(world.getName());
             world.getPlayers().forEach(player -> {
-                final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
+                BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
                 if (!bPlayer.isInBWorld(bWorld, true))
                     return;
 

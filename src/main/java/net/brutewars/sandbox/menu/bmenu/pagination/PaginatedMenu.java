@@ -2,7 +2,7 @@ package net.brutewars.sandbox.menu.bmenu.pagination;
 
 import com.google.common.base.Preconditions;
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.menu.items.BaseMenuItem;
+import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.menu.bmenu.Menu;
 import net.brutewars.sandbox.player.BPlayer;
 
@@ -22,9 +22,8 @@ public abstract class PaginatedMenu extends Menu {
      *
      * @param iterator supplies the items
      * @param pageSize the size for which the items are added. This is not the inventory size
-     *
      */
-    public void populate(final Iterator<? extends BaseMenuItem> iterator, final int pageSize, final int next, final int previous) {
+    public void populate(Iterator<? extends MenuItem> iterator, int pageSize, int next, int previous) {
         this.pages = new ArrayList<>();
         MenuPage page = addPage(next, previous);
         int slot = 0;
@@ -44,24 +43,28 @@ public abstract class PaginatedMenu extends Menu {
         open(bPlayer, 0);
     }
 
-    public void open(final BPlayer bPlayer, final int page) {
+    public void open(BPlayer bPlayer, int page) {
+        if (bPlayer.isSleeping())
+            return;
+
         if (reloadOnOpen())
-            init();
+            placeItems();
+
         getPage(page).open(bPlayer);
     }
 
     @Override
-    public void setItem(int slot, BaseMenuItem menuItem) {
+    public void setItem(int slot, MenuItem menuItem) {
         setItem(slot, menuItem, 0);
     }
 
-    public void setItem(int slot, BaseMenuItem item, int page) {
+    public void setItem(int slot, MenuItem item, int page) {
         getPage(page).setItem(slot, item);
     }
 
-    public MenuPage addPage(final int previous, final int next) {
-        final int id = pages.size();
-        final MenuPage page = new MenuPage(plugin, identifier, id, title, size);
+    public MenuPage addPage(int previous, int next) {
+        int id = pages.size();
+        MenuPage page = new MenuPage(plugin, identifier, id, title, size);
         pages.add(page);
 
         page.setPreviousArrow(previous, (event, bPlayer) -> {

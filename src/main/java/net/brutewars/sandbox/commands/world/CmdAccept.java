@@ -51,13 +51,13 @@ public final class CmdAccept implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final BWorld invitingWorld = CommandArguments.getBWorld(plugin, sender, args[1]);
+        BWorld invitingWorld = CommandArguments.getBWorld(plugin, sender, args[1]);
 
         if (invitingWorld == null)
             return;
 
-        final BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
-        final BPlayer inviter = invitingWorld.getInviter(invitee);
+        BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer inviter = invitingWorld.getInviter(invitee);
 
         if (inviter == null) {
             Lang.NO_INVITE.send(invitee);

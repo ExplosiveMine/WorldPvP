@@ -16,16 +16,16 @@ public final class BonusChest {
 
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
-    public BonusChest(final BWorldPlugin plugin) {
+    public BonusChest(BWorldPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void spawn(final Location location) {
+    public void spawn(Location location) {
         location.getBlock().setType(Material.CHEST);
-        final Chest chest = (Chest) location.getBlock().getState();
-        final Inventory inv = chest.getInventory();
+        Chest chest = (Chest) location.getBlock().getState();
+        Inventory inv = chest.getInventory();
 
-        final Iterator<ItemStack> itr = Arrays.stream(plugin.getConfigSettings().bonusChestParser.getItems()).iterator();
+        Iterator<ItemStack> itr = Arrays.stream(plugin.getConfigSettings().bonusChestParser.getItems()).iterator();
         while (itr.hasNext()) {
             int slot;
             do {

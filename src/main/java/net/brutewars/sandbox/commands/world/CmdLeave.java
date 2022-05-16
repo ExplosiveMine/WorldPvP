@@ -51,13 +51,13 @@ public final class CmdLeave implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
 
-        final BPlayer bWorldOwner = CommandArguments.getBPlayer(plugin, sender, args[1]);
+        BPlayer bWorldOwner = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (bWorldOwner == null)
             return;
 
-        final BWorld leavingBWorld = bWorldOwner.getBWorld();
+        BWorld leavingBWorld = bWorldOwner.getBWorld();
         if (!bPlayer.isInBWorld(leavingBWorld, false)) {
             Lang.NOT_IN_WORLD.send(bPlayer, bWorldOwner.getName());
             return;

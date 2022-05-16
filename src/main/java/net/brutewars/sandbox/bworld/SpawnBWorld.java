@@ -23,7 +23,7 @@ public final class SpawnBWorld implements IBWorld {
     @Getter private final int resetting = -1;
     @Getter private final int unloading = -1;
 
-    public SpawnBWorld(final BWorldPlugin plugin) {
+    public SpawnBWorld(BWorldPlugin plugin) {
         this.plugin = plugin;
         this.uuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
         this.owner = new BPlayer(plugin, uuid, null);
@@ -136,7 +136,7 @@ public final class SpawnBWorld implements IBWorld {
 
     @Override
     public CompletableFuture<World> getWorld() {
-        final CompletableFuture<World> cf = new CompletableFuture<>();
+        CompletableFuture<World> cf = new CompletableFuture<>();
         cf.complete(plugin.getServer().getWorld(getWorldName()));
         return cf;
     }

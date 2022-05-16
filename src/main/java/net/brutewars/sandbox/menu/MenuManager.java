@@ -16,13 +16,12 @@ public final class MenuManager {
 
     private final Map<String, Menu> menus = new HashMap<>();
 
-    public MenuManager(final BWorldPlugin plugin) {
+    public MenuManager(BWorldPlugin plugin) {
         this.plugin = plugin;
-        init();
     }
 
-    public void init() {
-        new MenuListener(plugin);
+    public void loadMenus() {
+        plugin.getServer().getPluginManager().registerEvents(new MenuListener(plugin), plugin);
 
         registerMenu(MenuIdentifier.CREATE, new CreateMenu(plugin));
         registerMenu(MenuIdentifier.SETTINGS, new SettingsMenu(plugin));
@@ -34,18 +33,21 @@ public final class MenuManager {
         menus.put(menuIdentifier.getIdentifier(), menu);
     }
 
-    public void openParentMenu(final BPlayer bPlayer, final String identifier) {
-        final String parentMenuId = get(identifier).getParentMenuId();
+    public void openParentMenu(BPlayer bPlayer, String identifier) {
+        String parentMenuId = get(identifier).getParentMenuId();
 
         if (parentMenuId != null && !parentMenuId.isEmpty())
             get(parentMenuId).open(bPlayer);
     }
 
-    public void open(final MenuIdentifier menuIdentifier, final BPlayer bPlayer) {
+    public void open(MenuIdentifier menuIdentifier, BPlayer bPlayer) {
         get(menuIdentifier.getIdentifier()).open(bPlayer);
     }
 
-    private Menu get(final String identifier) {
+    private Menu get(String identifier) {
+        if (menus.isEmpty())
+            loadMenus();
+
         return menus.get(identifier);
     }
 

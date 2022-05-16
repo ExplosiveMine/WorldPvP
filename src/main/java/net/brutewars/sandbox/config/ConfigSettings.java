@@ -27,7 +27,7 @@ public final class ConfigSettings {
 
     public boolean debug;
 
-    public ConfigSettings(final BWorldPlugin plugin) {
+    public ConfigSettings(BWorldPlugin plugin) {
         this.plugin = plugin;
         init();
     }
@@ -67,7 +67,7 @@ public final class ConfigSettings {
         debug = config.getBoolean("debug");
     }
 
-    private YamlConfiguration getConfig(final String resourcePath) {
+    private YamlConfiguration getConfig(String resourcePath) {
         File file = new File(plugin.getDataFolder(), resourcePath);
         if (!file.exists())
             plugin.saveResource(resourcePath, false);

@@ -11,31 +11,23 @@ import org.bukkit.event.inventory.InventoryType;
 
 public final class CreateMenu extends Menu {
     public CreateMenu(BWorldPlugin plugin) {
-        super(plugin, MenuIdentifier.CREATE.getIdentifier(), InventoryType.HOPPER, Lang.CREATE_MENU.get(), null);
+        super(plugin, MenuIdentifier.CREATE.getIdentifier(), Lang.CREATE_MENU.get(), InventoryType.HOPPER,null);
     }
 
     @Override
-    public void init() {
-        setItem(0, ItemFactory.createSkull("&4&lFlat", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyOGVkNDU4MDI0MDBmNDY1YjVjNGUzYTZiN2E5ZjJiNmE1YjNkNDc4YjZmZDg0OTI1Y2M1ZDk4ODM5MWM3ZCJ9fX0=",
-                (event, bPlayer) -> {
-                    close(bPlayer, false);
-                    createWorld(bPlayer, WorldType.FLAT);
-                }, "&cYour world will be completely flat!"));
+    public void placeItems() {
+        setItem(1, ItemFactory.createSkull("&4&lFlat", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDUyOGVkNDU4MDI0MDBmNDY1YjVjNGUzYTZiN2E5ZjJiNmE1YjNkNDc4YjZmZDg0OTI1Y2M1ZDk4ODM5MWM3ZCJ9fX0=",
+                (event, bPlayer) -> createWorld(bPlayer, WorldType.FLAT), "&cYour world will be completely flat!"));
 
         setItem(2, ItemFactory.createSkull("&6&lRegular", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Y0MDk0MmYzNjRmNmNiY2VmZmNmMTE1MTc5NjQxMDI4NmE0OGIxYWViYTc3MjQzZTIxODAyNmMwOWNkMSJ9fX0===",
-                (event, bPlayer) -> {
-                    close(bPlayer, false);
-                    createWorld(bPlayer, WorldType.NORMAL);
-                }, "&eYour world will be as usual!"));
+                (event, bPlayer) -> createWorld(bPlayer, WorldType.NORMAL), "&eYour world will be as usual!"));
 
-        setItem(4, ItemFactory.createSkull("&5&lAmplified", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMxMWQ2Yzc5YjhhMWYxODkwMmQ3ODNjZGRhNGJkZmI5ZDQ3MzM3YjczNzkxMDI4YTEyNmE2ZTZjZjEwMWRlZiJ9fX0==",
-                (event, bPlayer) -> {
-                    close(bPlayer, false);
-                    createWorld(bPlayer, WorldType.AMPLIFIED);
-                }, "&dA world from the past with amplified terrain!"));
+        setItem(3, ItemFactory.createSkull("&5&lAmplified", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMxMWQ2Yzc5YjhhMWYxODkwMmQ3ODNjZGRhNGJkZmI5ZDQ3MzM3YjczNzkxMDI4YTEyNmE2ZTZjZjEwMWRlZiJ9fX0==",
+                (event, bPlayer) -> createWorld(bPlayer, WorldType.AMPLIFIED), "&dA world from the past with amplified terrain!"));
     }
 
-    private void createWorld(final BPlayer bPlayer, final WorldType type) {
+    private void createWorld(BPlayer bPlayer, WorldType type) {
+        close(bPlayer, false);
         plugin.getBWorldManager().createBWorld(bPlayer, type);
         Lang.WORLD_CREATING.send(bPlayer);
         plugin.getMenuManager().open(MenuIdentifier.CREATING_ANIMATION, bPlayer);

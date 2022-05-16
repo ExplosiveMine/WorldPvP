@@ -17,8 +17,8 @@ public final class SettingsMenu extends Menu {
     }
 
     @Override
-    public void init() {
-        final CyclingItem gamemode = new CyclingItem(ItemFactory.createItem(Material.BEDROCK, "&3&lGamemode",
+    public void placeItems() {
+        CyclingItem gamemode = new CyclingItem(ItemFactory.createItem(Material.BEDROCK, "&3&lGamemode",
                 (event, bPlayer) -> bPlayer.runIfOnline(player -> player.setGameMode(GameMode.SURVIVAL)),
                 "&8Default gamemode is &d&lCREATIVE", "&8Click to change the default gamemode", "&8to &c&lSURVIVAL"));
         gamemode.add(ItemFactory.createItem(Material.DIAMOND_SWORD, "&3&lGamemode",
@@ -28,7 +28,7 @@ public final class SettingsMenu extends Menu {
         setItem(10, gamemode);
 
 
-        final CyclingItem difficulty = new CyclingItem(ItemFactory.createItem(Material.SKULL_ITEM, 3, "&4&lDifficulty",
+        CyclingItem difficulty = new CyclingItem(ItemFactory.createItem(Material.SKULL_ITEM, 3, "&4&lDifficulty",
                 (event, bPlayer) -> bPlayer.getBWorld().setDifficulty(Difficulty.EASY, true),
                 "&8Current difficulty is &b&lPEACEFUL", "&8Click to change the difficulty", "&8to &a&lEASY"));
 
@@ -60,7 +60,7 @@ public final class SettingsMenu extends Menu {
         setItem(12, difficulty);
 
 
-        final CyclingItem cheats = new CyclingItem(ItemFactory.createItem(Material.COMMAND, "&6&lCheats",
+        CyclingItem cheats = new CyclingItem(ItemFactory.createItem(Material.COMMAND, "&6&lCheats",
                 (event, bPlayer) -> bPlayer.getBWorld().setCheating(true),
                 "&8Cheats are currently &a&lENABLED", "&8Click to set cheats to &c&lDISABLED"));
 

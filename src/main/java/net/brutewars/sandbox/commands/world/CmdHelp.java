@@ -90,7 +90,7 @@ public final class CmdHelp implements ICommand {
 
         Lang.HELP_HEADER.send(sender, page, lastPage);
 
-        for (final ICommand _subCommand : subCommands) {
+        for (ICommand _subCommand : subCommands) {
             if (_subCommand.displayCommand() && (_subCommand.getPermission().isEmpty() || sender.hasPermission(_subCommand.getPermission()))) {
                 String description = _subCommand.getDescription();
                 Lang.HELP_LINE.send(sender, getLabel(_subCommand) + " " +  _subCommand.getUsage(), description == null ? "" : description);
@@ -105,7 +105,7 @@ public final class CmdHelp implements ICommand {
 
     @Override
     public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final List<String> list = new ArrayList<>();
+        List<String> list = new ArrayList<>();
 
         if (args.length == 2) {
             List<ICommand> subCommands = getICommands(plugin).keySet().stream()
@@ -127,7 +127,7 @@ public final class CmdHelp implements ICommand {
         return iCommands.get(iCommand);
     }
 
-    private Map<ICommand, String> getICommands(final BWorldPlugin plugin) {
+    private Map<ICommand, String> getICommands(BWorldPlugin plugin) {
         if (iCommands.isEmpty()) {
             for (CommandHandler commandHandler : plugin.getCommands())
                 commandHandler.getSubCommands().forEach(iCommand -> iCommands.put(iCommand, commandHandler.getLabel()));

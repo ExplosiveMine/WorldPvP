@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class Executor {
-    public static void async(final BWorldPlugin plugin, Consumer<Void> consumer) {
+    public static void async(BWorldPlugin plugin, Consumer<Void> consumer) {
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -17,8 +17,8 @@ public final class Executor {
         }.runTaskAsynchronously(plugin);
     }
 
-    public static int sync(final BWorldPlugin plugin, Consumer<BukkitRunnable> consumer, final long...args) {
-        final BukkitRunnable runnable = new BukkitRunnable() {
+    public static int sync(BWorldPlugin plugin, Consumer<BukkitRunnable> consumer, long...args) {
+        BukkitRunnable runnable = new BukkitRunnable() {
             @Override
             public void run() {
                 consumer.accept(this);
@@ -45,17 +45,17 @@ public final class Executor {
         private ComplexTask() {
         }
 
-        public void sync(final BWorldPlugin plugin, Consumer<T> consumer, long...args) {
+        public void sync(BWorldPlugin plugin, Consumer<T> consumer, long...args) {
             Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, unused1 -> consumer.accept(t), args)));
         }
 
-        public ComplexTask<Void> async(final BWorldPlugin plugin, Consumer<T> consumer) {
+        public ComplexTask<Void> async(BWorldPlugin plugin, Consumer<T> consumer) {
             Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> consumer.accept(t)));
             return new ComplexTask<>();
         }
 
-        public <R> ComplexTask<R> async(final BWorldPlugin plugin, Supplier<R> supplier) {
-            final ComplexTask<R> task = new ComplexTask<>();
+        public <R> ComplexTask<R> async(BWorldPlugin plugin, Supplier<R> supplier) {
+            ComplexTask<R> task = new ComplexTask<>();
             Executor.async(plugin, unused -> task.completableFuture.complete(supplier.get()));
             return task;
         }

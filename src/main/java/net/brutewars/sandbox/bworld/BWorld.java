@@ -58,19 +58,19 @@ public final class BWorld implements IBWorld {
     private final Map<BPlayer, BPlayer> invitedPlayers = new HashMap<>();
 
 
-    public BWorld(final BWorldPlugin plugin, UUID uuid) {
+    public BWorld(BWorldPlugin plugin, UUID uuid) {
         this.plugin = plugin;
         this.uuid = uuid;
+        worldName = plugin.getDataFolder() + File.separator + "worlds" + File.separator + uuid.toString();
         owner = null;
         defaultLocation = null;
-        worldName = plugin.getDataFolder() + File.separator + "worlds" + File.separator + uuid.toString();
     }
 
-    public void init(final BPlayer owner) {
+    public void setOwner(BPlayer owner) {
         // add the owner to the BWorld
         this.owner = owner;
         owner.setBWorld(this);
-        lastLocations.put(owner, null);
+        lastLocations.put(owner, defaultLocation);
 
         updateWorldSize();
     }
@@ -82,7 +82,7 @@ public final class BWorld implements IBWorld {
 
     @Override
     public Set<BPlayer> getPlayers(boolean includeOwner) {
-        final Set<BPlayer> _players = new HashSet<>(players);
+        Set<BPlayer> _players = new HashSet<>(players);
         if (includeOwner)
             _players.add(owner);
         return _players;
@@ -191,25 +191,30 @@ public final class BWorld implements IBWorld {
     }
 
     @Override
-    public void teleportToWorld(final BPlayer bPlayer) {
-        final LastLocation lastLoc = lastLocations.put(bPlayer, defaultLocation);
-        if (lastLoc != null)
-            getWorld().whenComplete((world, throwable) -> bPlayer.teleport(lastLoc.toLoc(world)));
+    public void teleportToWorld(BPlayer bPlayer) {
+        LastLocation lastLoc = lastLocations.put(bPlayer, defaultLocation);
+        if (lastLoc == null) return;
+
+        getWorld().whenComplete((world, throwable) -> {
+            Location loc = lastLoc.toLoc(world);
+            world.loadChunk(loc.getChunk());
+            bPlayer.teleport(loc);
+        });
     }
 
     @Override
-    public void updateLastLocation(final BPlayer bPlayer, final Location location) {
+    public void updateLastLocation(BPlayer bPlayer, Location location) {
         lastLocations.put(bPlayer, new LastLocation(location));
     }
 
     @Override
-    public LastLocation getLastLocation(final BPlayer bPlayer) {
+    public LastLocation getLastLocation(BPlayer bPlayer) {
         lastLocations.computeIfAbsent(bPlayer, k -> defaultLocation);
         return lastLocations.get(bPlayer);
     }
 
     @Override
-    public void setDefaultLocation(final LastLocation defaultLocation) {
+    public void setDefaultLocation(LastLocation defaultLocation) {
         this.defaultLocation = defaultLocation;
         lastLocations.replaceAll((bPlayer, lastLocation) -> lastLocation == null ? defaultLocation : lastLocation);
     }

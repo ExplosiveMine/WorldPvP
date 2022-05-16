@@ -15,7 +15,6 @@ HELP_FOOTER: '&e&lBrutewars Sandbox'
 HELP_HEADER: "&e&lSandbox &7Commands List [{0}/{1}]:"
 HELP_LINE: '&e/{0} &f- &7{1}'
 HELP_NEXT_PAGE: '&e&lSandbox &7Use /sandbox help {0} for the next page.'
-HOW_TO_CREATE_WORLD: "&aTo create your first world, use the command /world create"
 INVALID_AMOUNT: "&cInvalid amount {0}."
 INVALID_PLAYER: "&cWe could not find the mentioned player!"
 INVALID_WORLD: "&cWe could not find the world!"

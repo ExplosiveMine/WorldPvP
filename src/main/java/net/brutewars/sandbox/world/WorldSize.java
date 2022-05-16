@@ -19,7 +19,7 @@ public enum WorldSize {
         this.permission = "world." + name().toLowerCase();
     }
 
-    public static void reload(final BWorldPlugin plugin) {
+    public static void reload(BWorldPlugin plugin) {
         for (WorldSize size : values())
             sizes.put(size, plugin.getConfig().getInt("world.size." + size.name().toLowerCase()));
     }

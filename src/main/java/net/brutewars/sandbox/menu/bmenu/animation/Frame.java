@@ -1,6 +1,6 @@
 package net.brutewars.sandbox.menu.bmenu.animation;
 
-import net.brutewars.sandbox.menu.items.BaseMenuItem;
+import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
@@ -14,7 +14,7 @@ public final class Frame {
         this.pattern = pattern;
     }
 
-    public void play(final BPlayer bPlayer, final Inventory inventory, final Map<String, BaseMenuItem> items) {
+    public void play(BPlayer bPlayer, Inventory inventory, Map<String, MenuItem> items) {
         bPlayer.playSound(Sound.NOTE_STICKS, 0.5f, 0.5f);
 
         for (int i = 0; i < pattern.length; i++)

@@ -5,6 +5,7 @@ import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandHandler;
 import net.brutewars.sandbox.commands.ICommand;
 import net.brutewars.sandbox.config.parser.Lang;
+import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public final class WorldCommandHandler extends CommandHandler {
     private final Map<UUID, Map<String, Long>> commandsCooldown = new HashMap<>();
 
-    public WorldCommandHandler(final BWorldPlugin plugin) {
+    public WorldCommandHandler(BWorldPlugin plugin) {
         super(plugin, "world", new WorldCommandMap());
 
         setCommand(new WorldCommand(label), "worlds", "sandbox");
@@ -33,7 +34,7 @@ public final class WorldCommandHandler extends CommandHandler {
         @Override
         public boolean execute(CommandSender sender, String label, String[] args) {
             if (args.length > 0) {
-                final ICommand command = commandMap.getCommand(args[0]);
+                ICommand command = commandMap.getCommand(args[0]);
                 if (command != null) {
                     if (!(sender instanceof Player) && !command.canBeExecutedByConsole()) {
                         Lang.CONSOLE_NO_PERMISSION.send(sender);
@@ -50,8 +51,8 @@ public final class WorldCommandHandler extends CommandHandler {
                         return false;
                     }
 
-                    final String commandLabel = command.getAliases().get(0);
-                    final long cooldown = plugin.getConfigSettings().commandCooldownParser.get(command);
+                    String commandLabel = command.getAliases().get(0);
+                    long cooldown = plugin.getConfigSettings().commandCooldownParser.get(command);
 
                     if (sender instanceof Player && cooldown != 0) {
                         UUID uuid = ((Player) sender).getUniqueId();
@@ -76,20 +77,20 @@ public final class WorldCommandHandler extends CommandHandler {
             }
 
             if (sender instanceof Player) {
-                final Player player = (Player) sender;
-                final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
+                Player player = (Player) sender;
+                BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
 
                 if (args.length == 0) {
                     // COMMAND: /world
-                    final BWorld bWorld = bPlayer.getBWorld();
+                    BWorld bWorld = bPlayer.getBWorld();
 
                     if (bWorld == null)
-                        Lang.HOW_TO_CREATE_WORLD.send(bPlayer);
+                        plugin.getMenuManager().open(MenuIdentifier.CREATE, bPlayer);
                     else
                         teleportPlayer(bWorld, bPlayer);
                 } else if (args.length == 1) {
                     // COMMAND: /world <player>
-                    final BPlayer owner = CommandArguments.getBPlayer(plugin, sender, args[0]);
+                    BPlayer owner = CommandArguments.getBPlayer(plugin, sender, args[0]);
                     if (owner == null)
                         return false;
 
@@ -110,7 +111,7 @@ public final class WorldCommandHandler extends CommandHandler {
             return false;
         }
 
-        private void teleportPlayer(final BWorld bWorld, final BPlayer bPlayer) {
+        private void teleportPlayer(BWorld bWorld, BPlayer bPlayer) {
             switch (bWorld.getLoadingPhase()) {
                 case LOADING:
                     Lang.WORLD_LOADING.send(bPlayer);

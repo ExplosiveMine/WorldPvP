@@ -14,9 +14,9 @@ public final class RecruitMenu extends PaginatedMenu {
     }
 
     @Override
-    public void init() {
+    public void placeItems() {
         populate(plugin.getServer().getOnlinePlayers().stream().map(player -> ItemFactory.createSkull(player.getDisplayName(), player, (event, bPlayer) -> {
-            final TextComponent textComponent = new TextComponent(Lang.CLICK_TO_INVITE.get(player.getDisplayName()));
+            TextComponent textComponent = new TextComponent(Lang.CLICK_TO_INVITE.get(player.getDisplayName()));
             textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/sandbox invite " + player.getName()));
             bPlayer.runIfOnline(_player -> _player.spigot().sendMessage(textComponent));
         })).iterator(), 45, 48, 50);

@@ -10,7 +10,7 @@ public enum MenuIdentifier {
 
     @Getter private final String identifier;
 
-    MenuIdentifier(final String identifier) {
+    MenuIdentifier(String identifier) {
         this.identifier = identifier;
     }
 

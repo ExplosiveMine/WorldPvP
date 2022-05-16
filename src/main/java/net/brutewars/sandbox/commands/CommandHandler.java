@@ -16,7 +16,7 @@ public abstract class CommandHandler {
     protected final BWorldPlugin plugin;
     protected final CommandMap commandMap;
 
-    public CommandHandler(final BWorldPlugin plugin, final String label, CommandMap commandMap) {
+    public CommandHandler(BWorldPlugin plugin, String label, CommandMap commandMap) {
         this.plugin = plugin;
         this.label = label;
         this.commandMap = commandMap;
@@ -42,14 +42,14 @@ public abstract class CommandHandler {
         @Override
         public List<String> tabComplete(CommandSender sender, String label, String[] args) {
             if (args.length > 0) {
-                final ICommand command = commandMap.getCommand(args[0]);
+                ICommand command = commandMap.getCommand(args[0]);
                 if (command != null) {
                     return command.getPermission() != null && !sender.hasPermission(command.getPermission()) ?
                             new ArrayList<>() : command.tabComplete(plugin, sender, args);
                 }
             }
 
-            final List<String> list = new ArrayList<>();
+            List<String> list = new ArrayList<>();
 
             for (ICommand subCommand : getSubCommands()) {
                 if (subCommand.getPermission() == null || sender.hasPermission(subCommand.getPermission())) {

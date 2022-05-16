@@ -10,7 +10,7 @@ import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.Sound;
 import org.bukkit.event.inventory.InventoryType;
 
-public class CreatingAnimationMenu extends AnimatedMenu {
+public final class CreatingAnimationMenu extends AnimatedMenu {
     private final AnimatedMenuParser parser;
 
     public CreatingAnimationMenu(BWorldPlugin plugin) {
@@ -19,7 +19,7 @@ public class CreatingAnimationMenu extends AnimatedMenu {
     }
 
     @Override
-    public void init() {
+    public void placeItems() {
         //noop
     }
 
@@ -31,6 +31,7 @@ public class CreatingAnimationMenu extends AnimatedMenu {
     @Override
     public void onAnimationComplete(BPlayer bPlayer) {
         bPlayer.playSound(Sound.ORB_PICKUP, 100, 0);
+        bPlayer.getBWorld().teleportToWorld(bPlayer);
     }
 
 }

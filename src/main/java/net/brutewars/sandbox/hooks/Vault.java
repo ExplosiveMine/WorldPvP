@@ -12,7 +12,7 @@ public final class Vault {
 
     private Permission perms;
 
-    public Vault(final BWorldPlugin plugin) {
+    public Vault(BWorldPlugin plugin) {
         this.plugin = plugin;
 
         if (!setupPermissions()) {
@@ -30,7 +30,7 @@ public final class Vault {
         return perms != null;
     }
 
-    public boolean hasPermission(final OfflinePlayer offlinePlayer, final String permission) {
+    public boolean hasPermission(OfflinePlayer offlinePlayer, String permission) {
         return perms.playerHas(null, offlinePlayer, permission);
     }
 

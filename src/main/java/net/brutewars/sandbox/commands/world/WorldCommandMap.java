@@ -9,7 +9,7 @@ public final class WorldCommandMap extends CommandMap {
     }
 
     @Override
-    public void loadDefaultCommands(final BWorldPlugin plugin) {
+    public void loadDefaultCommands(BWorldPlugin plugin) {
         registerCommand(new CmdCreate());
         registerCommand(new CmdKick());
         registerCommand(new CmdHelp());

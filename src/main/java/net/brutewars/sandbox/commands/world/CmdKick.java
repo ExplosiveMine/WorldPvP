@@ -52,15 +52,15 @@ public final class CmdKick implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
+        Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-        final BPlayer owner = pair.getValue();
-        final BWorld bWorld = pair.getKey();
+        BPlayer owner = pair.getValue();
+        BWorld bWorld = pair.getKey();
 
         if (bWorld == null)
             return;
 
-        final BPlayer toBeKicked = CommandArguments.getBPlayer(plugin, sender, args[1]);
+        BPlayer toBeKicked = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (toBeKicked == null)
             return;
 

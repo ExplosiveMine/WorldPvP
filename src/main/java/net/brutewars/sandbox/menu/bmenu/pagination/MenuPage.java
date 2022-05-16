@@ -18,16 +18,16 @@ public final class MenuPage extends Menu {
     }
 
     @Override
-    public void init() {
+    public void placeItems() {
         //noop
     }
 
-    public void setNextArrow(final int slot, final BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {
+    public void setNextArrow(int slot, BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {
         if (biConsumer == null) return;
         setItem(slot, ItemFactory.createMenuArrow("&6Next", biConsumer));
     }
 
-    public void setPreviousArrow(final int slot, final BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {
+    public void setPreviousArrow(int slot, BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {
         if (biConsumer == null) return;
         setItem(slot, ItemFactory.createMenuArrow("&6Previous", biConsumer));
     }

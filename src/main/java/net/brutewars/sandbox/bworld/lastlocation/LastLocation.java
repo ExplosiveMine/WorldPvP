@@ -7,7 +7,7 @@ public final class LastLocation {
     private final double x, y, z;
     private final float yaw, pitch;
 
-    public LastLocation(final Location location) {
+    public LastLocation(Location location) {
         x = location.getX();
         y = location.getY();
         z = location.getZ();
@@ -15,8 +15,8 @@ public final class LastLocation {
         pitch = location.getPitch();
     }
 
-    public LastLocation(final String string) {
-        final String[] location = string.split(":");
+    public LastLocation(String string) {
+        String[] location = string.split(":");
         x = Double.parseDouble(location[0]);
         y = Double.parseDouble(location[1]);
         z = Double.parseDouble(location[2]);
@@ -24,7 +24,7 @@ public final class LastLocation {
         pitch = Float.parseFloat(location[4]);
     }
 
-    public Location toLoc(final World world) {
+    public Location toLoc(World world) {
         return new Location(world, x, y, z, yaw, pitch);
     }
 

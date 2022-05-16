@@ -9,7 +9,7 @@ public final class BonusItem {
     private final ItemStack item;
     private final int min, max;
 
-    public BonusItem(final String mat, final int min, final int max, final int sharp) {
+    public BonusItem(String mat, int min, int max, int sharp) {
         this.item = new ItemStack(Material.valueOf(mat), 1, (short) sharp);
         this.min = min;
         this.max = max;

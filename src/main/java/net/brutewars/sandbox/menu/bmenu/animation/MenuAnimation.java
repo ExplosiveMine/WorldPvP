@@ -1,6 +1,6 @@
 package net.brutewars.sandbox.menu.bmenu.animation;
 
-import net.brutewars.sandbox.menu.items.BaseMenuItem;
+import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.inventory.Inventory;
 
@@ -10,11 +10,11 @@ import java.util.Map;
 
 public final class MenuAnimation implements Iterator<Frame> {
     private final List<Frame> frames;
-    private final Map<String, BaseMenuItem> items;
+    private final Map<String, MenuItem> items;
 
     private int frameCounter = -1;
 
-    public MenuAnimation(final List<Frame> frames, final Map<String, BaseMenuItem> items) {
+    public MenuAnimation(List<Frame> frames, Map<String, MenuItem> items) {
         this.frames = frames;
         this.items = items;
     }
@@ -30,7 +30,7 @@ public final class MenuAnimation implements Iterator<Frame> {
         return frames.get(frameCounter);
     }
 
-    public boolean playNext(final BPlayer bPlayer, final Inventory inventory) {
+    public boolean playNext(BPlayer bPlayer, Inventory inventory) {
         if (!hasNext()) return false;
 
         next().play(bPlayer, inventory, items);

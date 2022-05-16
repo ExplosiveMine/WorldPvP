@@ -11,10 +11,10 @@ public abstract class CommandMap {
 
     protected CommandMap() { }
 
-    public abstract void loadDefaultCommands(final BWorldPlugin plugin);
+    public abstract void loadDefaultCommands(BWorldPlugin plugin);
 
     public void registerCommand(ICommand iCommand) {
-        final String label = iCommand.getAliases().get(0).toLowerCase();
+        String label = iCommand.getAliases().get(0).toLowerCase();
 
         if (subCommands.containsKey(label)) {
             subCommands.remove(label);

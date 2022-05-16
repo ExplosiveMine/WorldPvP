@@ -11,7 +11,7 @@ public final class BPlayerManager {
 
     private final Map<UUID, BPlayer> players = new HashMap<>();
 
-    public BPlayerManager(final BWorldPlugin plugin) {
+    public BPlayerManager(BWorldPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -20,20 +20,20 @@ public final class BPlayerManager {
     }
 
     public BPlayer createBPlayer(UUID uuid, BWorld bWorld) {
-        final BPlayer bPlayer = new BPlayer(plugin, uuid, bWorld);
+        BPlayer bPlayer = new BPlayer(plugin, uuid, bWorld);
         players.put(uuid, bPlayer);
         return bPlayer;
     }
 
-    public BPlayer getBPlayer(final UUID uuid) {
+    public BPlayer getBPlayer(UUID uuid) {
         return containsBPlayer(uuid) ? players.get(uuid) : createBPlayer(uuid);
     }
 
-    public BPlayer getBPlayer(final Player player) {
+    public BPlayer getBPlayer(Player player) {
         return getBPlayer(player.getUniqueId());
     }
 
-    public boolean containsBPlayer(final UUID uuid) {
+    public boolean containsBPlayer(UUID uuid) {
         return players.containsKey(uuid);
     }
 

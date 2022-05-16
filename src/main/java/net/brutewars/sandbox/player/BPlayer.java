@@ -22,22 +22,22 @@ public final class BPlayer {
     @Getter @Setter private BWorld bWorld;
     @Getter private final Set<UUID> additionalWorlds;
 
-    public BPlayer(final BWorldPlugin plugin, final UUID uuid, BWorld bWorld) {
+    public BPlayer(BWorldPlugin plugin, UUID uuid, BWorld bWorld) {
         this.plugin = plugin;
         this.bWorld = bWorld;
         this.uuid = uuid;
         this.additionalWorlds = new HashSet<>();
     }
 
-    public void addBWorld(final BWorld bWorld) {
+    public void addBWorld(BWorld bWorld) {
         additionalWorlds.add(bWorld.getUuid());
     }
 
-    public void removeBWorld(final BWorld bWorld) {
+    public void removeBWorld(BWorld bWorld) {
         additionalWorlds.remove(bWorld.getUuid());
     }
 
-    public boolean isInBWorld(final BWorld bWorld, boolean includeOwnBWorld) {
+    public boolean isInBWorld(BWorld bWorld, boolean includeOwnBWorld) {
         if (bWorld == null) return false;
         return additionalWorlds.contains(bWorld.getUuid()) || (includeOwnBWorld && bWorld.equals(this.bWorld));
     }
@@ -68,11 +68,11 @@ public final class BPlayer {
         return toOfflinePlayer().getName();
     }
 
-    public boolean hasPermission(final String permission) {
+    public boolean hasPermission(String permission) {
         return plugin.getVault().hasPermission(toOfflinePlayer(), permission);
     }
 
-    public void teleport(final Location location) {
+    public void teleport(Location location) {
         if (!isOnline())
             return;
 
@@ -83,7 +83,7 @@ public final class BPlayer {
         if (!isOnline())
             return;
 
-        final Player player = toPlayer();
+        Player player = toPlayer();
         player.playSound(player.getLocation(), sound, v, v1);
     }
 
@@ -91,7 +91,7 @@ public final class BPlayer {
         return isOnline() && toPlayer().isSleeping();
     }
 
-    public void openInventory(final Inventory inventory) {
+    public void openInventory(Inventory inventory) {
         if (!isOnline()) return;
 
         toPlayer().openInventory(inventory);

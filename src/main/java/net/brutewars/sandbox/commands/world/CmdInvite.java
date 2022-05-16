@@ -53,15 +53,15 @@ public final class CmdInvite implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
+        Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-        final BPlayer inviter = pair.getValue();
-        final BWorld bWorld = pair.getKey();
+        BPlayer inviter = pair.getValue();
+        BWorld bWorld = pair.getKey();
 
         if (bWorld == null)
             return;
 
-        final BPlayer invitee = CommandArguments.getBPlayer(plugin, sender, args[1]);
+        BPlayer invitee = CommandArguments.getBPlayer(plugin, sender, args[1]);
         if (invitee == null) return;
 
         if (bWorld.getPlayers(true).contains(invitee)) {
@@ -74,7 +74,7 @@ public final class CmdInvite implements ICommand {
             return;
         }
 
-        final String worldName = bWorld.getAlias();
+        String worldName = bWorld.getAlias();
         JSONMessage.create(Lang.PLAYER_INVITED.get(worldName))
                 .then(StringUtils.colour(" &aACC. "))
                 .tooltip(Lang.ACCEPT_INVITE_TOOLTIP.get())

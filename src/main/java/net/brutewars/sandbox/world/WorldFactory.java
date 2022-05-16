@@ -18,18 +18,18 @@ import java.util.concurrent.CompletableFuture;
 public final class WorldFactory {
     private final BWorldPlugin plugin;
 
-    public WorldFactory(final BWorldPlugin plugin) {
+    public WorldFactory(BWorldPlugin plugin) {
         this.plugin = plugin;
     }
 
-    public void create(final BWorld bWorld, WorldType worldType) {
+    public void create(BWorld bWorld, WorldType worldType) {
         bWorld.setLoadingPhase(LoadingPhase.CREATING);
 
         Executor.create().async(plugin, () -> {
             Logging.debug(plugin, "Creating world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
             return importWorld(bWorld, worldType);
         }).sync(plugin, (asyncWorld) -> {
-            final Location spawnLoc = asyncWorld.getSpawnLocation();
+            Location spawnLoc = asyncWorld.getSpawnLocation();
             int xCord = spawnLoc.getBlockX();
             int zCord = spawnLoc.getBlockZ();
 
@@ -37,7 +37,7 @@ public final class WorldFactory {
             asyncWorld.getWorldBorder().setCenter(spawnLoc);
             bWorld.setDefaultLocation(new LastLocation(asyncWorld.getSpawnLocation()));
 
-            final World world = asyncWorld.getBukkitWorld();
+            World world = asyncWorld.getBukkitWorld();
             zCord += 2;
 
             // spawn the bonus chest
@@ -53,7 +53,7 @@ public final class WorldFactory {
 
     }
 
-    public void load(final BWorld bWorld) {
+    public void load(BWorld bWorld) {
         bWorld.setLoadingPhase(LoadingPhase.LOADING);
         Executor.async(plugin, (unused) -> {
             Logging.debug(plugin, "Loading world for " + bWorld.getAlias() + ": " + bWorld.getWorldName());
@@ -63,15 +63,15 @@ public final class WorldFactory {
     }
 
     @SneakyThrows
-    public void delete(final BWorld bWorld) {
+    public void delete(BWorld bWorld) {
         Logging.debug(plugin, "Deleting world for " + bWorld.getAlias());
-        final File file = new File(bWorld.getWorldName());
+        File file = new File(bWorld.getWorldName());
         plugin.getServer().unloadWorld(getWorld(bWorld).getNow(null), false);
         bWorld.setLoadingPhase(LoadingPhase.UNLOADED);
         FileUtils.deleteDirectory(file);
     }
 
-    public void unload(final BWorld bWorld, boolean save) {
+    public void unload(BWorld bWorld, boolean save) {
         Executor.create().async(plugin, unused -> {
             if (!save) return;
             Logging.debug(plugin, "Saving world for " + bWorld.getAlias());
@@ -84,12 +84,12 @@ public final class WorldFactory {
     }
 
     @SneakyThrows
-    public void setWorldBorder(final BWorld bWorld, final WorldSize worldSize) {
+    public void setWorldBorder(BWorld bWorld, WorldSize worldSize) {
         getWorld(bWorld).getNow(null).getWorldBorder().setSize(worldSize.getValue());
     }
 
-    public CompletableFuture<World> getWorld(final BWorld bWorld) {
-        final CompletableFuture<World> cf = new CompletableFuture<>();
+    public CompletableFuture<World> getWorld(BWorld bWorld) {
+        CompletableFuture<World> cf = new CompletableFuture<>();
 
         if (!bWorld.getLoadingPhase().equals(LoadingPhase.UNLOADED)) {
             cf.complete(plugin.getServer().getWorld(bWorld.getWorldName()));
@@ -103,11 +103,11 @@ public final class WorldFactory {
         return cf;
     }
 
-    private AsyncWorld importWorld(final BWorld bWorld, final WorldType worldType) {
-        final WorldCreator wc = new WorldCreator(bWorld.getWorldName());
+    private AsyncWorld importWorld(BWorld bWorld, WorldType worldType) {
+        WorldCreator wc = new WorldCreator(bWorld.getWorldName());
         if (worldType != null)
             wc.type(worldType);
-        final AsyncWorld world = AsyncWorld.create(wc);
+        AsyncWorld world = AsyncWorld.create(wc);
         world.setKeepSpawnInMemory(false);
         world.getWorldBorder().setSize(bWorld.getWorldSize().getValue());
 

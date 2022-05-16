@@ -6,6 +6,8 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 public final class StringUtils {
+    private StringUtils() { }
+
     public static String colour(String s) {
         return ChatColor.translateAlternateColorCodes('&', s);
     }

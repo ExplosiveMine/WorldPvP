@@ -13,7 +13,7 @@ public final class CommandTabCompletes {
     private CommandTabCompletes() { }
 
     public static List<String> getWorldInvitations(BWorldPlugin plugin, CommandSender sender) {
-        final BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
         return plugin.getBWorldManager().getBWorlds().stream()
                 .filter(bWorld -> bWorld.isInvited(invitee))
                 .map(BWorld::getAlias)

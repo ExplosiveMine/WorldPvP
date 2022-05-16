@@ -56,11 +56,11 @@ public interface IBWorld {
 
     void updateLastLocation(BPlayer bPlayer, Location location);
 
-    LastLocation getLastLocation(final BPlayer bPlayer);
+    LastLocation getLastLocation(BPlayer bPlayer);
 
     LastLocation getDefaultLocation();
 
-    void setDefaultLocation(final LastLocation defaultLocation);
+    void setDefaultLocation(LastLocation defaultLocation);
 
     CompletableFuture<World> getWorld();
 

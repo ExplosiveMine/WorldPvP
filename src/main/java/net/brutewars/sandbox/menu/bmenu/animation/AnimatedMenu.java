@@ -15,8 +15,8 @@ public abstract class AnimatedMenu extends Menu {
     private final Map<UUID, MenuAnimation> playerAnimations;
     private final long animationSpeed;
 
-    public AnimatedMenu(BWorldPlugin plugin, String identifier, InventoryType type, String title, String parentMenuId, final long animationSpeed) {
-        super(plugin, identifier, type, title, parentMenuId);
+    public AnimatedMenu(BWorldPlugin plugin, String identifier, InventoryType type, String title, String parentMenuId, long animationSpeed) {
+        super(plugin, identifier, title, type, parentMenuId);
 
         this.playerAnimations = new HashMap<>();
         this.animationSpeed = animationSpeed;
@@ -28,20 +28,23 @@ public abstract class AnimatedMenu extends Menu {
 
     @Override
     public void open(BPlayer bPlayer) {
-        if (bPlayer.isSleeping()) return;
+        if (bPlayer.isSleeping())
+            return;
 
-        final Inventory inventory = build(bPlayer, title);
+        Inventory inventory = build(bPlayer);
         bPlayer.openInventory(inventory);
 
-        final UUID uuid = bPlayer.getUuid();
+        UUID uuid = bPlayer.getUuid();
 
-        if (playerAnimations.containsKey(uuid)) return;
+        if (playerAnimations.containsKey(uuid))
+            return;
         playerAnimations.put(uuid, getAnimation());
 
-        final MenuAnimation animation = playerAnimations.get(uuid);
+        MenuAnimation animation = playerAnimations.get(uuid);
 
         Executor.sync(plugin, runnable -> {
-            if (animation.playNext(bPlayer, inventory)) return;
+            if (animation.playNext(bPlayer, inventory))
+                return;
 
             playerAnimations.remove(uuid);
             close(bPlayer, false);

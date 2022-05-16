@@ -7,7 +7,7 @@ import java.util.function.Function;
 public final class MenuAction<T extends InventoryEvent, R> {
     private final Function<T, R> action;
 
-    public MenuAction(final Function<T, R> action) {
+    public MenuAction(Function<T, R> action) {
         this.action = action;
     }
 

@@ -52,6 +52,8 @@ public final class CmdReset implements IPermissibleCommand {
 
     @Override
     public void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
+        if (bWorld == null)
+            return;
         Lang.CONFIRM_RESET.send(bPlayer);
         bWorld.initialiseReset();
     }

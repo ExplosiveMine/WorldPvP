@@ -19,12 +19,12 @@ public final class BonusChestParser implements SectionParser {
     }
 
     @Override
-    public void parse(final ConfigurationSection bonusChestSection) {
+    public void parse(ConfigurationSection bonusChestSection) {
         min = bonusChestSection.getInt("minimum items", 5);
         max = bonusChestSection.getInt("maximum items", 5);
 
         bonusChestSection.getConfigurationSection("items").getKeys(false).forEach(s -> {
-            final ConfigurationSection item = bonusChestSection.getConfigurationSection("items." + s);
+            ConfigurationSection item = bonusChestSection.getConfigurationSection("items." + s);
             bonusItems.add(new BonusItem(
                     item.getString( "material", "AIR"),
                     item.getInt("min", 1),
@@ -34,9 +34,9 @@ public final class BonusChestParser implements SectionParser {
     }
 
     public ItemStack[] getItems() {
-        final int num = random.nextInt(min, max + 1);
+        int num = random.nextInt(min, max + 1);
 
-        final ItemStack[] items = new ItemStack[num];
+        ItemStack[] items = new ItemStack[num];
         for (int i = 1; i <= num; i++)
             items[i-1] = bonusItems.get(random.nextInt(0, bonusItems.size())).toItem();
 

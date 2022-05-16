@@ -1,9 +1,10 @@
 package net.brutewars.sandbox.menu;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.menu.items.BaseMenuItem;
+import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.menu.bmenu.Menu;
 import net.brutewars.sandbox.player.BPlayer;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -12,37 +13,38 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 public final class MenuListener implements Listener {
     private final BWorldPlugin plugin;
 
-    public MenuListener(final BWorldPlugin plugin) {
+    public MenuListener(BWorldPlugin plugin) {
         this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
     @EventHandler
-    public void onClick(final InventoryClickEvent event) {
+    public void onClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof Menu)) return;
-
-        // click was outside the inventory
-        if (event.getClickedInventory() == null) return;
 
         // prevent player from moving items therefore by default the event is cancelled when passed to menu items
         event.setCancelled(true);
 
-        final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(event.getWhoClicked().getUniqueId());
+        // empty slot was clicked. even if this slot is mapped to an item, the item wasn't added on purpose, and therefore we return
+        // this is done after cancelling the event to prevent any items on the cursors from being put in the empty slot.
+        if (event.getCurrentItem() == null || Material.AIR.equals(event.getCurrentItem().getType()))
+            return;
 
-        final Menu menu = (Menu) event.getInventory().getHolder();
+        BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(event.getWhoClicked().getUniqueId());
 
-        final BaseMenuItem item = menu.getItemAt(event.getSlot());
+        Menu menu = (Menu) event.getInventory().getHolder();
+
+        MenuItem item = menu.getItemAt(event.getSlot());
         if (item != null && item.getAction() != null)
             item.getAction().accept(event, bPlayer);
     }
 
     @EventHandler
-    public void onClose(final InventoryCloseEvent event) {
+    public void onClose(InventoryCloseEvent event) {
         if (!(event.getInventory().getHolder() instanceof Menu)) return;
 
-        final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(event.getPlayer().getUniqueId());
+        BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(event.getPlayer().getUniqueId());
 
-        final Menu menu = (Menu) event.getInventory().getHolder();
+        Menu menu = (Menu) event.getInventory().getHolder();
         menu.onClose(event, bPlayer);
     }
 

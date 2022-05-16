@@ -20,20 +20,17 @@ import java.lang.reflect.Field;
 import java.util.function.BiFunction;
 
 public abstract class AnvilInputMenu extends Menu {
-    // what to do when the player clicks on the result slot
+    // what to do when the player clicks on the result slot which contains an item
     @Getter @Setter protected BiFunction<BPlayer, String, String> completeAction;
 
     public AnvilInputMenu(BWorldPlugin plugin, String identifier, String title, String parentMenuId) {
-        super(plugin, identifier, InventoryType.ANVIL, title, parentMenuId);
+        super(plugin, identifier, title, InventoryType.ANVIL, parentMenuId);
 
         setItem(2, ItemFactory.createItem(Material.AIR, "", (event, bPlayer) -> {
-            final AnvilInputMenu anvilMenu = (AnvilInputMenu) event.getInventory().getHolder();
-            final ItemStack outputSlot = event.getCurrentItem();
+            AnvilInputMenu anvilMenu = (AnvilInputMenu) event.getInventory().getHolder();
+            ItemStack outputSlot = event.getCurrentItem();
 
-            // if there is no item/air
-            if (outputSlot == null || !outputSlot.hasItemMeta()) return;
-
-            final String response = anvilMenu.getCompleteAction().apply(bPlayer, outputSlot.hasItemMeta() ? outputSlot.getItemMeta().getDisplayName() : "");
+            String response = anvilMenu.getCompleteAction().apply(bPlayer, outputSlot.hasItemMeta() ? outputSlot.getItemMeta().getDisplayName() : "");
 
             // successful
             if (response.isEmpty()) {
@@ -42,7 +39,7 @@ public abstract class AnvilInputMenu extends Menu {
             }
 
             // unsuccessful, a message is displayed in the text slot
-            final ItemMeta meta = outputSlot.getItemMeta();
+            ItemMeta meta = outputSlot.getItemMeta();
             meta.setDisplayName(response);
             outputSlot.setItemMeta(meta);
             event.getInventory().setItem(0, outputSlot);
@@ -52,36 +49,28 @@ public abstract class AnvilInputMenu extends Menu {
 
     @Override
     public void open(BPlayer bPlayer) {
-        final EntityPlayer player = bPlayer.getIfOnline(p -> ((CraftPlayer) p).getHandle());
+        EntityPlayer player = bPlayer.getIfOnline(p -> ((CraftPlayer) p).getHandle());
 
         if (player == null)
             return;
 
         AnvilContainer anvil = new AnvilContainer(player, this, title);
-        final int containerId = player.nextContainerCounter();
+        int containerId = player.nextContainerCounter();
 
         player.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerId, "minecraft:anvil", new ChatMessage(Blocks.ANVIL.a() + ".name")));
         anvil.windowId = containerId;
         anvil.addSlotListener(player);
         player.activeContainer = anvil;
 
-        build(bPlayer, title);
+        build(bPlayer);
     }
 
     @Override
-    protected Inventory build(BPlayer bPlayer, String title) {
-        final Inventory inventory = bPlayer.getIfOnline(player -> player.getOpenInventory().getTopInventory());
-
-        if (inventory == null)
-            return null;
-
-        defaultItems.forEach((key, value) -> inventory.setItem(key, value.getItem(bPlayer)));
-
-        return inventory;
+    protected Inventory createInv(BPlayer bPlayer) {
+        return bPlayer.getIfOnline(player -> player.getOpenInventory().getTopInventory());
     }
 
     public static final class AnvilContainer extends ContainerAnvil {
-
         public AnvilContainer(EntityHuman entityhuman, InventoryHolder inventoryHolder, String title) {
             super(entityhuman.inventory, entityhuman.getWorld(), new BlockPosition(0, 0 ,0), entityhuman);
 

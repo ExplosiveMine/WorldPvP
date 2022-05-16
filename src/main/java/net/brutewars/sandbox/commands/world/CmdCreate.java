@@ -50,7 +50,7 @@ public final class CmdCreate implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        final BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
 
         if (bPlayer.getBWorld() != null) {
             Lang.ALREADY_HAVE_WORLD.send(sender);
