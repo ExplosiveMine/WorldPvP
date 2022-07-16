@@ -1,20 +1,22 @@
 package net.brutewars.sandbox.config.parser;
 
+import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.ICommand;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public final class CommandCooldownParser implements SectionParser {
+public final class CommandCooldownParser extends SectionParser {
     private final Map<String, Long> commandCooldown = new HashMap<>();
 
-    public CommandCooldownParser(ConfigurationSection configurationSection) {
-        parse(configurationSection);
+    public CommandCooldownParser(BWorldPlugin plugin) {
+        super(plugin, "commands.cooldown");
     }
 
     @Override
-    public void parse(ConfigurationSection cmdCooldownSection) {
+    public void parse() {
+        ConfigurationSection cmdCooldownSection = plugin.getConfig().getConfigurationSection(path);
         cmdCooldownSection.getKeys(false).forEach(s -> this.commandCooldown.put(s, cmdCooldownSection.getLong(s) * 1000));
     }
 

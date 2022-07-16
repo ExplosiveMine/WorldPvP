@@ -1,34 +1,33 @@
-bonus chest:
-  minimum items: 5
-  maximum items: 6
-  items:
-    1:
-      material: WOOD_PICKAXE
-    2:
-      material: WOOD_AXE
-    3:
-      material: STONE_PICKAXE
-    4:
-      material: STONE_AXE
-    5:
-      material: APPLE
-      min: 5
-      max: 5
-    6:
-      material: SAPLING
-      min: 2
-      max: 2
-    7:
-      material: GRASS
-    8:
-      material: STICK
-      min: 4
-      max: 4
-    9:
-      material: BUCKET
-    10:
-      material: GLASS_BOTTLE
-    11:
-      material: LEATHER_HELMET
-    12:
-      material: EMPTY_MAP
+minimum items: 5
+maximum items: 6
+items:
+  1:
+    material: WOODEN_PICKAXE
+  2:
+    material: WOODEN_AXE
+  3:
+    material: STONE_PICKAXE
+  4:
+    material: STONE_AXE
+  5:
+    material: APPLE
+    min: 5
+    max: 5
+  6:
+    material: OAK_SAPLING
+    min: 2
+    max: 2
+  7:
+    material: GRASS_BLOCK
+  8:
+    material: STICK
+    min: 4
+    max: 4
+  9:
+    material: BUCKET
+  10:
+    material: GLASS_BOTTLE
+  11:
+    material: LEATHER_HELMET
+  12:
+    material: MAP

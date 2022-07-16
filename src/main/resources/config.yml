@@ -13,7 +13,9 @@ world:
     nomad: 2500
     brute: 5000
 
-spawnWorld: "Sandbox"
+spawnWorld:
+  name: "Sandbox"
+  location: "-10.5:28.0:909.5:-90.0:1.0"
 
 invites:
   expire time: 300
