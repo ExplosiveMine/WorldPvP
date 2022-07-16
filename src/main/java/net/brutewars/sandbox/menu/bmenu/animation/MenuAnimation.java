@@ -26,14 +26,13 @@ public final class MenuAnimation implements Iterator<Frame> {
 
     @Override
     public Frame next() {
-        frameCounter = frameCounter + 1;
-        return frames.get(frameCounter);
+        return frames.get(++frameCounter);
     }
 
     public boolean playNext(BPlayer bPlayer, Inventory inventory) {
         if (!hasNext()) return false;
 
-        next().play(bPlayer, inventory, items);
+        next().play(bPlayer, inventory, items::get);
         return true;
     }
 

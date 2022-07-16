@@ -4,14 +4,25 @@ import lombok.Getter;
 
 public enum MenuIdentifier {
     CREATE("create"),
-    RECRUIT("recruit"),
     SETTINGS("settings"),
+    RECRUIT("recruit", SETTINGS),
     CREATING_ANIMATION("creating_animation");
 
-    @Getter private final String identifier;
+    private final String identifier;
+    @Getter private final MenuIdentifier parentIdentifier;
 
     MenuIdentifier(String identifier) {
         this.identifier = identifier;
+        this.parentIdentifier = null;
+    }
+
+    MenuIdentifier(String identifier, MenuIdentifier parentIdentifier) {
+        this.identifier = identifier;
+        this.parentIdentifier = parentIdentifier;
+    }
+
+    public String getIdentifier() {
+        return (parentIdentifier == null) ? identifier : parentIdentifier.getIdentifier() + "." + identifier;
     }
 
 }

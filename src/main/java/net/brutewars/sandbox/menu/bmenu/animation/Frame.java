@@ -5,7 +5,7 @@ import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.Sound;
 import org.bukkit.inventory.Inventory;
 
-import java.util.Map;
+import java.util.function.Function;
 
 public final class Frame {
     private final String[] pattern;
@@ -14,11 +14,11 @@ public final class Frame {
         this.pattern = pattern;
     }
 
-    public void play(BPlayer bPlayer, Inventory inventory, Map<String, MenuItem> items) {
-        bPlayer.playSound(Sound.NOTE_STICKS, 0.5f, 0.5f);
+    public void play(BPlayer bPlayer, Inventory inventory, Function<String, MenuItem> itemProvider) {
+        bPlayer.playSound(Sound.BLOCK_NOTE_BLOCK_BASS, 0.5f, 0.5f);
 
         for (int i = 0; i < pattern.length; i++)
-            inventory.setItem(i, items.get(pattern[i]).getItem(bPlayer));
+            inventory.setItem(i, itemProvider.apply(pattern[i]).getItem(bPlayer));
 
         bPlayer.openInventory(inventory);
     }

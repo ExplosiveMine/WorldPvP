@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.menu.bmenu.animation;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.menu.bmenu.Menu;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.thread.Executor;
@@ -15,8 +16,8 @@ public abstract class AnimatedMenu extends Menu {
     private final Map<UUID, MenuAnimation> playerAnimations;
     private final long animationSpeed;
 
-    public AnimatedMenu(BWorldPlugin plugin, String identifier, InventoryType type, String title, String parentMenuId, long animationSpeed) {
-        super(plugin, identifier, title, type, parentMenuId);
+    public AnimatedMenu(BWorldPlugin plugin, MenuIdentifier identifier, String title, InventoryType type, long animationSpeed) {
+        super(plugin, identifier, title, type);
 
         this.playerAnimations = new HashMap<>();
         this.animationSpeed = animationSpeed;
@@ -35,7 +36,6 @@ public abstract class AnimatedMenu extends Menu {
         bPlayer.openInventory(inventory);
 
         UUID uuid = bPlayer.getUuid();
-
         if (playerAnimations.containsKey(uuid))
             return;
         playerAnimations.put(uuid, getAnimation());

@@ -14,7 +14,7 @@ import java.util.Map;
 public final class MenuManager {
     private final BWorldPlugin plugin;
 
-    private final Map<String, Menu> menus = new HashMap<>();
+    private final Map<MenuIdentifier, Menu> menus = new HashMap<>();
 
     public MenuManager(BWorldPlugin plugin) {
         this.plugin = plugin;
@@ -30,21 +30,21 @@ public final class MenuManager {
     }
 
     private void registerMenu(MenuIdentifier menuIdentifier, Menu menu) {
-        menus.put(menuIdentifier.getIdentifier(), menu);
+        menus.put(menuIdentifier, menu);
     }
 
-    public void openParentMenu(BPlayer bPlayer, String identifier) {
-        String parentMenuId = get(identifier).getParentMenuId();
+    public void openParentMenu(BPlayer bPlayer, MenuIdentifier identifier) {
+        MenuIdentifier parentMenuId = identifier.getParentIdentifier();
 
-        if (parentMenuId != null && !parentMenuId.isEmpty())
+        if (parentMenuId != null)
             get(parentMenuId).open(bPlayer);
     }
 
     public void open(MenuIdentifier menuIdentifier, BPlayer bPlayer) {
-        get(menuIdentifier.getIdentifier()).open(bPlayer);
+        get(menuIdentifier).open(bPlayer);
     }
 
-    private Menu get(String identifier) {
+    public Menu get(MenuIdentifier identifier) {
         if (menus.isEmpty())
             loadMenus();
 

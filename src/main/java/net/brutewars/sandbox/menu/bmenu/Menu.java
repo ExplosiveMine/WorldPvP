@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.menu.MenuAction;
+import net.brutewars.sandbox.menu.MenuIdentifier;
+import net.brutewars.sandbox.menu.items.builders.BaseItemBuilder;
 import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
@@ -13,6 +15,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,8 +24,7 @@ import java.util.function.Function;
 public abstract class Menu implements InventoryHolder {
     protected final BWorldPlugin plugin;
 
-    @Getter protected final String identifier;
-    @Getter protected final String parentMenuId;
+    @Getter protected final MenuIdentifier identifier;
 
     protected final String title;
     protected Function<BPlayer, String> titleProvider;
@@ -34,28 +36,28 @@ public abstract class Menu implements InventoryHolder {
     @Setter protected MenuAction<InventoryCloseEvent, Boolean> closeAction;
 
     protected final Map<Integer, MenuItem> defaultItems = new HashMap<>();
+    protected boolean setup = false;
 
-    public Menu(BWorldPlugin plugin, String identifier, String title, InventoryType type, String parentMenuId) {
-        this(plugin, identifier, title, type, type.getDefaultSize(), parentMenuId);
+    public Menu(BWorldPlugin plugin, MenuIdentifier identifier, String title, InventoryType type) {
+        this(plugin, identifier, title, type, type.getDefaultSize());
     }
 
-    public Menu(BWorldPlugin plugin, String identifier, String title, int size, String parentMenuId) {
-        this(plugin, identifier, title, InventoryType.CHEST, size, parentMenuId);
+    public Menu(BWorldPlugin plugin, MenuIdentifier identifier, String title, int size) {
+        this(plugin, identifier, title, InventoryType.CHEST, size);
     }
 
-    private Menu(BWorldPlugin plugin, String identifier, String title, InventoryType type, int size, String parentMenuId) {
+    private Menu(BWorldPlugin plugin, MenuIdentifier identifier, String title, InventoryType type, int size) {
         this.plugin = plugin;
         this.identifier = identifier;
         this.type = type;
         this.size = size;
-        this.title = StringUtils.colour(title);
-        this.parentMenuId = parentMenuId;
+        this.title = title;
     }
 
     /**
      * @return An inventory with default items and default title.
      */
-    @Override
+    @Override @NotNull
     public Inventory getInventory() {
         return build(null);
     }
@@ -70,12 +72,13 @@ public abstract class Menu implements InventoryHolder {
     }
 
     protected Inventory build(BPlayer bPlayer) {
-        if (defaultItems.isEmpty())
+        if (!setup) {
             placeItems();
+            setup = true;
+        }
 
         Inventory inventory = createInv(bPlayer);
         defaultItems.forEach((key, value) -> inventory.setItem(key, value.getItem(bPlayer)));
-
         return inventory;
     }
 
@@ -105,8 +108,8 @@ public abstract class Menu implements InventoryHolder {
             bPlayer.openInventory(event.getInventory());
     }
 
-    public void setItem(int slot, MenuItem menuItem) {
-        defaultItems.put(slot, menuItem);
+    public void setItem(int slot, BaseItemBuilder<?> builder) {
+        defaultItems.put(slot, builder.toMenuItem());
     }
 
     public MenuItem getItemAt(int slot) {
