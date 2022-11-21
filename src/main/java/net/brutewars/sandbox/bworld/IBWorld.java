@@ -1,6 +1,6 @@
 package net.brutewars.sandbox.bworld;
 
-import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
+import net.brutewars.sandbox.bworld.lastlocation.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.world.LoadingPhase;
 import net.brutewars.sandbox.world.WorldSize;
@@ -10,6 +10,7 @@ import org.bukkit.World;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public interface IBWorld {
     UUID getUuid();
@@ -28,7 +29,7 @@ public interface IBWorld {
 
     Set<BPlayer> getPlayers(boolean includeOwner);
 
-    void addPlayer(BPlayer bPlayer, LastLocation lastLocation);
+    void addPlayer(BPlayer bPlayer, BLocation bLocation);
 
     void removePlayer(BPlayer bPlayer);
 
@@ -54,14 +55,16 @@ public interface IBWorld {
 
     void teleportToWorld(BPlayer bPlayer);
 
+    void teleportToWorld(BPlayer bPlayer, Consumer<Boolean> biConsumer);
+
     void updateLastLocation(BPlayer bPlayer, Location location);
 
-    LastLocation getLastLocation(BPlayer bPlayer);
+    BLocation getLastLocation(BPlayer bPlayer);
 
-    LastLocation getDefaultLocation();
+    BLocation getDefaultLocation();
 
-    void setDefaultLocation(LastLocation defaultLocation);
+    void setDefaultLocation(BLocation defaultLocation);
 
-    CompletableFuture<World> getWorld();
+    World getWorld();
 
 }

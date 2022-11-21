@@ -15,22 +15,22 @@ public final class BPlayerManager {
         this.plugin = plugin;
     }
 
-    public BPlayer createBPlayer(UUID uuid) {
-        return createBPlayer(uuid, null);
+    public BPlayer create(UUID uuid) {
+        return create(uuid, null);
     }
 
-    public BPlayer createBPlayer(UUID uuid, BWorld bWorld) {
+    public BPlayer create(UUID uuid, BWorld bWorld) {
         BPlayer bPlayer = new BPlayer(plugin, uuid, bWorld);
         players.put(uuid, bPlayer);
         return bPlayer;
     }
 
-    public BPlayer getBPlayer(UUID uuid) {
-        return containsBPlayer(uuid) ? players.get(uuid) : createBPlayer(uuid);
+    public BPlayer get(UUID uuid) {
+        return containsBPlayer(uuid) ? players.get(uuid) : create(uuid);
     }
 
-    public BPlayer getBPlayer(Player player) {
-        return getBPlayer(player.getUniqueId());
+    public BPlayer get(Player player) {
+        return get(player.getUniqueId());
     }
 
     public boolean containsBPlayer(UUID uuid) {

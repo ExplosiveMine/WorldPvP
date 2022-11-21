@@ -32,7 +32,7 @@ public interface IPermissibleCommand extends ICommand {
         BPlayer bPlayer = null;
 
         if (!canBeExecutedByConsole() || sender instanceof Player) {
-            bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
+            bPlayer = plugin.getBPlayerManager().get((Player) sender);
             bWorld = bPlayer.getBWorld();
         }
 

@@ -25,6 +25,9 @@ public enum Lang {
     CREATE_MENU,
     CREATING_ANIMATION,
     DENY_INVITE_TOOLTIP,
+    DEPENDENCY_FOUND,
+    DISCORD_LINK,
+    EAST,
     HELP_FOOTER,
     HELP_HEADER,
     HELP_LINE,
@@ -38,6 +41,7 @@ public enum Lang {
     MEMBER_LEAVE,
     MEMBER_LIST,
     NEW_MEMBER,
+    NORTH,
     NOT_IN_WORLD,
     NO_INVITE,
     ON_RESET_VISITOR,
@@ -54,15 +58,32 @@ public enum Lang {
     RELOADED_CONFIG,
     RESET_SUCCESS,
     SETTINGS_MENU,
+    SOCIAL_MEDIA_HOLOGRAM,
+    SOCIAL_MENU,
+    SOUTH,
     SUCCESSFULLY_INVITED_PLAYER,
     SUCCESSFULLY_JOINED_WORLD,
     SUCCESSFUL_HOOK,
+    WEBSITE_LINK,
+    WEST,
     WORLD_BORDER_UPDATE,
     WORLD_CREATED,
     WORLD_CREATING,
     WORLD_INFO,
     WORLD_LOADED,
-    WORLD_LOADING;
+    WORLD_LOADING,
+    CUSTOM {
+        @Override
+        public void send(CommandSender sender, Object... objects) {
+            if (objects.length > 0)
+                sender.sendMessage(StringUtils.replaceArgs("{0}", objects));
+        }
+
+        @Override
+        public String get(Object... objects) {
+            return StringUtils.replaceArgs("{0}", objects);
+        }
+    };
 
     private static YamlConfiguration langCfg;
 

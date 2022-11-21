@@ -1,12 +1,11 @@
 package net.brutewars.sandbox.menu;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.menu.bmenu.Menu;
-import net.brutewars.sandbox.menu.bworld.CreateMenu;
-import net.brutewars.sandbox.menu.bworld.CreatingAnimationMenu;
-import net.brutewars.sandbox.menu.bworld.RecruitMenu;
-import net.brutewars.sandbox.menu.bworld.SettingsMenu;
+import net.brutewars.sandbox.menu.impl.*;
+import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.player.BPlayer;
+import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,28 +22,32 @@ public final class MenuManager {
     public void loadMenus() {
         plugin.getServer().getPluginManager().registerEvents(new MenuListener(plugin), plugin);
 
-        registerMenu(MenuIdentifier.CREATE, new CreateMenu(plugin));
-        registerMenu(MenuIdentifier.SETTINGS, new SettingsMenu(plugin));
-        registerMenu(MenuIdentifier.RECRUIT, new RecruitMenu(plugin));
-        registerMenu(MenuIdentifier.CREATING_ANIMATION, new CreatingAnimationMenu(plugin));
+        registerMenu(new CreateMenu(plugin));
+        registerMenu(new SettingsMenu(plugin));
+        registerMenu(new RecruitMenu(plugin));
+        registerMenu(new CreatingAnimationMenu(plugin));
+        registerMenu(new SocialMenu(plugin));
     }
 
-    private void registerMenu(MenuIdentifier menuIdentifier, Menu menu) {
-        menus.put(menuIdentifier, menu);
+    private void registerMenu(Menu menu) {
+        menus.put(menu.getIdentifier(), menu);
     }
 
     public void openParentMenu(BPlayer bPlayer, MenuIdentifier identifier) {
-        MenuIdentifier parentMenuId = identifier.getParentIdentifier();
-
-        if (parentMenuId != null)
-            get(parentMenuId).open(bPlayer);
+        MenuIdentifier parentIdentifier = identifier.getParentIdentifier();
+        if (parentIdentifier != null)
+            open(parentIdentifier, bPlayer);
     }
 
     public void open(MenuIdentifier menuIdentifier, BPlayer bPlayer) {
-        get(menuIdentifier).open(bPlayer);
+        getMenu(menuIdentifier).open(bPlayer);
     }
 
-    public Menu get(MenuIdentifier identifier) {
+    public void open(MenuIdentifier menuIdentifier, Player player) {
+        open(menuIdentifier, plugin.getBPlayerManager().get(player));
+    }
+
+    public @NotNull Menu getMenu(MenuIdentifier identifier) {
         if (menus.isEmpty())
             loadMenus();
 

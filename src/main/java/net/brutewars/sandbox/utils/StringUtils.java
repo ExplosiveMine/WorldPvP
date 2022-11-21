@@ -13,7 +13,8 @@ public final class StringUtils {
     }
 
     public static String replaceArgs(String msg, Object... objects) {
-        if (msg == null) return null;
+        if (msg == null || objects == null)
+            return "";
 
         for (int i = 0; i < objects.length; i++) {
             String objectString = objects[i].toString();

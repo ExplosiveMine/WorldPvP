@@ -56,7 +56,7 @@ public final class CmdAccept implements ICommand {
         if (invitingWorld == null)
             return;
 
-        BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer invitee = plugin.getBPlayerManager().get((Player) sender);
         BPlayer inviter = invitingWorld.getInviter(invitee);
 
         if (inviter == null) {

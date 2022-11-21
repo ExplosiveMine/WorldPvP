@@ -8,11 +8,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public final class Executor {
-    public static void async(BWorldPlugin plugin, Consumer<Void> consumer) {
+    public static void async(BWorldPlugin plugin, Consumer<BukkitRunnable> consumer) {
         new BukkitRunnable() {
             @Override
             public void run() {
-                consumer.accept(null);
+                consumer.accept(this);
             }
         }.runTaskAsynchronously(plugin);
     }
@@ -26,7 +26,7 @@ public final class Executor {
         };
 
         if (args.length == 0)
-            runnable.runTaskLater(plugin, 0L);
+            runnable.runTaskLater(plugin, 1L);
         else if (args.length == 1)
             runnable.runTaskLater(plugin, args[0] * 20L);
         else if (args.length == 2)
@@ -36,7 +36,9 @@ public final class Executor {
     }
 
     public static ComplexTask<Void> create() {
-        return new ComplexTask<>();
+        ComplexTask<Void> task = new ComplexTask<>();
+        task.completableFuture.complete(null);
+        return task;
     }
 
     public static final class ComplexTask<T> {
@@ -45,20 +47,30 @@ public final class Executor {
         private ComplexTask() {
         }
 
-        public void sync(BWorldPlugin plugin, Consumer<T> consumer, long...args) {
-            Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, unused1 -> consumer.accept(t), args)));
+        public ComplexTask<Void> sync(BWorldPlugin plugin, Consumer<T> consumer, long...args) {
+            ComplexTask<Void> task = new ComplexTask<>();
+            completableFuture.whenComplete((t, throwable) -> Executor.sync(plugin, runnable -> {
+                consumer.accept(t);
+                task.completableFuture.complete(null);
+            }, args));
+            return task;
         }
 
         public ComplexTask<Void> async(BWorldPlugin plugin, Consumer<T> consumer) {
-            Executor.async(plugin, unused -> completableFuture.whenComplete((t, throwable) -> consumer.accept(t)));
-            return new ComplexTask<>();
+            ComplexTask<Void> task = new ComplexTask<>();
+            completableFuture.whenComplete((t, throwable) -> Executor.async(plugin, unused -> {
+                consumer.accept(t);
+                task.completableFuture.complete(null);
+            }));
+            return task;
         }
 
         public <R> ComplexTask<R> async(BWorldPlugin plugin, Supplier<R> supplier) {
             ComplexTask<R> task = new ComplexTask<>();
-            Executor.async(plugin, unused -> task.completableFuture.complete(supplier.get()));
+            completableFuture.whenComplete((t, throwable) -> Executor.async(plugin, unused -> task.completableFuture.complete(supplier.get())));
             return task;
         }
+
     }
 
 }

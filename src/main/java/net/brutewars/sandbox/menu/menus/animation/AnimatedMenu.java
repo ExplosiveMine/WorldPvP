@@ -1,8 +1,8 @@
-package net.brutewars.sandbox.menu.bmenu.animation;
+package net.brutewars.sandbox.menu.menus.animation;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.menu.MenuIdentifier;
-import net.brutewars.sandbox.menu.bmenu.Menu;
+import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.thread.Executor;
 import org.bukkit.event.inventory.InventoryType;

@@ -1,9 +1,9 @@
-package net.brutewars.sandbox.menu.bworld;
+package net.brutewars.sandbox.menu.impl;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.menu.MenuIdentifier;
-import net.brutewars.sandbox.menu.bmenu.Menu;
+import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.menu.items.builders.SkullBuilder;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.WorldType;
@@ -24,21 +24,21 @@ public final class CreateMenu extends Menu {
 
         setItem(2, new SkullBuilder()
                 .setDisplayName("&6&lRegular")
-                .setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Y0MDk0MmYzNjRmNmNiY2VmZmNmMTE1MTc5NjQxMDI4NmE0OGIxYWViYTc3MjQzZTIxODAyNmMwOWNkMSJ9fX0===")
+                .setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2Y0MDk0MmYzNjRmNmNiY2VmZmNmMTE1MTc5NjQxMDI4NmE0OGIxYWViYTc3MjQzZTIxODAyNmMwOWNkMSJ9fX0=")
                 .setLore("&eYour world will be as usual!")
                 .setAction((event, bPlayer) -> createWorld(bPlayer, WorldType.NORMAL)));
 
         setItem(3, new SkullBuilder()
                 .setDisplayName("&5&lAmplified")
-                .setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMxMWQ2Yzc5YjhhMWYxODkwMmQ3ODNjZGRhNGJkZmI5ZDQ3MzM3YjczNzkxMDI4YTEyNmE2ZTZjZjEwMWRlZiJ9fX0==")
+                .setTexture("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOWMxMWQ2Yzc5YjhhMWYxODkwMmQ3ODNjZGRhNGJkZmI5ZDQ3MzM3YjczNzkxMDI4YTEyNmE2ZTZjZjEwMWRlZiJ9fX0=")
                 .setLore("&dA world from the past with amplified terrain!")
                 .setAction((event, bPlayer) -> createWorld(bPlayer, WorldType.AMPLIFIED)));
     }
 
     private void createWorld(BPlayer bPlayer, WorldType type) {
         close(bPlayer, false);
-        plugin.getBWorldManager().createBWorld(bPlayer, type);
         Lang.WORLD_CREATING.send(bPlayer);
+        plugin.getBWorldManager().createBWorld(bPlayer, type);
         plugin.getMenuManager().open(MenuIdentifier.CREATING_ANIMATION, bPlayer);
     }
 

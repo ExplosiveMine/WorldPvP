@@ -2,7 +2,7 @@ package net.brutewars.sandbox.config.parser;
 
 import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.menu.bmenu.animation.Frame;
+import net.brutewars.sandbox.menu.menus.animation.Frame;
 import net.brutewars.sandbox.menu.items.builders.ItemBuilder;
 import net.brutewars.sandbox.menu.items.MenuItem;
 import org.bukkit.Material;

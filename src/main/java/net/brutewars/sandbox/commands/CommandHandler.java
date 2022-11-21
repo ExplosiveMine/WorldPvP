@@ -4,7 +4,6 @@ import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +23,7 @@ public abstract class CommandHandler {
 
     public void setCommand(PluginCommand command, String...aliases) {
         command.setAliases(Arrays.asList(aliases));
-        ((CraftServer) plugin.getServer()).getCommandMap().register("world", command);
+        plugin.getServer().getCommandMap().register("world", command);
     }
 
     public List<ICommand> getSubCommands() {

@@ -1,23 +1,23 @@
 package net.brutewars.sandbox.world.bonus;
 
+import net.brutewars.sandbox.menu.items.builders.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class BonusItem {
-    private final ItemStack item;
+    private final ItemBuilder itemBuilder;
     private final int min, max;
 
-    public BonusItem(String mat, int min, int max, int sharp) {
-        this.item = new ItemStack(Material.valueOf(mat), 1, (short) sharp);
+    public BonusItem(String mat, int min, int max) {
+        itemBuilder = new ItemBuilder(Material.valueOf(mat));
         this.min = min;
         this.max = max;
     }
 
     public ItemStack toItem() {
-        item.setAmount(ThreadLocalRandom.current().nextInt(min, max + 1));
-        return item;
+        return itemBuilder.setAmount(ThreadLocalRandom.current().nextInt(min, max + 1)).toItem();
     }
 
 }

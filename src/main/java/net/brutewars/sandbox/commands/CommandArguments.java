@@ -16,11 +16,11 @@ public final class CommandArguments {
      * needs to have a BWorld. Since a message saying that the sender does not have a BWorld
      * is sent if they don't.
      *
-     * Use {@link CommandArguments#getBPlayer(BWorldPlugin, CommandSender)} to simply get the player
+     * Use {@link CommandArguments#getBPlayer(BWorldPlugin, CommandSender)} to simply getMenu the player
      * and the BWorld afterwards.
      */
     public static Pair<BWorld, BPlayer> getPair(BWorldPlugin plugin, CommandSender sender) {
-        BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer bPlayer = plugin.getBPlayerManager().get((Player) sender);
         BWorld bWorld = bPlayer.getBWorld();
 
         if (bWorld == null)
@@ -30,7 +30,7 @@ public final class CommandArguments {
     }
 
     public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender) {
-        return plugin.getBPlayerManager().getBPlayer((Player) sender);
+        return plugin.getBPlayerManager().get((Player) sender);
     }
 
     public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender, String playerName) {
@@ -40,7 +40,7 @@ public final class CommandArguments {
             return null;
         }
 
-        return plugin.getBPlayerManager().getBPlayer(player);
+        return plugin.getBPlayerManager().get(player);
     }
 
     public static BWorld getBWorld(BWorldPlugin plugin, CommandSender sender, String worldOwnerName) {
@@ -51,7 +51,7 @@ public final class CommandArguments {
             return null;
         }
 
-        BWorld bWorld = plugin.getBPlayerManager().getBPlayer(player).getBWorld();
+        BWorld bWorld = plugin.getBPlayerManager().get(player).getBWorld();
         if (bWorld == null)
             Lang.INVALID_WORLD.send(sender);
 

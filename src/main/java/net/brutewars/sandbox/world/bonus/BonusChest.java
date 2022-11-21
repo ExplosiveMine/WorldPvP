@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.world.bonus;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.utils.Logging;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Chest;
@@ -23,9 +24,9 @@ public final class BonusChest {
     public void spawn(Location location) {
         location.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) location.getBlock().getState();
-        Inventory inv = chest.getInventory();
+        Inventory inv = chest.getSnapshotInventory();
 
-        Iterator<ItemStack> itr = Arrays.stream(plugin.getConfigSettings().bonusChestParser.getItems()).iterator();
+        Iterator<ItemStack> itr = Arrays.stream(plugin.getConfigSettings().getBonusChestParser().getItems()).iterator();
         while (itr.hasNext()) {
             int slot;
             do {

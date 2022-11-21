@@ -2,7 +2,7 @@ package net.brutewars.sandbox.bworld;
 
 import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
+import net.brutewars.sandbox.bworld.lastlocation.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.world.LoadingPhase;
 import net.brutewars.sandbox.world.WorldSize;
@@ -12,7 +12,7 @@ import org.bukkit.World;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 
 public final class SpawnBWorld implements IBWorld {
     private final BWorldPlugin plugin;
@@ -22,6 +22,8 @@ public final class SpawnBWorld implements IBWorld {
 
     @Getter private final int resetting = -1;
     @Getter private final int unloading = -1;
+
+    private BLocation defaultLocation;
 
     public SpawnBWorld(BWorldPlugin plugin) {
         this.plugin = plugin;
@@ -50,7 +52,7 @@ public final class SpawnBWorld implements IBWorld {
     }
 
     @Override
-    public void addPlayer(BPlayer bPlayer, LastLocation lastLocation) {
+    public void addPlayer(BPlayer bPlayer, BLocation bLocation) {
         //noop
     }
 
@@ -101,7 +103,7 @@ public final class SpawnBWorld implements IBWorld {
 
     @Override
     public String getWorldName() {
-        return plugin.getConfigSettings().worldName;
+        return plugin.getConfigSettings().getConfigParser().getWorldName();
     }
 
     @Override
@@ -109,9 +111,19 @@ public final class SpawnBWorld implements IBWorld {
         return uuid.toString();
     }
 
+    /**
+     * @implNote  teleportation is done synchronously so that players are
+     * immediately teleported when a world is being unloaded. If done async,
+     * the world would not be unloaded properly
+     */
     @Override
     public void teleportToWorld(BPlayer bPlayer) {
-        getWorld().whenComplete((world, throwable) -> bPlayer.teleport(world.getSpawnLocation()));
+        teleportToWorld(bPlayer, null);
+    }
+
+    @Override
+    public void teleportToWorld(BPlayer bPlayer, Consumer<Boolean> biConsumer) {
+        bPlayer.runIfOnline(player -> player.teleport(getDefaultLocation().toLoc(getWorld())));
     }
 
     @Override
@@ -120,25 +132,32 @@ public final class SpawnBWorld implements IBWorld {
     }
 
     @Override
-    public LastLocation getDefaultLocation() {
-        return new LastLocation(getWorld().getNow(null).getSpawnLocation());
+    public BLocation getDefaultLocation() {
+        if (defaultLocation == null) {
+            String loc = plugin.getConfigSettings().getConfigParser().getSpawnLocation();
+            if (loc.isEmpty())
+                defaultLocation = new BLocation(getWorld().getSpawnLocation());
+            else
+                defaultLocation = new BLocation(plugin.getConfigSettings().getConfigParser().getSpawnLocation());
+        }
+
+        return defaultLocation;
     }
 
     @Override
-    public LastLocation getLastLocation(BPlayer bPlayer) {
+    public BLocation getLastLocation(BPlayer bPlayer) {
         return getDefaultLocation();
     }
 
     @Override
-    public void setDefaultLocation(LastLocation defaultLocation) {
+    public void setDefaultLocation(BLocation defaultLocation) {
         //noop
     }
 
     @Override
-    public CompletableFuture<World> getWorld() {
-        CompletableFuture<World> cf = new CompletableFuture<>();
-        cf.complete(plugin.getServer().getWorld(getWorldName()));
-        return cf;
+    public World getWorld() {
+        World world = plugin.getServer().getWorld(getWorldName());
+        return world == null ? plugin.getServer().getWorlds().get(0) : world;
     }
 
 }

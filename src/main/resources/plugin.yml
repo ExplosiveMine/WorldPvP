@@ -1,5 +1,6 @@
 main: net.brutewars.sandbox.BWorldPlugin
 author: explosivemines
 version: '${project.version}'
+api-version: 1.19
 name: Sandbox
-depend: [Vault, FastAsyncWorldEdit, WorldEdit]
+depend: [Vault]

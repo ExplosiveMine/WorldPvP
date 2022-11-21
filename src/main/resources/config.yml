@@ -1,23 +1,33 @@
-# TIME UNIT IS IN SECONDS
+# TIME UNIT IS IN SECONDS UNLESS SPECIFIED
 
+# You can add more commands to this list
 commands:
   cooldown:
-    reset: 300
+    reset: 120
 
 world:
-  resetting time: 30
-  unloading time: 600
-  size:
+  sizes:
     default: 1000
     tyrant: 1500
     nomad: 2500
     brute: 5000
+  # the number of worlds to pre-generate for each type of world
+  roster-size: 1
 
-spawnWorld:
-  name: "Sandbox"
-  location: "-10.5:28.0:909.5:-90.0:1.0"
+spawn-world:
+  name: "world"
+  # Location format: "x:y:z:yaw:pitch" Example: "50:100:50:90.0:0.0"
+  location: ""
 
-invites:
-  expire time: 300
+times:
+  # amount of time given to a player to accept an invitation before it expires
+  invite-expire: 300
+  # the time before the world is unloaded when there are no players
+  world-unload: 600
+  # the time before a world reset is cancelled if the player does not confirm
+  reset-request: 30
+  # The interval in days at which new worlds are generated to be used when players create worlds
+  # NOTE THAT WORLDS ARE RENEWED ONLY WHEN THE SERVER RESTARTS
+  renew-worlds: 7
 
-debug: true
+debug: false

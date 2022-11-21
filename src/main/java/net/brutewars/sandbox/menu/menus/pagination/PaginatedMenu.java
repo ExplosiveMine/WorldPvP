@@ -1,18 +1,20 @@
-package net.brutewars.sandbox.menu.bmenu.pagination;
+package net.brutewars.sandbox.menu.menus.pagination;
 
 import com.google.common.base.Preconditions;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.menu.items.builders.BaseItemBuilder;
-import net.brutewars.sandbox.menu.bmenu.Menu;
+import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.player.BPlayer;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public abstract class PaginatedMenu extends Menu {
     private List<MenuPage> pages;
+
+    private final Map<BPlayer, Integer> playerMap = new HashMap<>();
 
     public PaginatedMenu(BWorldPlugin plugin, MenuIdentifier identifier, String title, int size) {
         super(plugin, identifier, title, size);
@@ -55,6 +57,7 @@ public abstract class PaginatedMenu extends Menu {
         }
 
         getPage(page).open(bPlayer);
+        playerMap.put(bPlayer, page);
     }
 
     @Override
@@ -93,6 +96,18 @@ public abstract class PaginatedMenu extends Menu {
         return pages.get(page);
     }
 
-    public abstract boolean reloadOnOpen();
+    public boolean reloadOnOpen() {
+        return false;
+    }
 
+    @Override
+    public void clickItemAt(InventoryClickEvent event) {
+        getPage(playerMap.get(plugin.getBPlayerManager().get(event.getWhoClicked().getUniqueId()))).clickItemAt(event);
+    }
+
+    @Override
+    public void onClose(InventoryCloseEvent event, BPlayer bPlayer) {
+        playerMap.remove(bPlayer);
+        super.onClose(event, bPlayer);
+    }
 }

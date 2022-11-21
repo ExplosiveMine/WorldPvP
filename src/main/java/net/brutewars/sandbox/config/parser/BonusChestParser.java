@@ -29,8 +29,7 @@ public final class BonusChestParser extends SectionParser {
             bonusItems.add(new BonusItem(
                     item.getString( "material", "AIR"),
                     item.getInt("min", 1),
-                    item.getInt("max", 1),
-                    item.getInt("sharp", 0)));
+                    item.getInt("max", 1)));
         });
     }
 

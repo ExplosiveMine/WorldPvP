@@ -1,9 +1,9 @@
-package net.brutewars.sandbox.menu.bmenu.pagination;
+package net.brutewars.sandbox.menu.menus.pagination;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.menu.items.builders.ItemBuilder;
-import net.brutewars.sandbox.menu.bmenu.Menu;
+import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -24,7 +24,7 @@ public final class MenuPage extends Menu {
 
     @Override
     public void onClose(InventoryCloseEvent event, BPlayer bPlayer) {
-        plugin.getMenuManager().get(identifier).onClose(event, bPlayer);
+        plugin.getMenuManager().getMenu(identifier).onClose(event, bPlayer);
     }
 
     public void setNextArrow(int slot, BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {

@@ -52,7 +52,7 @@ public final class WorldCommandHandler extends CommandHandler {
                     }
 
                     String commandLabel = command.getAliases().get(0);
-                    long cooldown = plugin.getConfigSettings().commandCooldownParser.get(command);
+                    long cooldown = plugin.getConfigSettings().getCommandCooldownParser().get(command);
 
                     if (sender instanceof Player && cooldown != 0) {
                         UUID uuid = ((Player) sender).getUniqueId();
@@ -66,7 +66,8 @@ public final class WorldCommandHandler extends CommandHandler {
                             return false;
                         }
 
-                        if (!commandsCooldown.containsKey(uuid)) commandsCooldown.put(uuid, new HashMap<>());
+                        if (!commandsCooldown.containsKey(uuid))
+                            commandsCooldown.put(uuid, new HashMap<>());
 
                         commandsCooldown.get(uuid).put(commandLabel, timeNow + cooldown);
                     }
@@ -78,7 +79,7 @@ public final class WorldCommandHandler extends CommandHandler {
 
             if (sender instanceof Player) {
                 Player player = (Player) sender;
-                BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
+                BPlayer bPlayer = plugin.getBPlayerManager().get(player);
 
                 if (args.length == 0) {
                     // COMMAND: /world
@@ -121,8 +122,7 @@ public final class WorldCommandHandler extends CommandHandler {
                     return;
                 case UNLOADED:
                     Lang.WORLD_LOADING.send(bWorld);
-                    plugin.getBWorldManager().getWorldFactory().load(bWorld);
-                    return;
+                    plugin.getBWorldManager().getWorldManager().load(bWorld);
                 case UNLOADING:
                     bWorld.cancelUnloading();
             }

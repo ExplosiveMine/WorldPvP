@@ -13,7 +13,7 @@ public final class CommandTabCompletes {
     private CommandTabCompletes() { }
 
     public static List<String> getWorldInvitations(BWorldPlugin plugin, CommandSender sender) {
-        BPlayer invitee = plugin.getBPlayerManager().getBPlayer((Player) sender);
+        BPlayer invitee = plugin.getBPlayerManager().get((Player) sender);
         return plugin.getBWorldManager().getBWorlds().stream()
                 .filter(bWorld -> bWorld.isInvited(invitee))
                 .map(BWorld::getAlias)
@@ -21,7 +21,7 @@ public final class CommandTabCompletes {
     }
 
     public static List<String> getWorldsToLeave(BWorldPlugin plugin, CommandSender sender) {
-        return plugin.getBPlayerManager().getBPlayer((Player) sender).getAdditionalWorlds().stream()
+        return plugin.getBPlayerManager().get((Player) sender).getAdditionalWorlds().stream()
                 .map(uuid -> plugin.getBWorldManager().getBWorld(uuid).getAlias())
                 .collect(Collectors.toList());
     }
@@ -33,7 +33,7 @@ public final class CommandTabCompletes {
     }
 
     public static List<String> getPlayersToKick(BWorldPlugin plugin, CommandSender sender) {
-        return plugin.getBPlayerManager().getBPlayer((Player) sender).getBWorld().getPlayers(false).stream()
+        return plugin.getBPlayerManager().get((Player) sender).getBWorld().getPlayers(false).stream()
                 .map(BPlayer::getName)
                 .collect(Collectors.toList());
     }

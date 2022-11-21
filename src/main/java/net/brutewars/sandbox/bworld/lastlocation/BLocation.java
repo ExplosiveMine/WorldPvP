@@ -3,11 +3,11 @@ package net.brutewars.sandbox.bworld.lastlocation;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public final class LastLocation {
+public final class BLocation {
     private final double x, y, z;
     private final float yaw, pitch;
 
-    public LastLocation(Location location) {
+    public BLocation(Location location) {
         x = location.getX();
         y = location.getY();
         z = location.getZ();
@@ -15,13 +15,19 @@ public final class LastLocation {
         pitch = location.getPitch();
     }
 
-    public LastLocation(String string) {
+    public BLocation(String string) {
         String[] location = string.split(":");
         x = Double.parseDouble(location[0]);
         y = Double.parseDouble(location[1]);
         z = Double.parseDouble(location[2]);
-        yaw = Float.parseFloat(location[3]);
-        pitch = Float.parseFloat(location[4]);
+        if (location.length == 5) {
+            yaw = Float.parseFloat(location[3]);
+            pitch = Float.parseFloat(location[4]);
+        } else {
+            yaw = 0;
+            pitch = 0;
+        }
+
     }
 
     public Location toLoc(World world) {

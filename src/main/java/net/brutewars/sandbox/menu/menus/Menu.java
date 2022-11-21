@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.menu.bmenu;
+package net.brutewars.sandbox.menu.menus;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +11,7 @@ import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -34,6 +35,8 @@ public abstract class Menu implements InventoryHolder {
     @Getter protected final int size;
 
     @Setter protected MenuAction<InventoryCloseEvent, Boolean> closeAction;
+
+    @Getter @Setter protected BaseItemBuilder<?> filler;
 
     protected final Map<Integer, MenuItem> defaultItems = new HashMap<>();
     protected boolean setup = false;
@@ -78,8 +81,18 @@ public abstract class Menu implements InventoryHolder {
         }
 
         Inventory inventory = createInv(bPlayer);
+        populate(inventory, bPlayer);
         defaultItems.forEach((key, value) -> inventory.setItem(key, value.getItem(bPlayer)));
         return inventory;
+    }
+
+    public void populate(Inventory inventory, BPlayer bPlayer) {
+        if (getFiller() != null) {
+            for (int i = 0; i < size; i++)
+                inventory.setItem(i, getFiller().toItem());
+        }
+
+        defaultItems.forEach((key, value) -> inventory.setItem(key, value.getItem(bPlayer)));
     }
 
     protected Inventory createInv(BPlayer bPlayer) {
@@ -112,8 +125,14 @@ public abstract class Menu implements InventoryHolder {
         defaultItems.put(slot, builder.toMenuItem());
     }
 
-    public MenuItem getItemAt(int slot) {
-        return defaultItems.get(slot);
+    public void clickItemAt(InventoryClickEvent event) {
+        BPlayer mPlayer = plugin.getBPlayerManager().get(event.getWhoClicked().getUniqueId());
+        MenuItem item = defaultItems.get(event.getSlot());
+        if (item != null && item.getAction() != null)
+            item.getAction().accept(event, mPlayer);
     }
 
+    public void update(BPlayer bPlayer) {
+        bPlayer.runIfOnline(player -> populate(player.getOpenInventory().getTopInventory(), bPlayer));
+    }
 }

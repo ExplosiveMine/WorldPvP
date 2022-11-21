@@ -2,20 +2,17 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.ICommand;
-import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.menu.MenuIdentifier;
-import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdCreate implements ICommand {
+public class CmdSocial implements ICommand {
     @Override
     public List<String> getAliases() {
-        return Collections.singletonList("create");
+        return Collections.singletonList("social");
     }
 
     @Override
@@ -25,12 +22,12 @@ public final class CmdCreate implements ICommand {
 
     @Override
     public String getUsage() {
-        return "create";
+        return "social";
     }
 
     @Override
     public String getDescription() {
-        return "Create your own world";
+        return "Opens a menu containing website and discord links";
     }
 
     @Override
@@ -50,19 +47,12 @@ public final class CmdCreate implements ICommand {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        BPlayer bPlayer = plugin.getBPlayerManager().get((Player) sender);
-
-        if (bPlayer.getBWorld() != null) {
-            Lang.ALREADY_HAVE_WORLD.send(sender);
-            return;
-        }
-
-        plugin.getMenuManager().open(MenuIdentifier.CREATE, bPlayer);
+        plugin.getMenuManager().open(MenuIdentifier.SOCIAL, (Player) sender);
     }
 
     @Override
     public List<String> tabComplete(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
 }

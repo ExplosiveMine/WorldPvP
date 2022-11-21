@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.database;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.bworld.lastlocation.LastLocation;
+import net.brutewars.sandbox.bworld.lastlocation.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.player.BPlayerManager;
 import net.brutewars.sandbox.utils.Logging;
@@ -51,15 +51,18 @@ public final class DataManager {
                 "`player_id` TEXT PRIMARY KEY");
 
         database.createTable("worlds",
-                "`world_id` TEXT NOT NULL",
+                "`bWorld_id` TEXT NOT NULL",
                 "`owner_id` TEXT PRIMARY KEY",
                 "`difficulty` TEXT NOT NULL",
                 "'default_location' TEXT NOT NULL");
 
         database.createTable("members",
-                "`world_id` TEXT NOT NULL",
+                "`bWorld_id` TEXT NOT NULL",
                 "`player_id` TEXT NOT NULL",
                 "'last_location' TEXT NOT NULL");
+
+        database.createTable("settings",
+                "'renew_time' INTEGER");
     }
 
     // loading everything from the database
@@ -72,7 +75,7 @@ public final class DataManager {
             try {
                 while (playerSet.next()) {
                     UUID uuid = UUID.fromString(playerSet.getString("player_id"));
-                    bPlayerManager.createBPlayer(uuid);
+                    bPlayerManager.create(uuid);
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -83,25 +86,34 @@ public final class DataManager {
         database.getTable("worlds").select(worldSet -> {
             try {
                 while (worldSet.next()) {
-                    // get basic BWorld info
-                    UUID worldUuid = UUID.fromString(worldSet.getString("world_id"));
-                    BPlayer owner = bPlayerManager.getBPlayer(UUID.fromString(worldSet.getString("owner_id")));
+                    // getMenu basic BWorld info
+                    UUID worldUuid = UUID.fromString(worldSet.getString("bWorld_id"));
+                    BPlayer owner = bPlayerManager.get(UUID.fromString(worldSet.getString("owner_id")));
                     BWorld bWorld = bWorldManager.loadBWorld(worldUuid, owner, null);
 
                     bWorld.setDifficulty(Difficulty.valueOf(worldSet.getString("difficulty")), false);
-                    bWorld.setDefaultLocation(new LastLocation(worldSet.getString("default_location")));
+                    bWorld.setDefaultLocation(new BLocation(worldSet.getString("default_location")));
 
-                    // get members
-                    database.getTable("members").select("*", "`world_id` = \"" + worldUuid + "\"", memberSet -> {
+                    // getMenu members
+                    database.getTable("members").select("*", "`bWorld_id` = \"" + worldUuid + "\"", memberSet -> {
                         try {
                             while (memberSet.next())
-                                bWorld.addPlayer(bPlayerManager.getBPlayer(UUID.fromString(memberSet.getString("player_id"))),
-                                        new LastLocation(memberSet.getString("last_location")));
+                                bWorld.addPlayer(bPlayerManager.get(UUID.fromString(memberSet.getString("player_id"))),
+                                        new BLocation(memberSet.getString("last_location")));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
                     });
                 }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+        database.getTable("settings").select(resultSet -> {
+            try {
+                if (resultSet.next())
+                    bWorldManager.getWorldManager().setLastRoster(resultSet.getLong("renew_time"));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -119,6 +131,7 @@ public final class DataManager {
 
         // insert data into tables
         bPlayerManager.getBPlayers().stream().map(BPlayer::getUuid).forEach(uuid -> database.getTable("players").insert(uuid.toString()));
+        database.getTable("settings").insert(bWorldManager.getWorldManager().getLastRoster());
         bWorldManager.getBWorlds().forEach(bWorld -> {
             String bWorldUuid = bWorld.getUuid().toString();
             database.getTable("worlds").insert(bWorldUuid, bWorld.getOwner().getUuid().toString(), bWorld.getDifficulty().toString(), bWorld.getDefaultLocation().toString());

@@ -17,6 +17,8 @@ public final class CommandCooldownParser extends SectionParser {
     @Override
     public void parse() {
         ConfigurationSection cmdCooldownSection = plugin.getConfig().getConfigurationSection(path);
+        if (cmdCooldownSection == null)
+            return;
         cmdCooldownSection.getKeys(false).forEach(s -> this.commandCooldown.put(s, cmdCooldownSection.getLong(s) * 1000));
     }
 

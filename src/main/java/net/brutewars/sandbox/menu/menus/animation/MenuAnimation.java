@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.menu.bmenu.animation;
+package net.brutewars.sandbox.menu.menus.animation;
 
 import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.player.BPlayer;

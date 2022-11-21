@@ -42,7 +42,7 @@ public final class BPlayer {
         return additionalWorlds.contains(bWorld.getUuid()) || (includeOwnBWorld && bWorld.equals(this.bWorld));
     }
 
-    private OfflinePlayer toOfflinePlayer() {
+    public OfflinePlayer toOfflinePlayer() {
         return plugin.getServer().getOfflinePlayer(uuid);
     }
 
@@ -70,13 +70,6 @@ public final class BPlayer {
 
     public boolean hasPermission(String permission) {
         return plugin.getVault().hasPermission(toOfflinePlayer(), permission);
-    }
-
-    public void teleport(Location location) {
-        if (!isOnline())
-            return;
-
-        toPlayer().teleport(location);
     }
 
     public void playSound(Sound sound, float v, float v1) {

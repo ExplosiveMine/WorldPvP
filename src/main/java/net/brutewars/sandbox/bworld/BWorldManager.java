@@ -7,7 +7,7 @@ import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.world.LoadingPhase;
-import net.brutewars.sandbox.world.WorldFactory;
+import net.brutewars.sandbox.world.WorldManager;
 import org.bukkit.WorldType;
 
 import java.io.File;
@@ -20,13 +20,13 @@ public final class BWorldManager {
 
     private final Map<UUID, BWorld> bWorlds;
 
-    @Getter private final WorldFactory worldFactory;
+    @Getter private final WorldManager worldManager;
 
     public BWorldManager(BWorldPlugin plugin) {
         this.plugin = plugin;
         this.spawn = new SpawnBWorld(plugin);
         this.bWorlds = new HashMap<>();
-        this.worldFactory = new WorldFactory(plugin);
+        this.worldManager = new WorldManager(plugin);
     }
 
     public void createBWorld(BPlayer owner, WorldType worldType) {
@@ -43,39 +43,34 @@ public final class BWorldManager {
         bWorlds.put(uuid, bWorld);
 
         if (worldType != null)
-            worldFactory.create(bWorld, worldType);
+            worldManager.create(bWorld, worldType);
 
         return bWorld;
     }
 
     public void removeBWorld(BWorld bWorld) {
-        if (bWorld.getResetting() != -1) {
+        if (bWorld.getResetting() != -  1) {
             Logging.debug(plugin, "Resetting: " + bWorld.getAlias());
             plugin.getServer().getScheduler().cancelTask(bWorld.getResetting());
         }
 
         // teleport visitors in that world to spawn if its loaded
+
+
         if (!bWorld.getLoadingPhase().equals(LoadingPhase.UNLOADED)) {
-            worldFactory.getWorld(bWorld).whenComplete((world, throwable) -> world.getPlayers().stream()
-                    .map(player -> plugin.getBPlayerManager().getBPlayer(player))
+            worldManager.getWorld(bWorld).getPlayers().stream()
+                    .map(player -> plugin.getBPlayerManager().get(player))
                     .filter(bPlayer -> !bPlayer.isInBWorld(bWorld, false))
                     .forEach(bPlayer -> {
                         Lang.ON_RESET_VISITOR.send(bPlayer);
                         getSpawn().teleportToWorld(bPlayer);
-                    }));
+                    });
         }
 
-
-        // remove all players
         bWorld.getPlayers(false).forEach(bWorld::removePlayer);
-
-        // set owners bWorld to null
         bWorld.getOwner().setBWorld(null);
 
-        // delete the world
-        worldFactory.delete(bWorld);
-
-        // remove team from database
+        worldManager.delete(bWorld);
         bWorlds.remove(bWorld.getUuid());
     }
 
@@ -107,7 +102,7 @@ public final class BWorldManager {
         plugin.getServer().getWorlds().forEach(world -> {
             BWorld bWorld = getBWorld(world.getName());
             world.getPlayers().forEach(player -> {
-                BPlayer bPlayer = plugin.getBPlayerManager().getBPlayer(player);
+                BPlayer bPlayer = plugin.getBPlayerManager().get(player);
                 if (!bPlayer.isInBWorld(bWorld, true))
                     return;
 

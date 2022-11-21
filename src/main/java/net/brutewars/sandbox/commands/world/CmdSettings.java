@@ -47,6 +47,9 @@ public final class CmdSettings implements IPermissibleCommand {
 
     @Override
     public void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
+        if (bWorld == null)
+            return;
+
         plugin.getMenuManager().open(MenuIdentifier.SETTINGS, bPlayer);
     }
 

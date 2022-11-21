@@ -3,26 +3,20 @@ package net.brutewars.sandbox.menu;
 import lombok.Getter;
 
 public enum MenuIdentifier {
-    CREATE("create"),
-    SETTINGS("settings"),
-    RECRUIT("recruit", SETTINGS),
-    CREATING_ANIMATION("creating_animation");
+    CREATE(),
+    SETTINGS(),
+    RECRUIT(SETTINGS),
+    SOCIAL(),
+    CREATING_ANIMATION();
 
-    private final String identifier;
     @Getter private final MenuIdentifier parentIdentifier;
 
-    MenuIdentifier(String identifier) {
-        this.identifier = identifier;
-        this.parentIdentifier = null;
+    MenuIdentifier() {
+        this(null);
     }
 
-    MenuIdentifier(String identifier, MenuIdentifier parentIdentifier) {
-        this.identifier = identifier;
+    MenuIdentifier(MenuIdentifier parentIdentifier) {
         this.parentIdentifier = parentIdentifier;
-    }
-
-    public String getIdentifier() {
-        return (parentIdentifier == null) ? identifier : parentIdentifier.getIdentifier() + "." + identifier;
     }
 
 }

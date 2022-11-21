@@ -52,6 +52,11 @@ public final class CmdConfirmReset implements IPermissibleCommand {
 
     @Override
     public void execute(BWorldPlugin plugin, BPlayer bPlayer, BWorld bWorld, String[] args) {
+        if (bWorld == null) {
+            Lang.PLAYER_NO_PERMISSION.send(bPlayer);
+            return;
+        }
+
         if (bWorld.getResetting() != -1) {
             Lang.RESET_SUCCESS.send(bWorld, bPlayer.getName());
             plugin.getBWorldManager().removeBWorld(bWorld);

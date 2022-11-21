@@ -21,7 +21,7 @@ public enum WorldSize {
 
     public static void reload(BWorldPlugin plugin) {
         for (WorldSize size : values())
-            sizes.put(size, plugin.getConfig().getInt("world.size." + size.name().toLowerCase()));
+            sizes.put(size, plugin.getConfig().getInt("world.sizes." + size.name().toLowerCase()));
     }
 
     public int getValue() {
