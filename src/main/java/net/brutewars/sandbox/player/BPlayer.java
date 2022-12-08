@@ -4,11 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.BWorld;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -20,26 +21,32 @@ public final class BPlayer {
     @Getter private final UUID uuid;
 
     @Getter @Setter private BWorld bWorld;
-    @Getter private final Set<UUID> additionalWorlds;
+    @Getter private final List<UUID> additionalBWorlds;
+
+    // HUD items
+    @Getter @Setter private int hudSlot = 9;
+    @Getter @Setter private boolean hudToggled = true;
 
     public BPlayer(BWorldPlugin plugin, UUID uuid, BWorld bWorld) {
         this.plugin = plugin;
         this.bWorld = bWorld;
         this.uuid = uuid;
-        this.additionalWorlds = new HashSet<>();
+        this.additionalBWorlds = new ArrayList<>();
     }
 
     public void addBWorld(BWorld bWorld) {
-        additionalWorlds.add(bWorld.getUuid());
+        additionalBWorlds.add(bWorld.getUuid());
     }
 
     public void removeBWorld(BWorld bWorld) {
-        additionalWorlds.remove(bWorld.getUuid());
+        additionalBWorlds.remove(bWorld.getUuid());
     }
 
-    public boolean isInBWorld(BWorld bWorld, boolean includeOwnBWorld) {
-        if (bWorld == null) return false;
-        return additionalWorlds.contains(bWorld.getUuid()) || (includeOwnBWorld && bWorld.equals(this.bWorld));
+    public boolean isInBWorld(@Nullable BWorld bWorld, boolean includeOwnBWorld) {
+        if (bWorld == null)
+            return false;
+
+        return additionalBWorlds.contains(bWorld.getUuid()) || (includeOwnBWorld && bWorld.equals(this.bWorld));
     }
 
     public OfflinePlayer toOfflinePlayer() {
@@ -51,12 +58,16 @@ public final class BPlayer {
     }
 
     public void runIfOnline(Consumer<Player> consumer) {
-        if (!isOnline()) return;
+        if (!isOnline())
+            return;
+
         consumer.accept(toPlayer());
     }
 
     public <T> T getIfOnline(Function<Player, T> function) {
-        if (!isOnline()) return null;
+        if (!isOnline())
+            return null;
+
         return function.apply(toPlayer());
     }
 
@@ -88,6 +99,10 @@ public final class BPlayer {
         if (!isOnline()) return;
 
         toPlayer().openInventory(inventory);
+    }
+
+    public void setGameMode(GameMode gameMode) {
+        runIfOnline(player -> player.setGameMode(gameMode));
     }
 
 }

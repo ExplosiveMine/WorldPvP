@@ -97,7 +97,7 @@ public abstract class Menu implements InventoryHolder {
 
     protected Inventory createInv(BPlayer bPlayer) {
         String title = (bPlayer == null || titleProvider == null) ? getTitle() : titleProvider.apply(bPlayer);
-        return InventoryType.CHEST.equals(type) ? Bukkit.createInventory(this, size, title) : Bukkit.createInventory(this, type, title);
+        return type == InventoryType.CHEST ? Bukkit.createInventory(this, size, title) : Bukkit.createInventory(this, type, title);
     }
 
     protected String getTitle() {
@@ -126,10 +126,10 @@ public abstract class Menu implements InventoryHolder {
     }
 
     public void clickItemAt(InventoryClickEvent event) {
-        BPlayer mPlayer = plugin.getBPlayerManager().get(event.getWhoClicked().getUniqueId());
-        MenuItem item = defaultItems.get(event.getSlot());
+        BPlayer bPlayer = plugin.getBPlayerManager().get(event.getWhoClicked().getUniqueId());
+        MenuItem item = defaultItems.get(event.getRawSlot());
         if (item != null && item.getAction() != null)
-            item.getAction().accept(event, mPlayer);
+            item.getAction().accept(event, bPlayer);
     }
 
     public void update(BPlayer bPlayer) {

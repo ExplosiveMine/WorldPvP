@@ -3,7 +3,7 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.List;
 
 
-public final class CmdKick implements ICommand {
+public final class CmdKick implements Command {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("kick");
@@ -54,9 +54,7 @@ public final class CmdKick implements ICommand {
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
         Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-        BPlayer owner = pair.getValue();
         BWorld bWorld = pair.getKey();
-
         if (bWorld == null)
             return;
 
@@ -64,6 +62,7 @@ public final class CmdKick implements ICommand {
         if (toBeKicked == null)
             return;
 
+        BPlayer owner = pair.getValue();
         if (toBeKicked.getUuid().equals(owner.getUuid())) {
             Lang.CANNOT_KICK_YOURSELF.send(owner);
             return;

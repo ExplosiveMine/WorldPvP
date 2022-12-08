@@ -6,47 +6,49 @@ import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.menu.menus.Menu;
 import net.brutewars.sandbox.menu.items.builders.CyclingItemBuilder;
 import net.brutewars.sandbox.menu.items.builders.ItemBuilder;
+import net.brutewars.sandbox.player.BPlayer;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 
 public final class SettingsMenu extends Menu {
     public SettingsMenu(BWorldPlugin plugin) {
-        super(plugin, MenuIdentifier.SETTINGS, Lang.SETTINGS_MENU.get(), 27);
+        super(plugin, MenuIdentifier.SETTINGS, Lang.SETTINGS_MENU.get(), 9);
     }
 
     @Override
     public void placeItems() {
-        setItem(10, new CyclingItemBuilder(plugin)
+        setItem(0, new CyclingItemBuilder(plugin)
                 .add(new ItemBuilder(Material.BEDROCK)
-                        .setDisplayName("&3&lGamemode")
-                        .setAction((event, bPlayer) -> bPlayer.runIfOnline(player -> player.setGameMode(GameMode.SURVIVAL)))
-                        .setLore("&7Default gamemode is &d&lCREATIVE", "&7Click to change the default gamemode", "&7to &c&lSURVIVAL")
+                        .setDisplayName("&5&lGamemode")
+                        .onClick((inventoryClickEvent, bPlayer) -> setDefaultGameMode(bPlayer, GameMode.SURVIVAL))
+                        .setLore("&7Default gamemode is &dCREATIVE", "&7Click to set to &cSURVIVAL")
                 ).add(new ItemBuilder(Material.DIAMOND_SWORD)
-                        .setDisplayName("&3&lGamemode")
-                        .setAction((event, bPlayer) -> bPlayer.runIfOnline(player -> player.setGameMode(GameMode.CREATIVE)))
-                        .setLore("&7Default gamemode is &c&lSURVIVAL", "&7Click to change the default gamemode", "&7to &d&lCREATIVE")
-                ).setStartingIndex(bPlayer -> GameMode.SURVIVAL.equals(bPlayer.getIfOnline(HumanEntity::getGameMode)) ? 1 : 0)
+                        .setDisplayName("&5&lGamemode")
+                        .onClick((inventoryClickEvent, bPlayer) -> setDefaultGameMode(bPlayer, GameMode.CREATIVE))
+                        .setLore("&7Default gamemode is &cSURVIVAL", "&7Click to set to &dCREATIVE")
+                ).setStartingIndex(bPlayer -> GameMode.SURVIVAL == bPlayer.getIfOnline(HumanEntity::getGameMode) ? 1 : 0)
         );
 
-        setItem(12, new CyclingItemBuilder(plugin)
+        setItem(1, new CyclingItemBuilder(plugin)
                 .add(new ItemBuilder(Material.PLAYER_HEAD)
                         .setDisplayName("&4&lDifficulty")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setDifficulty(Difficulty.EASY, true))
-                        .setLore("&7Current difficulty is &b&lPEACEFUL", "&7Click to change the difficulty", "&7to &a&lEASY")
-                ).add(new ItemBuilder(Material.PLAYER_HEAD)
+                        .onClick((event, bPlayer) -> setDifficulty(bPlayer, Difficulty.EASY))
+                        .setLore("&7Current difficulty is &bPEACEFUL", "&7Click to to &aEASY")
+                ).add(new ItemBuilder(Material.ZOMBIE_HEAD)
                         .setDisplayName("&4&lDifficulty")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setDifficulty(Difficulty.NORMAL, true))
-                        .setLore("&7Current difficulty is &a&lEASY", "&7Click to change the difficulty", "&7to &d&lNORMAL")
-                ).add(new ItemBuilder(Material.PLAYER_HEAD)
+                        .onClick((event, bPlayer) -> setDifficulty(bPlayer, Difficulty.NORMAL))
+                        .setLore("&7Current difficulty is &aEASY", "&7Click to set to &dNORMAL")
+                ).add(new ItemBuilder(Material.SKELETON_SKULL)
                         .setDisplayName("&4&lDifficulty")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setDifficulty(Difficulty.HARD, true))
-                        .setLore("&7Current difficulty is &d&lNORMAL", "&7Click to change the difficulty", "&7to &c&lHARD")
-                ).add(new ItemBuilder(Material.PLAYER_HEAD)
+                        .onClick((event, bPlayer) -> setDifficulty(bPlayer, Difficulty.HARD))
+                        .setLore("&7Current difficulty is &dNORMAL", "&7Click to set to &eHARD")
+                ).add(new ItemBuilder(Material.CREEPER_HEAD)
                         .setDisplayName("&4&lDifficulty")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setDifficulty(Difficulty.PEACEFUL, true))
-                        .setLore("&7Current difficulty is &c&lHARD", "&7Click to change the difficulty", "&7to &b&lPEACEFUL")
+                        .onClick((event, bPlayer) -> setDifficulty(bPlayer, Difficulty.PEACEFUL))
+                        .setLore("&7Current difficulty is &eHARD", "&7Click to set to &bPEACEFUL")
                 ).setStartingIndex(bPlayer ->
                         switch (bPlayer.getBWorld().getDifficulty()) {
                             case EASY -> 1;
@@ -56,27 +58,97 @@ public final class SettingsMenu extends Menu {
                         }
                 ));
 
-        setItem(14, new CyclingItemBuilder(plugin)
-                .add(new ItemBuilder(Material.COMMAND_BLOCK)
-                        .setDisplayName("&6&lCheats")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setCheating(true))
-                        .setLore("&7Cheats are currently &a&lENABLED", "&7Click to set cheats to &c&l✕ DISABLED")
-                ).add(new ItemBuilder(Material.BARRIER)
-                        .setDisplayName("&6&lCheats")
-                        .setAction((event, bPlayer) -> bPlayer.getBWorld().setCheating(false))
-                        .setLore("&7Cheats are currently &c&lDISABLED", "&7Click to set cheats to &a&l✓ ENABLED")
-                ).setStartingIndex(bPlayer -> bPlayer.getBWorld().isCheating() ? 1 : 0));
+        setItem(2, new CyclingItemBuilder(plugin)
+                .add(new ItemBuilder(Material.ROTTEN_FLESH)
+                        .setDisplayName("&6&lAnimals")
+                        .setLore("&7Animals are set to &aTRUE", "&7Click to set to &cFALSE")
+                        .onClick((event, bPlayer) -> setAnimals(bPlayer, false)))
+                .add(new ItemBuilder(Material.BEETROOT_SOUP)
+                        .setDisplayName("&6&lAnimals")
+                        .setLore("&7Animals are set to &cFALSE", "&7Click to set to &aTRUE")
+                        .onClick((event, bPlayer) -> setAnimals(bPlayer, true)))
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isAnimals() ? 0 : 1));
 
-        setItem(16, new ItemBuilder(Material.MAP)
-                .setDisplayName("&2&lRecruit members")
-                .setAction((event, bPlayer) -> plugin.getMenuManager().open(MenuIdentifier.RECRUIT, bPlayer)));
+        setItem(3, new CyclingItemBuilder(plugin)
+                .add(new ItemBuilder(Material.FERMENTED_SPIDER_EYE)
+                        .setDisplayName("&9&lMonsters")
+                        .setLore("&7Monsters are set to &4AGGRESSIVE", "&7Click to set monsters to &bPASSIVE")
+                        .onClick((event, bPlayer) -> setAggressiveMonsters(bPlayer, false)))
+                .add(new ItemBuilder(Material.CAULDRON)
+                        .setDisplayName("&9&lMonsters")
+                        .setLore("&7Monsters are set to &bPASSIVE", "&7Click to set monsters to &4AGGRESSIVE")
+                        .onClick((event, bPlayer) -> setAggressiveMonsters(bPlayer, true)))
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isAggressiveMonsters() ? 0 : 1));
 
-        setItem(26, new ItemBuilder(Material.RED_MUSHROOM_BLOCK)
-                .setDisplayName("&4&lRecycle world")
-                .setAction((event, bPlayer) -> {
+        setItem(4, new CyclingItemBuilder(plugin)
+                .add(new ItemBuilder(Material.WOODEN_AXE)
+                        .setDisplayName("&3&lMembers Can Build")
+                        .setLore("&7Members can build is set to &aTRUE", "&7Click to set to &cFALSE")
+                        .onClick((event, bPlayer) -> setMembersCanBuild(bPlayer, false)))
+                .add(new ItemBuilder(Material.FLINT_AND_STEEL)
+                        .setDisplayName("&3&lMembers Can Build")
+                        .setLore("&7Members can build is set to &cFALSE", "&7Click to set to &aTRUE")
+                        .onClick((event, bPlayer) -> setMembersCanBuild(bPlayer, true)))
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isMembersCanBuild() ? 0 : 1));
+
+        setItem(5, new CyclingItemBuilder(plugin)
+                .add(new ItemBuilder(Material.TNT)
+                        .setDisplayName("&d&lKeep Inventory")
+                        .setLore("&7Keep inventory is set to &cFALSE", "&7Click to set to &aTRUE")
+                        .onClick((event, bPlayer) -> setKeepInventory(bPlayer, true))
+                ).add(new ItemBuilder(Material.SLIME_BLOCK)
+                        .setDisplayName("&d&lKeep Inventory")
+                        .setLore("&7Keep inventory is set to &aTRUE", "&7Click to set to &cFALSE")
+                        .onClick((event, bPlayer) -> setKeepInventory(bPlayer, false))
+                ).setStartingIndex(bPlayer -> !bPlayer.getBWorld().isKeepInventory() ? 0 : 1));
+
+        setItem(6, new ItemBuilder(Material.MAP)
+                .setDisplayName("&2&lRecruit Members")
+                .setLore("&7Invite your friends!")
+                .onClick((event, bPlayer) -> plugin.getMenuManager().open(MenuIdentifier.RECRUIT, bPlayer)));
+
+        setItem(8, new ItemBuilder(Material.RED_MUSHROOM_BLOCK)
+                .setDisplayName("&4&lRecycle World")
+                .setLore("&cWARNING: This will delete your world permanently!")
+                .onClick((event, bPlayer) -> {
                     bPlayer.runIfOnline(player -> player.performCommand("world reset"));
                     close(bPlayer, false);
                 }));
+
+    }
+
+    private void setDefaultGameMode(BPlayer bPlayer, GameMode gameMode) {
+        bPlayer.getBWorld().setDefaultGameMode(gameMode);
+        playSound(bPlayer);
+    }
+
+    private void setDifficulty(BPlayer bPlayer, Difficulty difficulty) {
+        bPlayer.getBWorld().setDifficulty(difficulty, true);
+        playSound(bPlayer);
+    }
+
+    private void setAnimals(BPlayer bPlayer, boolean animals) {
+        bPlayer.getBWorld().setAnimals(animals);
+        playSound(bPlayer);
+    }
+
+    private void setAggressiveMonsters(BPlayer bPlayer, boolean aggressiveMonsters) {
+        bPlayer.getBWorld().setAggressiveMonsters(aggressiveMonsters);
+        playSound(bPlayer);
+    }
+
+    private void setMembersCanBuild(BPlayer bPlayer, boolean membersCanBuild) {
+        bPlayer.getBWorld().setMembersCanBuild(membersCanBuild);
+        playSound(bPlayer);
+    }
+
+    private void setKeepInventory(BPlayer bPlayer, boolean keepInventory) {
+        bPlayer.getBWorld().setKeepInventory(keepInventory);
+        playSound(bPlayer);
+    }
+
+    private void playSound(BPlayer bPlayer) {
+        bPlayer.playSound(Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
     }
 
 }

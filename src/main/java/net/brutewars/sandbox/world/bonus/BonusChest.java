@@ -4,7 +4,9 @@ import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.utils.Logging;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.Chest;
+import org.bukkit.block.data.Directional;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,14 +26,17 @@ public final class BonusChest {
     public void spawn(Location location) {
         location.getBlock().setType(Material.CHEST);
         Chest chest = (Chest) location.getBlock().getState();
-        Inventory inv = chest.getSnapshotInventory();
+        Directional direction = (Directional) chest.getBlockData();
+        direction.setFacing(BlockFace.SOUTH);
+        chest.setBlockData(direction);
 
+        Inventory inv = chest.getSnapshotInventory();
         Iterator<ItemStack> itr = Arrays.stream(plugin.getConfigSettings().getBonusChestParser().getItems()).iterator();
         while (itr.hasNext()) {
             int slot;
             do {
                 slot = random.nextInt(0, inv.getSize());
-            } while (inv.getItem(slot) != null && !Material.AIR.equals(inv.getItem(slot).getType()));
+            } while (inv.getItem(slot) != null && inv.getItem(slot).getType() != Material.AIR);
             inv.setItem(slot, itr.next());
         }
         chest.update();

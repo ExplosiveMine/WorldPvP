@@ -28,9 +28,9 @@ public final class Executor {
         if (args.length == 0)
             runnable.runTaskLater(plugin, 1L);
         else if (args.length == 1)
-            runnable.runTaskLater(plugin, args[0] * 20L);
+            runnable.runTaskLater(plugin, args[0]);
         else if (args.length == 2)
-            runnable.runTaskTimer(plugin, args[0] * 20L, args[1]);
+            runnable.runTaskTimer(plugin, args[0], args[1]);
 
         return runnable.getTaskId();
     }

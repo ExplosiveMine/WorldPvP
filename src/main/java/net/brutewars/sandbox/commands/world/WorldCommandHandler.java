@@ -3,12 +3,13 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandHandler;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.bworld.BWorld;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -34,7 +35,7 @@ public final class WorldCommandHandler extends CommandHandler {
         @Override
         public boolean execute(CommandSender sender, String label, String[] args) {
             if (args.length > 0) {
-                ICommand command = commandMap.getCommand(args[0]);
+                Command command = commandMap.getCommand(args[0]);
                 if (command != null) {
                     if (!(sender instanceof Player) && !command.canBeExecutedByConsole()) {
                         Lang.CONSOLE_NO_PERMISSION.send(sender);
@@ -77,8 +78,7 @@ public final class WorldCommandHandler extends CommandHandler {
                 }
             }
 
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
+            if (sender instanceof Player player) {
                 BPlayer bPlayer = plugin.getBPlayerManager().get(player);
 
                 if (args.length == 0) {
@@ -113,7 +113,7 @@ public final class WorldCommandHandler extends CommandHandler {
         }
 
         private void teleportPlayer(BWorld bWorld, BPlayer bPlayer) {
-            switch (bWorld.getLoadingPhase()) {
+            switch (bWorld.getWorldPhase(World.Environment.NORMAL)) {
                 case LOADING:
                     Lang.WORLD_LOADING.send(bPlayer);
                     return;
@@ -122,7 +122,7 @@ public final class WorldCommandHandler extends CommandHandler {
                     return;
                 case UNLOADED:
                     Lang.WORLD_LOADING.send(bWorld);
-                    plugin.getBWorldManager().getWorldManager().load(bWorld);
+                    plugin.getBWorldManager().getWorldManager().load(bWorld, World.Environment.NORMAL);
                 case UNLOADING:
                     bWorld.cancelUnloading();
             }

@@ -16,7 +16,17 @@ import java.util.Map;
 public enum Lang {
     ACCEPT_INVITE_TOOLTIP,
     ALREADY_HAVE_WORLD,
+    BONUS_CHEST_HOLOGRAM,
+    CANNOT_BUILD,
+    CANNOT_DROP_ITEM,
     CANNOT_KICK_YOURSELF,
+    CLEAR_LAG_SUBTITLE_15,
+    CLEAR_LAG_ACTIONBAR_15,
+    CLEAR_LAG_ACTIONBAR_3,
+    CLEAR_LAG_ACTIONBAR_2,
+    CLEAR_LAG_ACTIONBAR_1,
+    CLEAR_LAG_SUBTITLE,
+    CLEAR_LAG_ACTIONBAR,
     CLICK_TO_INVITE,
     COMMAND_COOLDOWN,
     COMMAND_USAGE,
@@ -27,6 +37,7 @@ public enum Lang {
     DENY_INVITE_TOOLTIP,
     DEPENDENCY_FOUND,
     DISCORD_LINK,
+    END_DIMENSION_HOLOGRAM,
     EAST,
     HELP_FOOTER,
     HELP_HEADER,
@@ -35,11 +46,15 @@ public enum Lang {
     INVALID_AMOUNT,
     INVALID_PLAYER,
     INVALID_WORLD,
+    INVENTORY_FULL_TITLE,
+    INVENTORY_FULL_SUBTITLE,
     INVITED_PLAYER_IS_MEMBER,
     INVITE_DENIED,
+    JOIN_WORLD_MENU,
     LEFT_WORLD,
     MEMBER_LEAVE,
     MEMBER_LIST,
+    NETHER_DIMENSION_HOLOGRAM,
     NEW_MEMBER,
     NORTH,
     NOT_IN_WORLD,
@@ -58,13 +73,15 @@ public enum Lang {
     RELOADED_CONFIG,
     RESET_SUCCESS,
     SETTINGS_MENU,
-    SOCIAL_MEDIA_HOLOGRAM,
     SOCIAL_MENU,
     SOUTH,
     SUCCESSFULLY_INVITED_PLAYER,
     SUCCESSFULLY_JOINED_WORLD,
-    SUCCESSFUL_HOOK,
+    TELEPORT_OVERWORLD_HOLO,
     WEBSITE_LINK,
+    WELCOME_HOLOGRAM_1,
+    WELCOME_HOLOGRAM_2,
+    WELCOME_HOLOGRAM_3,
     WEST,
     WORLD_BORDER_UPDATE,
     WORLD_CREATED,
@@ -81,7 +98,7 @@ public enum Lang {
 
         @Override
         public String get(Object... objects) {
-            return StringUtils.replaceArgs("{0}", objects);
+            return StringUtils.colour(StringUtils.replaceArgs("{0}", objects));
         }
     };
 

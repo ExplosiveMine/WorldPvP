@@ -26,7 +26,7 @@ public abstract class CommandHandler {
         plugin.getServer().getCommandMap().register("world", command);
     }
 
-    public List<ICommand> getSubCommands() {
+    public List<Command> getSubCommands() {
         return commandMap.getSubCommands();
     }
 
@@ -41,7 +41,7 @@ public abstract class CommandHandler {
         @Override
         public List<String> tabComplete(CommandSender sender, String label, String[] args) {
             if (args.length > 0) {
-                ICommand command = commandMap.getCommand(args[0]);
+                Command command = commandMap.getCommand(args[0]);
                 if (command != null) {
                     return command.getPermission() != null && !sender.hasPermission(command.getPermission()) ?
                             new ArrayList<>() : command.tabComplete(plugin, sender, args);
@@ -50,7 +50,7 @@ public abstract class CommandHandler {
 
             List<String> list = new ArrayList<>();
 
-            for (ICommand subCommand : getSubCommands()) {
+            for (Command subCommand : getSubCommands()) {
                 if (subCommand.getPermission() == null || sender.hasPermission(subCommand.getPermission())) {
                     for (String alias : subCommand.getAliases())
                         if (alias.contains(args[0].toLowerCase())) list.add(alias);

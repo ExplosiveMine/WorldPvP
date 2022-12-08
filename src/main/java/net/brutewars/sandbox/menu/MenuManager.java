@@ -27,6 +27,7 @@ public final class MenuManager {
         registerMenu(new RecruitMenu(plugin));
         registerMenu(new CreatingAnimationMenu(plugin));
         registerMenu(new SocialMenu(plugin));
+        registerMenu(new JoinWorldMenu(plugin));
     }
 
     private void registerMenu(Menu menu) {
@@ -48,9 +49,6 @@ public final class MenuManager {
     }
 
     public @NotNull Menu getMenu(MenuIdentifier identifier) {
-        if (menus.isEmpty())
-            loadMenus();
-
         return menus.get(identifier);
     }
 

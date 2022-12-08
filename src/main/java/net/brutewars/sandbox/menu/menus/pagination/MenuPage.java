@@ -33,7 +33,7 @@ public final class MenuPage extends Menu {
 
         setItem(slot, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
                 .setDisplayName("&6Next")
-                .setAction(biConsumer));
+                .onClick(biConsumer));
     }
 
     public void setPreviousArrow(int slot, BiConsumer<InventoryClickEvent, BPlayer> biConsumer) {
@@ -42,7 +42,7 @@ public final class MenuPage extends Menu {
 
         setItem(slot, new ItemBuilder(Material.EXPERIENCE_BOTTLE)
                 .setDisplayName("&6Previous")
-                .setAction(biConsumer));
+                .onClick(biConsumer));
     }
 
 }

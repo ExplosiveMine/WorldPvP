@@ -3,29 +3,23 @@ package net.brutewars.sandbox.bworld;
 import net.brutewars.sandbox.bworld.lastlocation.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.world.LoadingPhase;
-import net.brutewars.sandbox.world.WorldSize;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public interface IBWorld {
     UUID getUuid();
 
     BPlayer getOwner();
 
-    WorldSize getWorldSize();
-
-    LoadingPhase getLoadingPhase();
+    LoadingPhase getWorldPhase(World.Environment env);
 
     int getResetting();
 
     int getUnloading();
-
-    Set<BPlayer> getOnlineBPlayers();
 
     Set<BPlayer> getPlayers(boolean includeOwner);
 
@@ -41,23 +35,11 @@ public interface IBWorld {
 
     void removeInvite(BPlayer invitee);
 
-    void initialiseReset();
-
-    void updateWorldSize();
-
-    void initialiseUnloading();
-
-    void cancelUnloading();
-
-    String getWorldName();
+    String getWorldPath();
 
     String getAlias();
 
     void teleportToWorld(BPlayer bPlayer);
-
-    void teleportToWorld(BPlayer bPlayer, Consumer<Boolean> biConsumer);
-
-    void updateLastLocation(BPlayer bPlayer, Location location);
 
     BLocation getLastLocation(BPlayer bPlayer);
 
@@ -66,5 +48,19 @@ public interface IBWorld {
     void setDefaultLocation(BLocation defaultLocation);
 
     World getWorld();
+
+    GameMode getDefaultGameMode();
+
+    void setDefaultGameMode(GameMode gamemode);
+
+    /**
+     * @return Set of BPlayers who are in the BWorld's loaded worlds
+     */
+    Set<BPlayer> getActivePlayers();
+
+    default void updatePlayerGameModes() {
+        for (BPlayer bPlayer : getActivePlayers())
+            bPlayer.setGameMode(getDefaultGameMode());
+    }
 
 }

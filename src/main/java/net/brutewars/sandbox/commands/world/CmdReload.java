@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.world.WorldSize;
 import org.bukkit.command.CommandSender;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdReload implements ICommand {
+public final class CmdReload implements Command {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("reload");

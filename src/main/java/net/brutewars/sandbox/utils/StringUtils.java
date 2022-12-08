@@ -24,6 +24,13 @@ public final class StringUtils {
         return msg;
     }
 
+    public static boolean isUUID(String id) {
+        if (id == null)
+            return false;
+
+        return id.matches("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$");
+    }
+
     /*
     ===================
            TIME

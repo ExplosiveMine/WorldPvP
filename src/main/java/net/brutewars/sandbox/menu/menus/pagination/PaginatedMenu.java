@@ -74,15 +74,17 @@ public abstract class PaginatedMenu extends Menu {
         MenuPage page = new MenuPage(plugin, identifier, title, size);
         pages.add(page);
 
-        page.setNextArrow(next, (event, bPlayer) -> {
-            if (id == pages.size() - 1) return;
+        page.setNextArrow(next, (item, bPlayer) -> {
+            if (id == pages.size() - 1)
+                return;
 
             close(bPlayer, false);
             open(bPlayer, id + 1);
         });
 
-        page.setPreviousArrow(previous, (event, bPlayer) -> {
-            if (id == 0) return;
+        page.setPreviousArrow(previous, (item, bPlayer) -> {
+            if (id == 0)
+                return;
 
             close(bPlayer, false);
             open(bPlayer, id - 1);
@@ -110,4 +112,5 @@ public abstract class PaginatedMenu extends Menu {
         playerMap.remove(bPlayer);
         super.onClose(event, bPlayer);
     }
+
 }

@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.config.parser;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.HashMap;
@@ -22,8 +22,8 @@ public final class CommandCooldownParser extends SectionParser {
         cmdCooldownSection.getKeys(false).forEach(s -> this.commandCooldown.put(s, cmdCooldownSection.getLong(s) * 1000));
     }
 
-    public long get(ICommand iCommand) {
-        return commandCooldown.getOrDefault(iCommand.getAliases().get(0), 0L);
+    public long get(Command command) {
+        return commandCooldown.getOrDefault(command.getAliases().get(0), 0L);
     }
 
 }

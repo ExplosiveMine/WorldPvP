@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-public interface IPermissibleCommand extends ICommand {
+public interface PermissibleCommand extends Command {
     @Override
     default void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
         BWorld bWorld = null;

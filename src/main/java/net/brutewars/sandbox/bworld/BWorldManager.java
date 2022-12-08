@@ -6,9 +6,13 @@ import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.Logging;
+import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.world.LoadingPhase;
 import net.brutewars.sandbox.world.WorldManager;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.*;
@@ -49,16 +53,14 @@ public final class BWorldManager {
     }
 
     public void removeBWorld(BWorld bWorld) {
-        if (bWorld.getResetting() != -  1) {
+        if (bWorld.getResetting() != -1) {
             Logging.debug(plugin, "Resetting: " + bWorld.getAlias());
             plugin.getServer().getScheduler().cancelTask(bWorld.getResetting());
         }
 
         // teleport visitors in that world to spawn if its loaded
-
-
-        if (!bWorld.getLoadingPhase().equals(LoadingPhase.UNLOADED)) {
-            worldManager.getWorld(bWorld).getPlayers().stream()
+        for (World world : bWorld.getLoadedWorlds()) {
+            world.getPlayers().stream()
                     .map(player -> plugin.getBPlayerManager().get(player))
                     .filter(bPlayer -> !bPlayer.isInBWorld(bWorld, false))
                     .forEach(bPlayer -> {
@@ -78,11 +80,19 @@ public final class BWorldManager {
         return bWorlds.get(uuid);
     }
 
-    public BWorld getBWorld(String worldPath) {
-        String[] str = worldPath.split("worlds" + File.separator);
-        if (str.length != 2)
+    public BWorld getBWorld(World world) {
+        String[] str = world.getName().split(File.separator);
+        if (str.length < 4 || !StringUtils.isUUID(str[3]))
             return null;
-        return getBWorld(UUID.fromString(str[1]));
+
+        return getBWorld(UUID.fromString(str[3]));
+    }
+
+    public IBWorld getIBWorld(World world) {
+        if (spawn.getWorldPath().equals(world.getName()))
+            return spawn;
+
+        return getBWorld(world);
     }
 
     public Collection<BWorld> getBWorlds() {
@@ -99,16 +109,15 @@ public final class BWorldManager {
     }
 
     public void updateLastLocations() {
-        plugin.getServer().getWorlds().forEach(world -> {
-            BWorld bWorld = getBWorld(world.getName());
-            world.getPlayers().forEach(player -> {
-                BPlayer bPlayer = plugin.getBPlayerManager().get(player);
-                if (!bPlayer.isInBWorld(bWorld, true))
-                    return;
+        for (BWorld bWorld : plugin.getBWorldManager().getBWorlds()) {
+            if (bWorld.getWorldPhase(World.Environment.NORMAL) != LoadingPhase.LOADED)
+                continue;
 
-                bWorld.updateLastLocation(bPlayer, player.getLocation());
-            });
-        });
+            bWorld.getWorld().getPlayers().stream()
+                    .map(player -> plugin.getBPlayerManager().get(player))
+                    .filter(bPlayer -> bPlayer.isInBWorld(bWorld, true))
+                    .forEach(bPlayer -> bWorld.updateLastLocation(bPlayer, (Location) bPlayer.getIfOnline(Player::getLocation)));
+        }
     }
 
 }

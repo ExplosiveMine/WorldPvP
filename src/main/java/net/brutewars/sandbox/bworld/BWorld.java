@@ -11,43 +11,51 @@ import net.brutewars.sandbox.thread.Executor;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.world.LoadingPhase;
 import net.brutewars.sandbox.world.WorldSize;
-import org.bukkit.Difficulty;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.entity.*;
 import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.File;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public final class BWorld implements IBWorld {
     private final BWorldPlugin plugin;
 
     @Getter private final UUID uuid;
-
     @Getter private BPlayer owner;
-    private final Set<BPlayer> players = new HashSet<>();
 
-    @Getter private final String worldName;
+    @Getter private final String worldPath;
+
+    private final Set<BPlayer> players = new HashSet<>();
+    private final Map<BPlayer, BPlayer> invitedPlayers = new HashMap<>();
+
+    //World Settings
     @Getter private WorldSize worldSize = WorldSize.DEFAULT;
     @Getter private Difficulty difficulty = Difficulty.NORMAL;
-    @Getter @Setter private boolean cheating = false;
+    @Getter private GameMode defaultGameMode = GameMode.SURVIVAL;
+    @Getter private boolean animals = true;
+    @Getter @Setter private boolean aggressiveMonsters = true;
+    @Getter @Setter private boolean membersCanBuild = true;
+    @Getter private boolean keepInventory = false;
 
+    // Last location
     @Getter private BLocation defaultLocation;
     private final Map<BPlayer, BLocation> lastLocations = new HashMap<>();
 
+    // Loading & Unloading
     @Getter @Setter private int resetting = -1;
     @Getter @Setter private int unloading = -1;
-    @Getter @Setter private LoadingPhase loadingPhase = LoadingPhase.UNLOADED;
-
-    private final Map<BPlayer, BPlayer> invitedPlayers = new HashMap<>();
-
+    private final Map<World.Environment, LoadingPhase> worldPhases = new HashMap<>() {{
+        put(World.Environment.NORMAL, LoadingPhase.UNLOADED);
+        put(World.Environment.NETHER, LoadingPhase.UNLOADED);
+        put(World.Environment.THE_END, LoadingPhase.UNLOADED);
+    }};
 
     public BWorld(BWorldPlugin plugin, UUID uuid) {
         this.plugin = plugin;
         this.uuid = uuid;
-        worldName = plugin.getDataFolder() + File.separator + "worlds" + File.separator + uuid.toString();
+        worldPath = plugin.getDataFolder() + File.separator + "worlds" + File.separator + uuid.toString() + File.separator;
         owner = null;
         defaultLocation = null;
     }
@@ -62,6 +70,16 @@ public final class BWorld implements IBWorld {
     }
 
     @Override
+    public String getAlias() {
+        return getOwner().getName();
+    }
+
+    /*
+    ----------------------------------------------------------
+                            PLAYERS
+    ----------------------------------------------------------
+     */
+
     public Set<BPlayer> getOnlineBPlayers() {
         return getPlayers(true).stream().filter(BPlayer::isOnline).collect(Collectors.toSet());
     }
@@ -94,13 +112,30 @@ public final class BWorld implements IBWorld {
         bPlayer.removeBWorld(this);
 
         bPlayer.runIfOnline(player -> {
-            if (player.getWorld().getName().equals(getWorldName()))
+            if (player.getWorld().getName().equals(getWorldPath()))
                 plugin.getBWorldManager().getSpawn().teleportToWorld(bPlayer);
         });
 
         players.remove(bPlayer);
         lastLocations.remove(bPlayer);
     }
+
+    public Set<BPlayer> getActivePlayers() {
+        Set<BPlayer> activePlayers = new HashSet<>();
+        for (World loadedWorld : getLoadedWorlds()) {
+            activePlayers.addAll(loadedWorld.getPlayers().stream()
+                    .map(player -> plugin.getBPlayerManager().get(player))
+                    .filter(bPlayer -> bPlayer.isInBWorld(BWorld.this, true))
+                    .collect(Collectors.toSet()));
+        }
+        return activePlayers;
+    }
+
+    /*
+    ----------------------------------------------------------
+                             INVITES
+    ----------------------------------------------------------
+     */
 
     @Override
     public boolean isInvited(BPlayer invitee) {
@@ -123,7 +158,20 @@ public final class BWorld implements IBWorld {
         invitedPlayers.remove(invitee);
     }
 
-    @Override
+    /*
+    ----------------------------------------------------------
+                     WORLD LOADING & UNLOADING
+    ----------------------------------------------------------
+     */
+
+    public LoadingPhase getWorldPhase(World.Environment env) {
+        return worldPhases.get(env);
+    }
+
+    public void setWorldPhases(LoadingPhase loadingPhase, World.Environment env) {
+        worldPhases.put(env, loadingPhase);
+    }
+
     public void initialiseReset() {
         Logging.debug(plugin, "Initialised reset for: " + getAlias());
 
@@ -133,7 +181,6 @@ public final class BWorld implements IBWorld {
         }, plugin.getConfigSettings().getConfigParser().getResettingTime()));
     }
 
-    @Override
     public void updateWorldSize() {
         WorldSize maxSize = WorldSize.DEFAULT;
 
@@ -142,60 +189,77 @@ public final class BWorld implements IBWorld {
                 maxSize = worldSize;
         }
 
-        if (worldSize.equals(maxSize))
+        if (worldSize == maxSize)
             return;
 
-        Logging.debug(plugin, "Updated WorldSize from " +  worldSize.getValue() + " to " + maxSize.getValue() + " for: " + getAlias());
+        Logging.debug(plugin, "Updated world size from " +  worldSize.getValue() + " to " + maxSize.getValue() + " for: " + getWorldSize());
 
-        if (loadingPhase.equals(LoadingPhase.LOADED)) {
+        for (World world : getLoadedWorlds()) {
             Lang.WORLD_BORDER_UPDATE.send(this, (maxSize.getValue() > worldSize.getValue() ? "increased" : "decreased"), worldSize.getValue(), maxSize.getValue());
-            plugin.getBWorldManager().getWorldManager().getWorldFactory().setWorldBorder(getWorld(), maxSize);
+            plugin.getBWorldManager().getWorldManager().getWorldFactory().setWorldBorder(world, maxSize);
         }
 
         this.worldSize = maxSize;
     }
 
-    @Override
     public void initialiseUnloading() {
         Logging.debug(plugin, "Initialised unloading for: " + getAlias());
 
         setUnloading(Executor.sync(plugin, unused -> {
-            if (getOnlineBPlayers().size() != 0) return;
+            if (getOnlineBPlayers().size() != 0)
+                return;
+
             Logging.debug(plugin, "Unloading world: " + getAlias());
-            plugin.getBWorldManager().getWorldManager().unload(BWorld.this, true);
+            plugin.getBWorldManager().getWorldManager().unload(this, true);
         }, plugin.getConfigSettings().getConfigParser().getUnloadingTime()));
     }
 
-    @Override
     public void cancelUnloading() {
         Logging.debug(plugin, "Unloading cancelled for: " + getAlias());
         plugin.getServer().getScheduler().cancelTask(getUnloading());
     }
 
-    @Override
-    public String getAlias() {
-        return getOwner().getName();
-    }
+    /*
+    ----------------------------------------------------------
+                WORLD TELEPORTATION & LASTLOCATION
+    ----------------------------------------------------------
+     */
 
     @Override
     public void teleportToWorld(BPlayer bPlayer) {
-        teleportToWorld(bPlayer, Boolean::booleanValue);
+        teleportToWorld(bPlayer, World.Environment.NORMAL);
     }
 
-    @Override
-    public void teleportToWorld(BPlayer bPlayer, Consumer<Boolean> consumer) {
-        BLocation lastLoc = lastLocations.put(bPlayer, defaultLocation);
-        if (lastLoc == null)
-            return;
+    public void teleportToWorld(BPlayer bPlayer, World.Environment env) {
+        Location toTeleport = null;
+        if (env == World.Environment.NORMAL) {
+            BLocation lastLoc = lastLocations.put(bPlayer, defaultLocation);
+            if (lastLoc == null)
+                return;
 
-        bPlayer.runIfOnline(player -> player.teleportAsync(lastLoc.toLoc(getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN)
-                .whenComplete((bool, throwable) -> consumer.accept(bool)));
+            toTeleport = lastLoc.toLoc(getWorld());
+            // in creative if they player is being teleported to a nether portal they will get teleported
+            // to the nether
+            if (bPlayer.getIfOnline(Player::getGameMode) == GameMode.CREATIVE)
+                toTeleport = defaultLocation.toLoc(getWorld());
+        } else if (env == World.Environment.THE_END) {
+            toTeleport = getWorld(World.Environment.THE_END).getSpawnLocation();
+        }
+
+        if (toTeleport != null) {
+            Location finalToTeleport = toTeleport;
+            bPlayer.runIfOnline(player -> player.teleportAsync(finalToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN));
+        }
     }
 
-    @Override
     public void updateLastLocation(BPlayer bPlayer, Location location) {
-        lastLocations.put(bPlayer, new BLocation(location));
+        updateLastLocation(bPlayer, new BLocation(location));
     }
+
+    public void updateLastLocation(BPlayer bPlayer, BLocation bLocation) {
+        lastLocations.put(bPlayer, bLocation);
+    }
+
 
     @Override
     public BLocation getLastLocation(BPlayer bPlayer) {
@@ -211,13 +275,103 @@ public final class BWorld implements IBWorld {
 
     @Override
     public World getWorld() {
-        return plugin.getBWorldManager().getWorldManager().getWorld(this);
+        return getWorld(World.Environment.NORMAL);
+    }
+
+    public World getWorld(World.Environment env) {
+        return plugin.getBWorldManager().getWorldManager().getWorld(this, env);
+    }
+
+    public List<World> getLoadedWorlds() {
+        return getEnvironments(LoadingPhase.LOADED).stream()
+                .map(this::getWorld)
+                .collect(Collectors.toList());
+    }
+
+    public List<World.Environment> getEnvironments(LoadingPhase loadingPhase) {
+        return worldPhases.keySet().stream()
+                .filter(env -> getWorldPhase(env) == loadingPhase)
+                .collect(Collectors.toList());
+    }
+
+    public void onPlayerTeleport(BPlayer bPlayer, Location from, Location to) {
+        // When the player goes from nether/end to the overworld we don't save the last location
+        World worldTo = to.getWorld();
+        if (from.getWorld().equals(worldTo))
+            return;
+
+        BWorld _bWorld = plugin.getBWorldManager().getBWorld(worldTo);
+        if (equals(_bWorld)) {
+            // if they are touching an end portal block, teleport them to another location
+            if (from.getWorld().getEnvironment() == World.Environment.THE_END)
+                updateLastLocation(bPlayer, getDefaultLocation());
+            else if (worldTo.getEnvironment() == World.Environment.NETHER)
+                updateLastLocation(bPlayer, from);
+        } else
+            updateLastLocation(bPlayer, from);
+    }
+
+    /*
+    ----------------------------------------------------------
+                        WORLD SETTINGS
+    ----------------------------------------------------------
+     */
+
+    /**
+     * @param bPlayer player who tries to build/break something
+     * @return whether to cancel the event
+     */
+    public boolean canPlayerBuild(BPlayer bPlayer) {
+        return equals(bPlayer.getBWorld())  // player is NOT the owner
+                || bPlayer.isInBWorld(this, false) && isMembersCanBuild(); // NOT(player is member & members can build)
+    }
+
+    @Override
+    public void setDefaultGameMode(GameMode gamemode) {
+        this.defaultGameMode = gamemode;
+        updatePlayerGameModes();
     }
 
     public void setDifficulty(Difficulty difficulty, boolean updateWorld) {
         this.difficulty = difficulty;
-        if (updateWorld)
-            getWorld().setDifficulty(difficulty);
+        if (updateWorld) {
+            for (World loadedWorld : getLoadedWorlds())
+                loadedWorld.setDifficulty(difficulty);
+        }
+    }
+
+    public void setKeepInventory(boolean keepInventory) {
+        this.keepInventory = keepInventory;
+        for (World loadedWorld : getLoadedWorlds())
+            loadedWorld.setGameRule(GameRule.KEEP_INVENTORY, keepInventory);
+    }
+
+    public void setAnimals(boolean animals) {
+        this.animals = animals;
+
+        if (!animals) {
+            getLoadedWorlds().forEach(world -> world.getEntities().forEach(entity -> {
+                if (!shouldEntityExist(entity.getType()) && entity.customName() == null)
+                    entity.remove();
+            }));
+        }
+
+    }
+
+    /**
+     * @return whether a creature should be spawned or removed based on current
+     * settings
+     */
+    public boolean shouldEntityExist(EntityType entityType) {
+        return animals || !isAnimal(entityType);
+    }
+
+    private boolean isAnimal(EntityType entityType) {
+        Class<? extends Entity> entityClass = entityType.getEntityClass();
+        return entityClass != null &&
+                (Animals.class.isAssignableFrom(entityType.getEntityClass() )
+                || WaterMob.class.isAssignableFrom(entityType.getEntityClass())
+                || Ambient.class.isAssignableFrom(entityType.getEntityClass()));
     }
 
 }

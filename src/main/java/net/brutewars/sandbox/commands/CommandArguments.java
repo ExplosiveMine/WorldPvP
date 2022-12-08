@@ -5,6 +5,7 @@ import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.Pair;
 import net.brutewars.sandbox.bworld.BWorld;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -44,14 +45,14 @@ public final class CommandArguments {
     }
 
     public static BWorld getBWorld(BWorldPlugin plugin, CommandSender sender, String worldOwnerName) {
-        Player player = plugin.getServer().getPlayer(worldOwnerName);
+        OfflinePlayer player = plugin.getServer().getOfflinePlayer(worldOwnerName);
 
-        if (player == null) {
+        if (!player.hasPlayedBefore()) {
             Lang.INVALID_WORLD.send(sender);
             return null;
         }
 
-        BWorld bWorld = plugin.getBPlayerManager().get(player).getBWorld();
+        BWorld bWorld = plugin.getBPlayerManager().get(player.getUniqueId()).getBWorld();
         if (bWorld == null)
             Lang.INVALID_WORLD.send(sender);
 

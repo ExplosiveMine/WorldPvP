@@ -21,7 +21,7 @@ public final class CommandTabCompletes {
     }
 
     public static List<String> getWorldsToLeave(BWorldPlugin plugin, CommandSender sender) {
-        return plugin.getBPlayerManager().get((Player) sender).getAdditionalWorlds().stream()
+        return plugin.getBPlayerManager().get((Player) sender).getAdditionalBWorlds().stream()
                 .map(uuid -> plugin.getBWorldManager().getBWorld(uuid).getAlias())
                 .collect(Collectors.toList());
     }

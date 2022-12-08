@@ -3,7 +3,7 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdAccept implements ICommand {
+public final class CmdAccept implements Command {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("accept");
@@ -65,7 +65,6 @@ public final class CmdAccept implements ICommand {
         }
 
         invitingWorld.addPlayer(invitee, null);
-
         invitingWorld.teleportToWorld(invitee);
 
         Lang.PLAYER_ACCEPTED_INVITE.send(inviter, invitee.getName());

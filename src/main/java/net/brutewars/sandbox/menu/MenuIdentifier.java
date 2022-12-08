@@ -7,7 +7,8 @@ public enum MenuIdentifier {
     SETTINGS(),
     RECRUIT(SETTINGS),
     SOCIAL(),
-    CREATING_ANIMATION();
+    CREATING_ANIMATION(),
+    JOINWORLD();
 
     @Getter private final MenuIdentifier parentIdentifier;
 

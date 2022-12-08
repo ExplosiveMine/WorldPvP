@@ -49,8 +49,8 @@ public final class CyclingMenuItem extends MenuItem {
             if (item == null || !item.hasItemMeta())
                 return;
 
-            items.get(item.getItemMeta().getPersistentDataContainer().get(new NamespacedKey(plugin, "index"), PersistentDataType.INTEGER))
-                    .getAction().accept(event, bPlayer);
+            int index = item.getItemMeta().getPersistentDataContainer().getOrDefault(new NamespacedKey(plugin, "index"), PersistentDataType.INTEGER, 0);
+            items.get(index).getAction().accept(event, bPlayer);
         };
     }
 

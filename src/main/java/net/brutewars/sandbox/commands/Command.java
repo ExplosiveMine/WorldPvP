@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public interface ICommand {
+public interface Command {
     List<String> getAliases();
 
     String getPermission();

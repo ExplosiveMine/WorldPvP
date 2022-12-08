@@ -13,11 +13,18 @@ world:
     brute: 5000
   # the number of worlds to pre-generate for each type of world
   roster-size: 1
+  # the maximum number of tries to find a suitable spawn to generate the beacon structure in the overworld
+  # if the perfect area is found beforehand, fewer attempts are used.
+  # 100 attempts usually are NOT required, but it's a safeguard to limit the maximum time taken by the algorithm
+  # this can be increased at the cost of a longer possible generation time (which is rare)
+  spawn-location-attempts: 100
 
 spawn-world:
   name: "world"
   # Location format: "x:y:z:yaw:pitch" Example: "50:100:50:90.0:0.0"
   location: ""
+  # can be SURVIVAL, CREATIVE, ADVENTURE, SPECTATOR
+  default_gamemode: SURVIVAL
 
 times:
   # amount of time given to a player to accept an invitation before it expires
@@ -26,8 +33,10 @@ times:
   world-unload: 600
   # the time before a world reset is cancelled if the player does not confirm
   reset-request: 30
+  # the time interval at which items are cleared
+  clear-lag: 300
   # The interval in days at which new worlds are generated to be used when players create worlds
   # NOTE THAT WORLDS ARE RENEWED ONLY WHEN THE SERVER RESTARTS
   renew-worlds: 7
 
-debug: false
+debug: true

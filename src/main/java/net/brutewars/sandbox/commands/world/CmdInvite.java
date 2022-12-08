@@ -3,19 +3,22 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandArguments;
 import net.brutewars.sandbox.commands.CommandTabCompletes;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
-import net.brutewars.sandbox.utils.JSONMessage;
 import net.brutewars.sandbox.utils.Pair;
 import net.brutewars.sandbox.utils.StringUtils;
 import net.brutewars.sandbox.bworld.BWorld;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.command.CommandSender;
 
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdInvite implements ICommand {
+public final class CmdInvite implements Command {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("invite");
@@ -55,15 +58,15 @@ public final class CmdInvite implements ICommand {
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
         Pair<BWorld, BPlayer> pair = CommandArguments.getPair(plugin, sender);
 
-        BPlayer inviter = pair.getValue();
         BWorld bWorld = pair.getKey();
-
         if (bWorld == null)
             return;
 
         BPlayer invitee = CommandArguments.getBPlayer(plugin, sender, args[1]);
-        if (invitee == null) return;
+        if (invitee == null)
+            return;
 
+        BPlayer inviter = pair.getValue();
         if (bWorld.getPlayers(true).contains(invitee)) {
             Lang.INVITED_PLAYER_IS_MEMBER.send(inviter);
             return;
@@ -75,14 +78,19 @@ public final class CmdInvite implements ICommand {
         }
 
         String worldName = bWorld.getAlias();
-        JSONMessage.create(Lang.PLAYER_INVITED.get(worldName))
-                .then(StringUtils.colour(" &aACC. "))
-                .tooltip(Lang.ACCEPT_INVITE_TOOLTIP.get())
-                .runCommand("/world accept " + worldName)
-                .then(StringUtils.colour("&cDECL. "))
-                .tooltip(Lang.DENY_INVITE_TOOLTIP.get())
-                .runCommand("/world deny " + worldName)
-                .send(invitee);
+        TextComponent textComponent = Component.text()
+                .append(Component.text(Lang.PLAYER_INVITED.get(worldName)))
+                .append(Component.text()
+                        .append(Component.text(StringUtils.colour(" &aACC. ")))
+                        .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text(Lang.ACCEPT_INVITE_TOOLTIP.get())))
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/world accept " + worldName)))
+                .append(Component.text()
+                        .append(Component.text(StringUtils.colour("&cDECL. ")))
+                        .hoverEvent(HoverEvent.hoverEvent(HoverEvent.Action.SHOW_TEXT, Component.text(Lang.DENY_INVITE_TOOLTIP.get())))
+                        .clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, "/world deny " + worldName)))
+                .build();
+
+        invitee.runIfOnline(player -> player.sendMessage(textComponent));
 
         bWorld.invite(inviter, invitee);
         Lang.SUCCESSFULLY_INVITED_PLAYER.send(inviter, invitee.getName());

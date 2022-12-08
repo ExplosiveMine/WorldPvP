@@ -2,14 +2,14 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.BWorld;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.commands.PermissibleCommand;
 import net.brutewars.sandbox.menu.MenuIdentifier;
 import net.brutewars.sandbox.player.BPlayer;
 
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdSettings implements IPermissibleCommand {
+public final class CmdSettings implements PermissibleCommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("settings");

@@ -1,6 +1,7 @@
 package net.brutewars.sandbox.menu.items.builders;
 
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.menu.items.InteractableItem;
 import net.brutewars.sandbox.menu.items.MenuItem;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.StringUtils;
@@ -8,6 +9,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -24,7 +26,9 @@ public abstract class BaseItemBuilder<Builder extends BaseItemBuilder<Builder>> 
 
     protected ItemMeta meta;
 
-    protected BiConsumer<InventoryClickEvent, BPlayer> action;
+    protected BiConsumer<InventoryClickEvent, BPlayer> inventoryClickAction;
+
+    protected BiConsumer<PlayerInteractEvent, BPlayer> playerInteractAction;
 
     protected BiFunction<ItemStack, BPlayer, ItemStack> function;
 
@@ -63,13 +67,17 @@ public abstract class BaseItemBuilder<Builder extends BaseItemBuilder<Builder>> 
         return (Builder) this;
     }
 
-    public <T, Z> Builder getKey(BWorldPlugin plugin, String identifier, PersistentDataType<T, Z> dataType) {
-        meta.getPersistentDataContainer().get(new NamespacedKey(plugin, identifier), dataType);
+    public <T, Z> Z getKey(BWorldPlugin plugin, String identifier, PersistentDataType<T, Z> dataType, Z defaultValue) {
+        return meta.getPersistentDataContainer().getOrDefault(new NamespacedKey(plugin, identifier), dataType, defaultValue);
+    }
+
+    public Builder onClick(BiConsumer<InventoryClickEvent, BPlayer> action) {
+        this.inventoryClickAction = action;
         return (Builder) this;
     }
 
-    public Builder setAction(BiConsumer<InventoryClickEvent, BPlayer> action) {
-        this.action = action;
+    public Builder onInteract(BiConsumer<PlayerInteractEvent, BPlayer> action) {
+        this.playerInteractAction = action;
         return (Builder) this;
     }
 
@@ -89,7 +97,10 @@ public abstract class BaseItemBuilder<Builder extends BaseItemBuilder<Builder>> 
     }
 
     public MenuItem toMenuItem() {
-        return new MenuItem(toItem(), action, function);
+        return new MenuItem(toItem(), inventoryClickAction, function);
+    }
+    public InteractableItem toInteractableItem() {
+        return new InteractableItem(toItem(), playerInteractAction, function);
     }
 
 }

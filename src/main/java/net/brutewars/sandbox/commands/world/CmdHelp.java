@@ -2,17 +2,17 @@ package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.CommandHandler;
-import net.brutewars.sandbox.commands.ICommand;
+import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
 import org.bukkit.command.CommandSender;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-public final class CmdHelp implements ICommand {
-    private final Map<ICommand, String> iCommands = new HashMap<>();
+public final class CmdHelp implements Command {
+    private final Map<Command, String> iCommands = new HashMap<>();
 
-    private final Comparator<ICommand> comparator = Comparator.comparing(this::getLabel).thenComparing(o -> o.getAliases().get(0));
+    private final Comparator<Command> comparator = Comparator.comparing(this::getLabel).thenComparing(o -> o.getAliases().get(0));
 
     @Override
     public List<String> getAliases() {
@@ -67,7 +67,7 @@ public final class CmdHelp implements ICommand {
             return;
         }
 
-        List<ICommand> subCommands = getICommands(plugin).keySet().stream()
+        List<Command> subCommands = getICommands(plugin).keySet().stream()
                 .filter(subCommand -> subCommand.getPermission().isEmpty() || sender.hasPermission(subCommand.getPermission()))
                 .sorted(comparator)
                 .collect(Collectors.toList());
@@ -90,7 +90,7 @@ public final class CmdHelp implements ICommand {
 
         Lang.HELP_HEADER.send(sender, page, lastPage);
 
-        for (ICommand _subCommand : subCommands) {
+        for (Command _subCommand : subCommands) {
             if (_subCommand.displayCommand() && (_subCommand.getPermission().isEmpty() || sender.hasPermission(_subCommand.getPermission()))) {
                 String description = _subCommand.getDescription();
                 Lang.HELP_LINE.send(sender, getLabel(_subCommand) + " " +  _subCommand.getUsage(), description == null ? "" : description);
@@ -108,7 +108,7 @@ public final class CmdHelp implements ICommand {
         List<String> list = new ArrayList<>();
 
         if (args.length == 2) {
-            List<ICommand> subCommands = getICommands(plugin).keySet().stream()
+            List<Command> subCommands = getICommands(plugin).keySet().stream()
                     .filter(subCommand -> subCommand.displayCommand() && (subCommand.getPermission().isEmpty() || sender.hasPermission(subCommand.getPermission())))
                     .sorted(comparator)
                     .collect(Collectors.toList());
@@ -123,11 +123,11 @@ public final class CmdHelp implements ICommand {
         return list;
     }
 
-    private String getLabel(ICommand iCommand) {
-        return iCommands.get(iCommand);
+    private String getLabel(Command command) {
+        return iCommands.get(command);
     }
 
-    private Map<ICommand, String> getICommands(BWorldPlugin plugin) {
+    private Map<Command, String> getICommands(BWorldPlugin plugin) {
         if (iCommands.isEmpty()) {
             for (CommandHandler commandHandler : plugin.getCommands())
                 commandHandler.getSubCommands().forEach(iCommand -> iCommands.put(iCommand, commandHandler.getLabel()));

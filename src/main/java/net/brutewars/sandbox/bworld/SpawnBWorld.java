@@ -5,14 +5,13 @@ import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.lastlocation.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.world.LoadingPhase;
-import net.brutewars.sandbox.world.WorldSize;
-import org.bukkit.Location;
+import org.bukkit.GameMode;
 import org.bukkit.World;
 
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public final class SpawnBWorld implements IBWorld {
     private final BWorldPlugin plugin;
@@ -23,6 +22,7 @@ public final class SpawnBWorld implements IBWorld {
     @Getter private final int resetting = -1;
     @Getter private final int unloading = -1;
 
+    private GameMode defaultGameMode;
     private BLocation defaultLocation;
 
     public SpawnBWorld(BWorldPlugin plugin) {
@@ -32,18 +32,8 @@ public final class SpawnBWorld implements IBWorld {
     }
 
     @Override
-    public WorldSize getWorldSize() {
-        return WorldSize.DEFAULT;
-    }
-
-    @Override
-    public LoadingPhase getLoadingPhase() {
+    public LoadingPhase getWorldPhase(World.Environment env) {
         return LoadingPhase.LOADED;
-    }
-
-    @Override
-    public Set<BPlayer> getOnlineBPlayers() {
-        return null;
     }
 
     @Override
@@ -82,27 +72,7 @@ public final class SpawnBWorld implements IBWorld {
     }
 
     @Override
-    public void initialiseReset() {
-        //noop
-    }
-
-    @Override
-    public void updateWorldSize() {
-        //noop
-    }
-
-    @Override
-    public void initialiseUnloading() {
-        //noop
-    }
-
-    @Override
-    public void cancelUnloading() {
-        //noop
-    }
-
-    @Override
-    public String getWorldName() {
+    public String getWorldPath() {
         return plugin.getConfigSettings().getConfigParser().getWorldName();
     }
 
@@ -118,17 +88,7 @@ public final class SpawnBWorld implements IBWorld {
      */
     @Override
     public void teleportToWorld(BPlayer bPlayer) {
-        teleportToWorld(bPlayer, null);
-    }
-
-    @Override
-    public void teleportToWorld(BPlayer bPlayer, Consumer<Boolean> biConsumer) {
         bPlayer.runIfOnline(player -> player.teleport(getDefaultLocation().toLoc(getWorld())));
-    }
-
-    @Override
-    public void updateLastLocation(BPlayer bPlayer, Location location) {
-        //noop
     }
 
     @Override
@@ -156,8 +116,29 @@ public final class SpawnBWorld implements IBWorld {
 
     @Override
     public World getWorld() {
-        World world = plugin.getServer().getWorld(getWorldName());
+        World world = plugin.getServer().getWorld(getWorldPath());
         return world == null ? plugin.getServer().getWorlds().get(0) : world;
+    }
+
+    @Override
+    public GameMode getDefaultGameMode() {
+        if (defaultGameMode == null)
+            setDefaultGameMode(GameMode.valueOf(plugin.getConfigSettings().getConfigParser().getSpawnDefaultGamemode()));
+
+        return defaultGameMode;
+    }
+
+    @Override
+    public void setDefaultGameMode(GameMode gamemode) {
+        this.defaultGameMode = gamemode;
+        updatePlayerGameModes();
+    }
+
+    @Override
+    public Set<BPlayer> getActivePlayers() {
+        return getWorld().getPlayers().stream()
+                .map(player -> plugin.getBPlayerManager().get(player))
+                .collect(Collectors.toSet());
     }
 
 }

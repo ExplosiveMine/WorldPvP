@@ -22,7 +22,7 @@ public final class AnimatedMenuParser extends SectionParser {
 
     @Override
     public void parse() {
-        animationSpeed = getSection().getLong("animation speed", 7);
+        animationSpeed = getSection().getLong("animation speed", 7L);
 
         List<String> patterns = getSection().getStringList("frames");
         for (String s : patterns)

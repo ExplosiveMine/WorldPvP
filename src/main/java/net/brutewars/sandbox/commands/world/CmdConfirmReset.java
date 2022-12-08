@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.commands.world;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.commands.IPermissibleCommand;
+import net.brutewars.sandbox.commands.PermissibleCommand;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.bworld.BWorld;
@@ -9,7 +9,7 @@ import net.brutewars.sandbox.bworld.BWorld;
 import java.util.Collections;
 import java.util.List;
 
-public final class CmdConfirmReset implements IPermissibleCommand {
+public final class CmdConfirmReset implements PermissibleCommand {
     @Override
     public List<String> getAliases() {
         return Collections.singletonList("confirm");
