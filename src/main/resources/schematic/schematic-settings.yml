@@ -1,0 +1,10 @@
+blocks:
+  special:
+    BONUS_CHEST: "chest"
+  other:
+    #raw_gold_block: "nether_portal"
+
+# This is the size of the largest schematic so that any randomly chosen schematic will fit in the
+# spawn for the pre-generated worlds
+schematic length x: 5
+schematic length z: 6

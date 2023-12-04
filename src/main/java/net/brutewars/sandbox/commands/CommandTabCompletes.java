@@ -33,7 +33,7 @@ public final class CommandTabCompletes {
     }
 
     public static List<String> getPlayersToKick(BWorldPlugin plugin, CommandSender sender) {
-        return plugin.getBPlayerManager().get((Player) sender).getBWorld().getPlayers(false).stream()
+        return plugin.getBPlayerManager().get((Player) sender).getBWorld().getMembers(false).stream()
                 .map(BPlayer::getName)
                 .collect(Collectors.toList());
     }

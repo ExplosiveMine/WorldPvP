@@ -3,7 +3,6 @@ package net.brutewars.sandbox.commands.world;
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.commands.Command;
 import net.brutewars.sandbox.config.parser.Lang;
-import net.brutewars.sandbox.world.WorldSize;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -48,8 +47,10 @@ public final class CmdReload implements Command {
 
     @Override
     public void execute(BWorldPlugin plugin, CommandSender sender, String[] args) {
-        Lang.reload(plugin);
-        WorldSize.reload(plugin);
+  //todo test if this works fine
+        plugin.getConfigSettings().reload();
+//        Lang.reload(plugin);
+//        WorldSize.reload(plugin);
         Lang.RELOADED_CONFIG.send(sender);
     }
 

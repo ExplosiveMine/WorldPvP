@@ -28,6 +28,7 @@ public final class MenuManager {
         registerMenu(new CreatingAnimationMenu(plugin));
         registerMenu(new SocialMenu(plugin));
         registerMenu(new JoinWorldMenu(plugin));
+        registerMenu(new StructureGenMenu(plugin));
     }
 
     private void registerMenu(Menu menu) {

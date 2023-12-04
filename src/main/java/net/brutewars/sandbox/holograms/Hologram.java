@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.world.holograms;
+package net.brutewars.sandbox.holograms;
 
 import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;

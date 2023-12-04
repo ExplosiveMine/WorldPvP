@@ -12,24 +12,23 @@ import java.util.function.BiFunction;
 public class MenuItem {
     private final ItemStack item;
 
-    // action to do on inventory click
-    @Getter private final BiConsumer<InventoryClickEvent, BPlayer> action;
+    @Getter private final BiConsumer<InventoryClickEvent, BPlayer> onClickAction;
 
     // modify the item based on the player
-    @Getter private final BiFunction<ItemStack, BPlayer, ItemStack> function;
+    @Getter private final BiFunction<ItemStack, BPlayer, ItemStack> playerFunction;
 
-    public MenuItem(ItemStack item, BiConsumer<InventoryClickEvent, BPlayer> action) {
-        this(item, action, null);
+    public MenuItem(ItemStack item, BiConsumer<InventoryClickEvent, BPlayer> onClickAction) {
+        this(item, onClickAction, null);
     }
 
-    public MenuItem(ItemStack item, BiConsumer<InventoryClickEvent, BPlayer> action, BiFunction<ItemStack, BPlayer, ItemStack> function) {
+    public MenuItem(ItemStack item, BiConsumer<InventoryClickEvent, BPlayer> action, BiFunction<ItemStack, BPlayer, ItemStack> playerFunction) {
         this.item = item;
-        this.action = action;
-        this.function = function;
+        this.onClickAction = action;
+        this.playerFunction = playerFunction;
     }
 
     public ItemStack getItem(BPlayer bPlayer) {
-        return (function == null || bPlayer == null) ? item : function.apply(item.clone(), bPlayer);
+        return (playerFunction == null || bPlayer == null) ? item : playerFunction.apply(item.clone(), bPlayer);
     }
 
 }

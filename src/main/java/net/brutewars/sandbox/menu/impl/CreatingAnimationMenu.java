@@ -31,7 +31,7 @@ public final class CreatingAnimationMenu extends AnimatedMenu {
         BWorld bWorld = bPlayer.getBWorld();
         if (bWorld != null) {
             bWorld.teleportToWorld(bPlayer);
-            Lang.WORLD_CREATED.send(bWorld.getOwner(), bWorld.getWorldSize().getValue());
+            Lang.WORLD_CREATED.send(bWorld.getOwner(), bWorld.getSettings().getBorderSize().getSize());
         }
     }
 

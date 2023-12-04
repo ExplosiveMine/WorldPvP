@@ -67,7 +67,7 @@ public final class CmdInvite implements Command {
             return;
 
         BPlayer inviter = pair.getValue();
-        if (bWorld.getPlayers(true).contains(invitee)) {
+        if (bWorld.getMembers(true).contains(invitee)) {
             Lang.INVITED_PLAYER_IS_MEMBER.send(inviter);
             return;
         }

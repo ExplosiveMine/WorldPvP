@@ -33,7 +33,7 @@ public final class CyclingMenuItem extends MenuItem {
 
         items.add(new MenuItem(setIndexKey(item.getItem(null)), (event, bPlayer) -> {
             event.getInventory().setItem(event.getSlot(), items.get((size == items.size() - 1) ? 0 : size + 1).getItem(bPlayer));
-            item.getAction().accept(event, bPlayer);
+            item.getOnClickAction().accept(event, bPlayer);
         }));
     }
 
@@ -43,14 +43,14 @@ public final class CyclingMenuItem extends MenuItem {
     }
 
     @Override
-    public BiConsumer<InventoryClickEvent, BPlayer> getAction() {
+    public BiConsumer<InventoryClickEvent, BPlayer> getOnClickAction() {
         return (event, bPlayer) -> {
             ItemStack item = event.getCurrentItem();
             if (item == null || !item.hasItemMeta())
                 return;
 
             int index = item.getItemMeta().getPersistentDataContainer().getOrDefault(new NamespacedKey(plugin, "index"), PersistentDataType.INTEGER, 0);
-            items.get(index).getAction().accept(event, bPlayer);
+            items.get(index).getOnClickAction().accept(event, bPlayer);
         };
     }
 

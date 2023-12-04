@@ -16,7 +16,7 @@ public final class CommandArguments {
      * @apiNote This method is to be used only in the case where the sender
      * needs to have a BWorld. Since a message saying that the sender does not have a BWorld
      * is sent if they don't.
-     *
+     * <p>
      * Use {@link CommandArguments#getBPlayer(BWorldPlugin, CommandSender)} to simply getMenu the player
      * and the BWorld afterwards.
      */
@@ -36,7 +36,7 @@ public final class CommandArguments {
 
     public static BPlayer getBPlayer(BWorldPlugin plugin, CommandSender sender, String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
-        if (player == null) {
+        if (player == null || !player.isOnline()) {
             Lang.INVALID_PLAYER.send(sender);
             return null;
         }

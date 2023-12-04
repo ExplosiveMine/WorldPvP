@@ -5,9 +5,9 @@ import net.brutewars.sandbox.bworld.BWorld;
 import net.brutewars.sandbox.bworld.BWorldManager;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
-import net.brutewars.sandbox.world.dimensions.EndDimension;
-import net.brutewars.sandbox.world.dimensions.OverworldDimension;
-import net.brutewars.sandbox.world.holograms.HologramManager;
+import net.brutewars.sandbox.bworld.world.dimensions.EndDimension;
+import net.brutewars.sandbox.bworld.world.dimensions.OverworldDimension;
+import net.brutewars.sandbox.holograms.HologramManager;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -41,7 +41,7 @@ public final class BlockEvents extends EventListener {
 
         World world = block.getWorld();
         HologramManager holoManager = plugin.getHologramManager();
-        OverworldDimension overWorldDimension = (OverworldDimension) bWorldManager.getWorldManager().getWorldFactory().getDimension(World.Environment.NORMAL);
+        OverworldDimension overWorldDimension = (OverworldDimension) bWorld.getSandboxWorld(World.Environment.NORMAL);
         if (overWorldDimension.isSpecialBlock(block, Material.BEACON, "beacon")) {
             holoManager.removeIncrementalHolograms(world);
             holoManager.removeHologram(world, "welcome");
@@ -74,8 +74,7 @@ public final class BlockEvents extends EventListener {
         if (world.getEnvironment() != World.Environment.NORMAL)
             return;
 
-        OverworldDimension dimension = (OverworldDimension) bWorldManager.getWorldManager().getWorldFactory().getDimension(World.Environment.NORMAL);
-        dimension.onBlockPhysics(event);
+        ((OverworldDimension) bWorld.getSandboxWorld(World.Environment.NORMAL)).onBlockPhysics(event);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -88,7 +87,6 @@ public final class BlockEvents extends EventListener {
         if (world.getEnvironment() != World.Environment.THE_END)
             return;
 
-        EndDimension dimension = (EndDimension) bWorldManager.getWorldManager().getWorldFactory().getDimension(World.Environment.THE_END);
-        dimension.onBlockFromTo(event);
+        ((EndDimension) bWorld.getSandboxWorld(World.Environment.THE_END)).onBlockFromTo(event);
     }
 }

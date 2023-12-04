@@ -64,7 +64,7 @@ public final class CmdAccept implements Command {
             return;
         }
 
-        invitingWorld.addPlayer(invitee, null);
+        invitingWorld.addMember(invitee, null);
         invitingWorld.teleportToWorld(invitee);
 
         Lang.PLAYER_ACCEPTED_INVITE.send(inviter, invitee.getName());

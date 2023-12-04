@@ -16,7 +16,7 @@ import java.util.UUID;
 
 public class JoinWorldMenu extends Menu {
     public JoinWorldMenu(BWorldPlugin plugin) {
-        super(plugin, MenuIdentifier.JOINWORLD, Lang.JOIN_WORLD_MENU.get(), 36);
+        super(plugin, MenuIdentifier.JOIN_WORLD, Lang.JOIN_WORLD_MENU.get(), 36);
     }
 
     @Override

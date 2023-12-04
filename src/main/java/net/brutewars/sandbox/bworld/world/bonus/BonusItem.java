@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.world.bonus;
+package net.brutewars.sandbox.bworld.world.bonus;
 
 import net.brutewars.sandbox.menu.items.builders.ItemBuilder;
 import org.bukkit.Material;

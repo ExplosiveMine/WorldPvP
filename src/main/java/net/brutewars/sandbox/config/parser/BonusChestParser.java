@@ -1,7 +1,7 @@
 package net.brutewars.sandbox.config.parser;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.world.bonus.BonusItem;
+import net.brutewars.sandbox.bworld.world.bonus.BonusItem;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;
 

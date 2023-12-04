@@ -113,7 +113,7 @@ public final class WorldCommandHandler extends CommandHandler {
         }
 
         private void teleportPlayer(BWorld bWorld, BPlayer bPlayer) {
-            switch (bWorld.getWorldPhase(World.Environment.NORMAL)) {
+            switch (bWorld.getLoadingPhase(World.Environment.NORMAL)) {
                 case LOADING:
                     Lang.WORLD_LOADING.send(bPlayer);
                     return;
@@ -122,7 +122,7 @@ public final class WorldCommandHandler extends CommandHandler {
                     return;
                 case UNLOADED:
                     Lang.WORLD_LOADING.send(bWorld);
-                    plugin.getBWorldManager().getWorldManager().load(bWorld, World.Environment.NORMAL);
+                    bWorld.loadSandboxWorld(World.Environment.NORMAL);
                 case UNLOADING:
                     bWorld.cancelUnloading();
             }

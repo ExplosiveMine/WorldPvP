@@ -128,8 +128,8 @@ public abstract class Menu implements InventoryHolder {
     public void clickItemAt(InventoryClickEvent event) {
         BPlayer bPlayer = plugin.getBPlayerManager().get(event.getWhoClicked().getUniqueId());
         MenuItem item = defaultItems.get(event.getRawSlot());
-        if (item != null && item.getAction() != null)
-            item.getAction().accept(event, bPlayer);
+        if (item != null && item.getOnClickAction() != null)
+            item.getOnClickAction().accept(event, bPlayer);
     }
 
     public void update(BPlayer bPlayer) {

@@ -7,10 +7,11 @@ commands:
 
 world:
   sizes:
-    default: 1000
-    tyrant: 1500
-    nomad: 2500
-    brute: 5000
+    # if default setting is not present, default will be 1000 blocks
+    default: 20000
+    tyrant: 50000
+    nomad: 75000
+    brute: 100000
   # the number of worlds to pre-generate for each type of world
   roster-size: 1
   # the maximum number of tries to find a suitable spawn to generate the beacon structure in the overworld

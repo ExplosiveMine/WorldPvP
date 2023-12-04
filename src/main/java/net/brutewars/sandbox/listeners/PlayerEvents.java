@@ -2,9 +2,9 @@ package net.brutewars.sandbox.listeners;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.bworld.BWorld;
-import net.brutewars.sandbox.bworld.IBWorld;
-import net.brutewars.sandbox.bworld.SpawnBWorld;
-import net.brutewars.sandbox.bworld.lastlocation.BLocation;
+import net.brutewars.sandbox.bworld.world.dimensions.SpawnWorld;
+import net.brutewars.sandbox.bworld.world.location.BLocation;
+import net.brutewars.sandbox.bworld.settings.WorldSettingsContainer;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.thread.Executor;
 import net.brutewars.sandbox.utils.PersistentDataUtils;
@@ -23,11 +23,9 @@ public final class PlayerEvents extends EventListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        plugin.getHudManager().onPlayerJoin(event);
-
         Executor.sync(plugin, unused -> {
             // Teleport the player to the world spawn if they are in the spawn world
-            SpawnBWorld spawn = plugin.getBWorldManager().getSpawn();
+            SpawnWorld spawn = plugin.getBWorldManager().getSpawn();
             if (spawn.getWorld().equals(event.getPlayer().getLocation().getWorld()))
                 spawn.teleportToWorld(plugin.getBPlayerManager().get(event.getPlayer()));
         });
@@ -35,8 +33,6 @@ public final class PlayerEvents extends EventListener {
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        plugin.getHudManager().onPlayerQuit(event.getPlayer());
-
         Player player = event.getPlayer();
         BPlayer bPlayer = plugin.getBPlayerManager().get(player);
 
@@ -53,10 +49,10 @@ public final class PlayerEvents extends EventListener {
 
             if (bWorld.equals(plugin.getBWorldManager().getBWorld(world))
                     && world.getEnvironment() == World.Environment.NORMAL) {
-                bWorld.updateLastLocation(bPlayer, lastLoc);
+                bWorld.getLastLocationTracker().updateLastLocation(bPlayer, lastLoc);
             }
 
-            if (bWorld.getOnlineBPlayers().size() == 0)
+            if (bWorld.getOnlineMembers().size() == 0)
                 bWorld.initialiseUnloading();
         });
     }
@@ -64,7 +60,7 @@ public final class PlayerEvents extends EventListener {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerMove(PlayerMoveEvent event) {
         //todo
-        // move this to EndDimension.java
+        // maybe move this to end dimension? if it fits
         BWorld bWorld = plugin.getBWorldManager().getBWorld(event.getTo().getWorld());
         if (bWorld == null)
             return;
@@ -87,12 +83,12 @@ public final class PlayerEvents extends EventListener {
     public void onPlayerTeleport(PlayerTeleportEvent event) {
         BPlayer bPlayer = plugin.getBPlayerManager().get(event.getPlayer());
 
-        // Update player's gamemode
-        IBWorld iBWorld = plugin.getBWorldManager().getIBWorld(event.getTo().getWorld());
-        if (iBWorld != null)
-            bPlayer.setGameMode(iBWorld.getDefaultGameMode());
+        //todo probably need to move this to BWorld#onPlayerTeleport
+        // also make it so when a player is teleported in the same world it doesnt affect gamemode
+        WorldSettingsContainer settingsContainer = plugin.getBWorldManager().getSettingsContainer(event.getTo().getWorld());
+        if (settingsContainer != null)
+            bPlayer.setGameMode(settingsContainer.getSettings().getDefaultGameMode());
 
-        // Update last location
         BWorld bWorld = plugin.getBWorldManager().getBWorld(event.getFrom().getWorld());
         if (bPlayer.isInBWorld(bWorld, true))
             bWorld.onPlayerTeleport(bPlayer, event.getFrom(), event.getTo());
@@ -103,8 +99,6 @@ public final class PlayerEvents extends EventListener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        plugin.getHudManager().onPlayerDeath(event);
-
         Location loc = event.getPlayer().getLocation();
         World world = loc.getWorld();
         BWorld bWorld = plugin.getBWorldManager().getBWorld(world);
@@ -118,13 +112,11 @@ public final class PlayerEvents extends EventListener {
         if (!bPlayer.isInBWorld(bWorld, true))
             return;
 
-        bWorld.updateLastLocation(bPlayer, loc);
+        bWorld.getLastLocationTracker().updateLastLocation(bPlayer, loc);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        plugin.getHudManager().onPlayerRespawn(event);
-
         Location deathLoc = event.getPlayer().getLocation();
         BWorld bWorld = plugin.getBWorldManager().getBWorld(deathLoc.getWorld());
         if (bWorld == null)
@@ -132,17 +124,7 @@ public final class PlayerEvents extends EventListener {
 
         Location bedLocation = event.getPlayer().getBedSpawnLocation();
         if (bedLocation == null || !bedLocation.getWorld().equals(bWorld.getWorld()))
-            event.setRespawnLocation(bWorld.getDefaultLocation().toLoc(bWorld.getWorld()));
-    }
-
-    @EventHandler
-    public void onPlayerInteract(PlayerInteractEvent event) {
-        plugin.getHudManager().onPlayerInteract(event);
-    }
-
-    @EventHandler(ignoreCancelled = true)
-    public void onPlayerDropItem(PlayerDropItemEvent event) {
-        plugin.getHudManager().onPlayerDrop(event);
+            event.setRespawnLocation(bWorld.getLastLocationTracker().getDefaultLocation().toLoc(bWorld.getWorld()));
     }
 
 }

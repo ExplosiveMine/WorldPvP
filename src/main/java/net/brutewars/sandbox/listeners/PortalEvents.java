@@ -29,17 +29,24 @@ public final class PortalEvents extends EventListener {
             return;
         }
 
-        // player going from nether to overworld/end, so we use last location.
-        if (event.getFrom().getWorld().getEnvironment() == World.Environment.NETHER) {
-            if (toEnv == World.Environment.NORMAL || toEnv == World.Environment.THE_END)
-                bWorld.teleportToWorld(plugin.getBPlayerManager().get(event.getPlayer()), toEnv);
+        World.Environment fromEnv = event.getFrom().getWorld().getEnvironment();
+        if (fromEnv == World.Environment.NETHER
+                && (toEnv == World.Environment.NORMAL || toEnv == World.Environment.THE_END)) {
+            bWorld.teleportToWorld(plugin.getBPlayerManager().get(event.getPlayer()), toEnv);
+            event.setCancelled(true);
         }
 
-        event.setCancelled(true);
+        if (event.getCause() == PlayerPortalEvent.TeleportCause.END_PORTAL
+                && fromEnv == World.Environment.NORMAL
+                && toEnv == World.Environment.THE_END)
+            event.getTo().setWorld(bWorld.getWorld(toEnv));
     }
+
+
 
     @EventHandler(ignoreCancelled = true)
     public void onEntityPortal(EntityPortalEvent event) {
+        //todo might cause bugs
         BWorld bWorld = plugin.getBWorldManager().getBWorld(event.getFrom().getWorld());
         if (bWorld == null)
             return;
@@ -68,14 +75,16 @@ public final class PortalEvents extends EventListener {
         World.Environment env = World.Environment.NORMAL;
         if (world.getEnvironment() == env || world.getEnvironment() == World.Environment.NETHER) {
             if (mat == Material.END_PORTAL)
-                env = World.Environment.THE_END;
+                return;
 
             loc = bWorld.getWorld(env).getSpawnLocation();
         } else {
-            loc = bWorld.getDefaultLocation().toLoc(bWorld.getWorld());
+            loc = bWorld.getLastLocationTracker().getDefaultLocation().toLoc(bWorld.getWorld());
         }
 
-        ent.teleport(loc);
+        ent.teleportAsync(loc);
     }
+
+
 
 }

@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.world;
+package net.brutewars.sandbox.bworld.world;
 
 public enum LoadingPhase {
     CREATING,

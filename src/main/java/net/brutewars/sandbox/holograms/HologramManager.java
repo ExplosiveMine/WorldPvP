@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.world.holograms;
+package net.brutewars.sandbox.holograms;
 
 import net.brutewars.sandbox.BWorldPlugin;
 import net.brutewars.sandbox.config.parser.Lang;
@@ -33,7 +33,7 @@ public final class HologramManager {
     /**
      * Called to initiate the ticking of dynamic holograms.
      */
-    public void init() {
+    public void startThread() {
         Executor.sync(plugin, bukkitRunnable -> {
             for (DynamicHologram holo : dynamicHolograms.values())
                 holo.update();
@@ -154,7 +154,6 @@ public final class HologramManager {
         for (Iterator<Pair<UUID, String>> iter = dynamicHolograms.keySet().iterator(); iter.hasNext();) {
             Pair<UUID, String> pair = iter.next();
             if (world.getUID().equals(pair.getKey())) {
-                System.out.println("world unload");
                 dynamicHolograms.get(pair).deSpawn();
                 iter.remove();
             }

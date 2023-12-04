@@ -3,4 +3,4 @@ author: explosivemines
 version: '${project.version}'
 api-version: 1.19
 name: Sandbox
-depend: [Vault]
+depend: [Vault, WorldEdit]

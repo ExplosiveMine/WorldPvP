@@ -50,7 +50,7 @@ public final class SettingsMenu extends Menu {
                         .onClick((event, bPlayer) -> setDifficulty(bPlayer, Difficulty.PEACEFUL))
                         .setLore("&7Current difficulty is &eHARD", "&7Click to set to &bPEACEFUL")
                 ).setStartingIndex(bPlayer ->
-                        switch (bPlayer.getBWorld().getDifficulty()) {
+                        switch (bPlayer.getBWorld().getSettings().getDifficulty()) {
                             case EASY -> 1;
                             case NORMAL -> 2;
                             case HARD -> 3;
@@ -67,7 +67,7 @@ public final class SettingsMenu extends Menu {
                         .setDisplayName("&6&lAnimals")
                         .setLore("&7Animals are set to &cFALSE", "&7Click to set to &aTRUE")
                         .onClick((event, bPlayer) -> setAnimals(bPlayer, true)))
-                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isAnimals() ? 0 : 1));
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().getSettings().isAnimals() ? 0 : 1));
 
         setItem(3, new CyclingItemBuilder(plugin)
                 .add(new ItemBuilder(Material.FERMENTED_SPIDER_EYE)
@@ -78,18 +78,18 @@ public final class SettingsMenu extends Menu {
                         .setDisplayName("&9&lMonsters")
                         .setLore("&7Monsters are set to &bPASSIVE", "&7Click to set monsters to &4AGGRESSIVE")
                         .onClick((event, bPlayer) -> setAggressiveMonsters(bPlayer, true)))
-                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isAggressiveMonsters() ? 0 : 1));
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().getSettings().isAggressiveMonsters() ? 0 : 1));
 
         setItem(4, new CyclingItemBuilder(plugin)
                 .add(new ItemBuilder(Material.WOODEN_AXE)
-                        .setDisplayName("&3&lMembers Can Build")
-                        .setLore("&7Members can build is set to &aTRUE", "&7Click to set to &cFALSE")
-                        .onClick((event, bPlayer) -> setMembersCanBuild(bPlayer, false)))
+                        .setDisplayName("&3&lPlayers Can Build")
+                        .setLore("&7Players can build is set to &aTRUE", "&7Click to set to &cFALSE")
+                        .onClick((event, bPlayer) -> setPlayersCanBuild(bPlayer, false)))
                 .add(new ItemBuilder(Material.FLINT_AND_STEEL)
-                        .setDisplayName("&3&lMembers Can Build")
-                        .setLore("&7Members can build is set to &cFALSE", "&7Click to set to &aTRUE")
-                        .onClick((event, bPlayer) -> setMembersCanBuild(bPlayer, true)))
-                .setStartingIndex(bPlayer -> bPlayer.getBWorld().isMembersCanBuild() ? 0 : 1));
+                        .setDisplayName("&3&lPlayers Can Build")
+                        .setLore("&7Players can build is set to &cFALSE", "&7Click to set to &aTRUE")
+                        .onClick((event, bPlayer) -> setPlayersCanBuild(bPlayer, true)))
+                .setStartingIndex(bPlayer -> bPlayer.getBWorld().getSettings().isPlayersCanBuild() ? 0 : 1));
 
         setItem(5, new CyclingItemBuilder(plugin)
                 .add(new ItemBuilder(Material.TNT)
@@ -100,7 +100,7 @@ public final class SettingsMenu extends Menu {
                         .setDisplayName("&d&lKeep Inventory")
                         .setLore("&7Keep inventory is set to &aTRUE", "&7Click to set to &cFALSE")
                         .onClick((event, bPlayer) -> setKeepInventory(bPlayer, false))
-                ).setStartingIndex(bPlayer -> !bPlayer.getBWorld().isKeepInventory() ? 0 : 1));
+                ).setStartingIndex(bPlayer -> !bPlayer.getBWorld().getSettings().isKeepInventory() ? 0 : 1));
 
         setItem(6, new ItemBuilder(Material.MAP)
                 .setDisplayName("&2&lRecruit Members")
@@ -118,36 +118,37 @@ public final class SettingsMenu extends Menu {
     }
 
     private void setDefaultGameMode(BPlayer bPlayer, GameMode gameMode) {
-        bPlayer.getBWorld().setDefaultGameMode(gameMode);
-        playSound(bPlayer);
+        bPlayer.getBWorld().getSettings().setDefaultGameMode(gameMode);
+        onUpdateSetting(bPlayer);
     }
 
     private void setDifficulty(BPlayer bPlayer, Difficulty difficulty) {
-        bPlayer.getBWorld().setDifficulty(difficulty, true);
-        playSound(bPlayer);
+        bPlayer.getBWorld().getSettings().setDifficulty(difficulty);
+        onUpdateSetting(bPlayer);
     }
 
     private void setAnimals(BPlayer bPlayer, boolean animals) {
-        bPlayer.getBWorld().setAnimals(animals);
-        playSound(bPlayer);
+        bPlayer.getBWorld().getSettings().setAnimals(animals);
+        onUpdateSetting(bPlayer);
     }
 
     private void setAggressiveMonsters(BPlayer bPlayer, boolean aggressiveMonsters) {
-        bPlayer.getBWorld().setAggressiveMonsters(aggressiveMonsters);
-        playSound(bPlayer);
+        bPlayer.getBWorld().getSettings().setAggressiveMonsters(aggressiveMonsters);
+        onUpdateSetting(bPlayer);
     }
 
-    private void setMembersCanBuild(BPlayer bPlayer, boolean membersCanBuild) {
-        bPlayer.getBWorld().setMembersCanBuild(membersCanBuild);
-        playSound(bPlayer);
+    private void setPlayersCanBuild(BPlayer bPlayer, boolean playersCanBuild) {
+        bPlayer.getBWorld().getSettings().setPlayersCanBuild(playersCanBuild);
+        onUpdateSetting(bPlayer);
     }
 
     private void setKeepInventory(BPlayer bPlayer, boolean keepInventory) {
-        bPlayer.getBWorld().setKeepInventory(keepInventory);
-        playSound(bPlayer);
+        bPlayer.getBWorld().getSettings().setKeepInventory(keepInventory);
+        onUpdateSetting(bPlayer);
     }
 
-    private void playSound(BPlayer bPlayer) {
+    private void onUpdateSetting(BPlayer bPlayer) {
+        bPlayer.getBWorld().applySandboxSettings();
         bPlayer.playSound(Sound.BLOCK_NOTE_BLOCK_PLING, 1, 2);
     }
 

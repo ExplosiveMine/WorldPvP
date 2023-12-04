@@ -60,8 +60,8 @@ public final class CmdInfo implements Command {
         if (bWorld == null)
             return;
 
-        Lang.WORLD_INFO.send(sender, bWorld.getAlias(), bWorld.getWorldSize().getValue());
-        for (BPlayer _bPlayer : bWorld.getPlayers(false))
+        Lang.WORLD_INFO.send(sender, bWorld.getAlias(), bWorld.getSettings().getBorderSize().getSize());
+        for (BPlayer _bPlayer : bWorld.getMembers(false))
             Lang.MEMBER_LIST.send(sender, _bPlayer.getName());
     }
 

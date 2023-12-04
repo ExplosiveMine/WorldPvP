@@ -75,6 +75,7 @@ public enum Lang {
     SETTINGS_MENU,
     SOCIAL_MENU,
     SOUTH,
+    STRUCTURE_GEN_MENU,
     SUCCESSFULLY_INVITED_PLAYER,
     SUCCESSFULLY_JOINED_WORLD,
     TELEPORT_OVERWORLD_HOLO,
@@ -130,11 +131,11 @@ public enum Lang {
     }
 
     public void send(BWorld bWorld, Object... objects) {
-        bWorld.getPlayers(true).forEach(bPlayer -> send(bPlayer, objects));
+        bWorld.getMembers(true).forEach(bPlayer -> send(bPlayer, objects));
     }
 
     public String get(Object... objects) {
-        return StringUtils.colour(StringUtils.replaceArgs(messages.get(this).getMessage(), objects));
+        return StringUtils.colour(StringUtils.replaceArgs(messages.getOrDefault(this, new Message(name())).getMessage(), objects));
     }
 
     private static final class Message {

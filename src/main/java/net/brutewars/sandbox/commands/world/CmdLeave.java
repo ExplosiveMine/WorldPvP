@@ -63,7 +63,7 @@ public final class CmdLeave implements Command {
             return;
         }
 
-        leavingBWorld.removePlayer(bPlayer);
+        leavingBWorld.removeMember(bPlayer);
         Lang.MEMBER_LEAVE.send(leavingBWorld, bPlayer.getName());
         Lang.LEFT_WORLD.send(bPlayer, leavingBWorld.getAlias());
     }

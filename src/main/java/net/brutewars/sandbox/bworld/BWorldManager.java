@@ -1,14 +1,15 @@
 package net.brutewars.sandbox.bworld;
 
-import com.google.common.base.Preconditions;
-import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
+import net.brutewars.sandbox.bworld.world.dimensions.SpawnWorld;
+import net.brutewars.sandbox.bworld.settings.WorldSettingsContainer;
+import net.brutewars.sandbox.bworld.world.ImportOptions;
 import net.brutewars.sandbox.config.parser.Lang;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.utils.Logging;
 import net.brutewars.sandbox.utils.StringUtils;
-import net.brutewars.sandbox.world.LoadingPhase;
-import net.brutewars.sandbox.world.WorldManager;
+import net.brutewars.sandbox.bworld.world.LoadingPhase;
+import net.brutewars.sandbox.bworld.world.dimensions.SandboxWorld;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldType;
@@ -20,35 +21,44 @@ import java.util.*;
 public final class BWorldManager {
     private final BWorldPlugin plugin;
 
-    @Getter private final SpawnBWorld spawn;
+    private SpawnWorld spawn;
+    private final Map<UUID, BWorld> bWorlds = new HashMap<>();
 
-    private final Map<UUID, BWorld> bWorlds;
-
-    @Getter private final WorldManager worldManager;
+    private final Map<BPlayer, WorldType> pendingRequests = new HashMap<>();
 
     public BWorldManager(BWorldPlugin plugin) {
         this.plugin = plugin;
-        this.spawn = new SpawnBWorld(plugin);
-        this.bWorlds = new HashMap<>();
-        this.worldManager = new WorldManager(plugin);
     }
 
-    public void createBWorld(BPlayer owner, WorldType worldType) {
-        loadBWorld(generateNextUuid(), owner, worldType);
+    public SpawnWorld getSpawn() {
+        if (spawn == null)
+            spawn = new SpawnWorld(plugin, plugin.getConfigSettings().getConfigParser().getWorldName());
+
+        return spawn;
     }
 
-    public BWorld loadBWorld(UUID uuid, BPlayer owner, WorldType worldType) {
-        Preconditions.checkNotNull(uuid, "uuid parameter cannot be null");
-        Preconditions.checkNotNull(owner, "owner parameter cannot be null");
+    public void createRequest(BPlayer bPlayer, WorldType worldType) {
+        pendingRequests.put(bPlayer, worldType);
+    }
 
-        BWorld bWorld = new BWorld(plugin, uuid);
+    public void resolveRequest(BPlayer bPlayer, boolean generateSpawn) {
+        createBWorld(bPlayer, pendingRequests.remove(bPlayer), generateSpawn);
+    }
+
+    private void createBWorld(BPlayer owner, WorldType worldType, boolean generateSpawn) {
+        BWorld bWorld = loadBWorld(generateNextUuid(), owner, worldType, generateSpawn);
+        bWorld.loadSandboxWorld(World.Environment.NORMAL);
+    }
+
+    public BWorld loadBWorld(UUID uuid, BPlayer owner, WorldType worldType, boolean generateSpawn) {
+        ImportOptions options = new ImportOptions()
+                .setWorldType(worldType)
+                .setGenerateCustomSpawn(generateSpawn);
+
+        BWorld bWorld = new BWorld(plugin, uuid, plugin.getSandboxManager().importSandboxWorlds(uuid, options));
         bWorld.setOwner(owner);
 
         bWorlds.put(uuid, bWorld);
-
-        if (worldType != null)
-            worldManager.create(bWorld, worldType);
-
         return bWorld;
     }
 
@@ -59,9 +69,8 @@ public final class BWorldManager {
         }
 
         // teleport visitors in that world to spawn if its loaded
-        for (World world : bWorld.getLoadedWorlds()) {
-            world.getPlayers().stream()
-                    .map(player -> plugin.getBPlayerManager().get(player))
+        for (SandboxWorld sandboxWorld : bWorld.getLoadedWorlds()) {
+            sandboxWorld.getPlayers().stream()
                     .filter(bPlayer -> !bPlayer.isInBWorld(bWorld, false))
                     .forEach(bPlayer -> {
                         Lang.ON_RESET_VISITOR.send(bPlayer);
@@ -69,10 +78,10 @@ public final class BWorldManager {
                     });
         }
 
-        bWorld.getPlayers(false).forEach(bWorld::removePlayer);
+        bWorld.getMembers(false).forEach(bWorld::removeMember);
         bWorld.getOwner().setBWorld(null);
 
-        worldManager.delete(bWorld);
+        plugin.getSandboxManager().deleteWorldFiles(bWorld);
         bWorlds.remove(bWorld.getUuid());
     }
 
@@ -88,8 +97,8 @@ public final class BWorldManager {
         return getBWorld(UUID.fromString(str[3]));
     }
 
-    public IBWorld getIBWorld(World world) {
-        if (spawn.getWorldPath().equals(world.getName()))
+    public WorldSettingsContainer getSettingsContainer(World world) {
+        if (spawn.getName().equals(world.getName()))
             return spawn;
 
         return getBWorld(world);
@@ -99,7 +108,7 @@ public final class BWorldManager {
         return Collections.unmodifiableCollection(bWorlds.values());
     }
 
-    public UUID generateNextUuid() {
+    private UUID generateNextUuid() {
         UUID uuid;
         do {
             uuid = UUID.randomUUID();
@@ -110,13 +119,13 @@ public final class BWorldManager {
 
     public void updateLastLocations() {
         for (BWorld bWorld : plugin.getBWorldManager().getBWorlds()) {
-            if (bWorld.getWorldPhase(World.Environment.NORMAL) != LoadingPhase.LOADED)
+            if (bWorld.getLoadingPhase(World.Environment.NORMAL) != LoadingPhase.LOADED)
                 continue;
 
             bWorld.getWorld().getPlayers().stream()
                     .map(player -> plugin.getBPlayerManager().get(player))
                     .filter(bPlayer -> bPlayer.isInBWorld(bWorld, true))
-                    .forEach(bPlayer -> bWorld.updateLastLocation(bPlayer, (Location) bPlayer.getIfOnline(Player::getLocation)));
+                    .forEach(bPlayer -> bWorld.getLastLocationTracker().updateLastLocation(bPlayer, (Location) bPlayer.getIfOnline(Player::getLocation)));
         }
     }
 

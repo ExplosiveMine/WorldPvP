@@ -20,7 +20,7 @@ public final class EntityEvents extends EventListener {
         if (bWorld == null)
             return;
 
-        if (bWorld.isAnimals())
+        if (bWorld.getSettings().isAnimals())
             return;
 
         switch (event.getReason()) {
@@ -46,7 +46,7 @@ public final class EntityEvents extends EventListener {
         if (bWorld == null)
             return;
 
-        if (bWorld.isAggressiveMonsters())
+        if (bWorld.getSettings().isAggressiveMonsters())
             return;
 
         if (event.getEntity().getSpawnCategory() != SpawnCategory.MONSTER)
@@ -70,7 +70,7 @@ public final class EntityEvents extends EventListener {
         if (bWorld == null)
             return;
 
-        if (bWorld.isAggressiveMonsters())
+        if (bWorld.getSettings().isAggressiveMonsters())
             return;
 
         event.setCancelled(true);

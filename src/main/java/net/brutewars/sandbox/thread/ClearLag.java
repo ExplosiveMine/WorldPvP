@@ -20,7 +20,7 @@ public final class ClearLag extends BukkitRunnable {
         this.plugin = plugin;
     }
 
-    public void init() {
+    public void startThread() {
         interval = plugin.getConfigSettings().getConfigParser().getClearLagInterval();
         countdown = interval;
 

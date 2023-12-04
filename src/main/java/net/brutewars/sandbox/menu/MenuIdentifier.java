@@ -4,11 +4,12 @@ import lombok.Getter;
 
 public enum MenuIdentifier {
     CREATE(),
+    CREATING_ANIMATION(),
+    JOIN_WORLD(),
     SETTINGS(),
     RECRUIT(SETTINGS),
     SOCIAL(),
-    CREATING_ANIMATION(),
-    JOINWORLD();
+    STRUCTURE_GEN(CREATE);
 
     @Getter private final MenuIdentifier parentIdentifier;
 

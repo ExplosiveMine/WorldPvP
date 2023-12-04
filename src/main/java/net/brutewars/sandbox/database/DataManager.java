@@ -1,7 +1,8 @@
 package net.brutewars.sandbox.database;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.bworld.lastlocation.BLocation;
+import net.brutewars.sandbox.bworld.settings.WorldSettings;
+import net.brutewars.sandbox.bworld.world.location.BLocation;
 import net.brutewars.sandbox.player.BPlayer;
 import net.brutewars.sandbox.player.BPlayerManager;
 import net.brutewars.sandbox.utils.Logging;
@@ -9,6 +10,8 @@ import net.brutewars.sandbox.bworld.BWorld;
 import net.brutewars.sandbox.bworld.BWorldManager;
 import org.bukkit.Difficulty;
 import org.bukkit.GameMode;
+import org.bukkit.World;
+import org.bukkit.WorldType;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,8 +59,10 @@ public final class DataManager {
         database.createTable("worlds",
                 "`bWorld_id` TEXT NOT NULL",
                 "`owner_id` TEXT PRIMARY KEY",
+                "`world_type` TEXT NOT NULL",
                 "'animals' INTEGER NOT NULL",
                 "'aggressive_monsters' INTEGER NOT NULL",
+                "'allow_build' INTEGER NOT NULL",
                 "'keepInventory' INTEGER NOT NULL",
                 "`difficulty` TEXT NOT NULL",
                 "'gamemode' TEXT NOT NULL");
@@ -71,8 +76,6 @@ public final class DataManager {
                 "'renew_time' INTEGER NOT NULL");
     }
 
-    // loading everything from the database
-    // Runs synchronously on enable
     public void load() {
         createSQLiteDatabase();
 
@@ -97,13 +100,16 @@ public final class DataManager {
                     // basic BWorld info
                     UUID worldUuid = UUID.fromString(worldSet.getString("bWorld_id"));
                     BPlayer owner = bPlayerManager.get(UUID.fromString(worldSet.getString("owner_id")));
-                    BWorld bWorld = bWorldManager.loadBWorld(worldUuid, owner, null);
+                    WorldType worldType = WorldType.valueOf(worldSet.getString("world_type"));
+                    BWorld bWorld = bWorldManager.loadBWorld(worldUuid, owner, worldType, false);
 
-                    bWorld.setAnimals(worldSet.getBoolean("animals"));
-                    bWorld.setAggressiveMonsters(worldSet.getBoolean("aggressive_monsters"));
-                    bWorld.setKeepInventory(worldSet.getBoolean("keepInventory"));
-                    bWorld.setDifficulty(Difficulty.valueOf(worldSet.getString("difficulty")), false);
-                    bWorld.setDefaultGameMode(GameMode.valueOf(worldSet.getString("gamemode")));
+                    WorldSettings settings = bWorld.getSettings();
+                    settings.setAnimals(worldSet.getBoolean("animals"));
+                    settings.setAggressiveMonsters(worldSet.getBoolean("aggressive_monsters"));
+                    settings.setPlayersCanBuild(worldSet.getBoolean("allow_build"));
+                    settings.setKeepInventory(worldSet.getBoolean("keepInventory"));
+                    settings.setDifficulty(Difficulty.valueOf(worldSet.getString("difficulty")));
+                    settings.setDefaultGameMode(GameMode.valueOf(worldSet.getString("gamemode")));
 
                     // members
                     database.getTable("members").select("*", "`bWorld_id` = \"" + worldUuid + "\"", memberSet -> {
@@ -113,9 +119,9 @@ public final class DataManager {
                                 BLocation bLoc = new BLocation(memberSet.getString("last_location"));
                                 // Player is owner, so they have already been added; just need to update their last location
                                 if (bWorld.getOwner().equals(bPlayer))
-                                    bWorld.updateLastLocation(bPlayer, bLoc);
+                                    bWorld.getLastLocationTracker().updateLastLocation(bPlayer, bLoc);
                                 else
-                                    bWorld.addPlayer(bPlayer, bLoc);
+                                    bWorld.addMember(bPlayer, bLoc);
                             }
                         } catch (SQLException e) {
                             e.printStackTrace();
@@ -130,7 +136,7 @@ public final class DataManager {
         database.getTable("settings").select(resultSet -> {
             try {
                 if (resultSet.next())
-                    bWorldManager.getWorldManager().setLastRoster(resultSet.getLong("renew_time"));
+                    plugin.getWorldRoster().setLastRoster(resultSet.getLong("renew_time"));
             } catch (SQLException e) {
                 e.printStackTrace();
             }
@@ -139,45 +145,47 @@ public final class DataManager {
         database.closeConnection();
     }
 
-    // Runs synchronously on disable
     public void save() {
         database.backup();
 
-        // create new database since we made a backup...
         createSQLiteDatabase();
 
         // insert data into tables
-        database.getTable("settings").insert(bWorldManager.getWorldManager().getLastRoster());
+        database.getTable("settings").insert(plugin.getWorldRoster().getLastRoster());
 
         bPlayerManager.getBPlayers().forEach(bPlayer -> database.getTable("players").insert(
                 bPlayer.getUuid().toString(),
                 bPlayer.getHudSlot(),
-                parseInt(bPlayer.isHudToggled())
+                booleanToInt(bPlayer.isHudToggled())
         ));
 
         bWorldManager.getBWorlds().forEach(bWorld -> {
             String bWorldUuid = bWorld.getUuid().toString();
+
+            WorldSettings settings = bWorld.getSettings();
             database.getTable("worlds").insert(
                     bWorldUuid,
                     bWorld.getOwner().getUuid().toString(),
-                    parseInt(bWorld.isAnimals()),
-                    parseInt(bWorld.isAggressiveMonsters()),
-                    parseInt(bWorld.isKeepInventory()),
-                    bWorld.getDifficulty().toString(),
-                    bWorld.getDefaultGameMode().toString()
+                    bWorld.getSandboxWorld(World.Environment.NORMAL).getWorldType(),
+                    booleanToInt(settings.isAnimals()),
+                    booleanToInt(settings.isAggressiveMonsters()),
+                    booleanToInt(settings.isPlayersCanBuild()),
+                    booleanToInt(settings.isKeepInventory()),
+                    settings.getDifficulty().toString(),
+                    settings.getDefaultGameMode().toString()
             );
 
-            bWorld.getPlayers(true).forEach(bPlayer -> database.getTable("members").insert(
+            bWorld.getMembers(true).forEach(bPlayer -> database.getTable("members").insert(
                     bWorldUuid,
                     bPlayer.getUuid().toString(),
-                    bWorld.getLastLocation(bPlayer).toString())
+                    bWorld.getLastLocationTracker().getLastLocation(bPlayer).toString())
             );
         });
 
         database.closeConnection();
     }
 
-    private int parseInt(boolean value) {
+    private int booleanToInt(boolean value) {
         return value ? 1 : 0;
     }
 

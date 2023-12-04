@@ -73,7 +73,7 @@ public final class CmdKick implements Command {
             return;
         }
 
-        bWorld.removePlayer(toBeKicked);
+        bWorld.removeMember(toBeKicked);
 
         Lang.OWNER_KICK_PLAYER.send(bWorld, toBeKicked.getName());
         Lang.PLAYER_KICKED.send(toBeKicked, owner.getName());

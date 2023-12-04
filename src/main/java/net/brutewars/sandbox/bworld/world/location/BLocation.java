@@ -1,4 +1,4 @@
-package net.brutewars.sandbox.bworld.lastlocation;
+package net.brutewars.sandbox.bworld.world.location;
 
 import org.bukkit.Location;
 import org.bukkit.World;

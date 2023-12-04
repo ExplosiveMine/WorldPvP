@@ -1,7 +1,6 @@
-package net.brutewars.sandbox.world.bonus;
+package net.brutewars.sandbox.bworld.world.bonus;
 
 import net.brutewars.sandbox.BWorldPlugin;
-import net.brutewars.sandbox.utils.Logging;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -16,8 +15,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public final class BonusChest {
     private final BWorldPlugin plugin;
-
-    private final ThreadLocalRandom random = ThreadLocalRandom.current();
 
     public BonusChest(BWorldPlugin plugin) {
         this.plugin = plugin;
@@ -35,7 +32,7 @@ public final class BonusChest {
         while (itr.hasNext()) {
             int slot;
             do {
-                slot = random.nextInt(0, inv.getSize());
+                slot = ThreadLocalRandom.current().nextInt(0, inv.getSize());
             } while (inv.getItem(slot) != null && inv.getItem(slot).getType() != Material.AIR);
             inv.setItem(slot, itr.next());
         }

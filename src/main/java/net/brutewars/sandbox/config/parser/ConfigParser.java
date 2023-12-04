@@ -4,12 +4,16 @@ import lombok.Getter;
 import net.brutewars.sandbox.BWorldPlugin;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 public final class ConfigParser extends SectionParser {
     @Getter private long invitingTime;
+
     @Getter private long resettingTime;
     @Getter private long unloadingTime;
     @Getter private long clearLagInterval;
-    @Getter private long worldRenewTime;
+    @Getter private Duration worldRenewTime;
 
     @Getter private int rosterSize;
     @Getter private int spawnLocationAttempts;
@@ -32,7 +36,7 @@ public final class ConfigParser extends SectionParser {
         unloadingTime = config.getLong("times.world-unload", 600L) * 20;
         resettingTime = config.getLong("times.reset-request", 30L) * 20;
         clearLagInterval = config.getLong("times.clear-lag", 300L);
-        worldRenewTime = config.getLong("times.renew-worlds", 7L) * 24 * 3600 * 20;
+        worldRenewTime = Duration.of(config.getLong("times.renew-worlds", 7L), ChronoUnit.DAYS);
 
         rosterSize = config.getInt("world.roster-size", 5);
         spawnLocationAttempts = config.getInt("world.spawn-location-attempts", 20);
